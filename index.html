@@ -1,398 +1,341 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>আধুনিক অ্যাডমিন প্যানেল</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Admin V3 - Ultra Modern</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         :root {
-            --bg-main: #0f172a;
-            --bg-sidebar: #1e293b;
-            --bg-card: #334155;
-            --text-light: #f8fafc;
-            --text-gray: #94a3b8;
-            --primary-color: #10b981;
-            --accent-color: #f59e0b;
-            --blue-color: #3b82f6;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --primary: #10b981; /* Green */
+            --danger: #ef4444; /* Red */
+            --accent: #3b82f6; /* Blue */
         }
 
-        body, html {
-            margin: 0;
-            padding: 0;
-            font-family: 'Poppins', sans-serif;
-            height: 100%;
-            background-color: var(--bg-main);
-            color: var(--text-light);
-        }
+        body { margin: 0; font-family: 'Poppins', sans-serif; background: var(--bg-dark); color: var(--text-main); height: 100vh; display: flex; overflow: hidden; }
+        
+        /* LOGIN SCREEN */
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0f172a, #020617); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .login-box { background: rgba(30, 41, 59, 0.7); padding: 40px; border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); width: 320px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .login-inp { width: 100%; padding: 12px 15px; margin: 10px 0; border-radius: 10px; border: none; background: #334155; color: white; outline: none; box-sizing: border-box; }
+        .login-btn { width: 100%; padding: 12px; border-radius: 10px; border: none; background: var(--primary); color: white; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .login-btn:hover { background: #059669; transform: scale(1.02); }
 
-        /* Login Screen Styles */
-        #login-screen {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-        }
+        /* DASHBOARD LAYOUT */
+        #admin-panel { display: none; width: 100%; height: 100%; display: flex; }
+        
+        /* SIDEBAR */
+        .sidebar { width: 260px; background: var(--bg-card); padding: 20px; display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.05); }
+        .brand { font-size: 22px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
+        .menu-item { padding: 12px 15px; margin-bottom: 8px; border-radius: 12px; color: var(--text-sub); cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 12px; }
+        .menu-item:hover, .menu-item.active { background: rgba(16, 185, 129, 0.15); color: var(--primary); }
+        .menu-item i { font-size: 18px; }
 
-        .login-card {
-            background: rgba(51, 65, 85, 0.8);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            width: 350px;
-            text-align: center;
-        }
+        /* MAIN CONTENT */
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; }
+        .section { display: none; animation: slideUp 0.4s; }
+        .section.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .login-card h2 {
-            margin-bottom: 25px;
-            color: var(--primary-color);
-        }
+        h2 { margin-top: 0; font-weight: 600; font-size: 24px; margin-bottom: 25px; }
 
-        .input-group {
-            margin-bottom: 20px;
-            position: relative;
-        }
+        /* CARDS */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .card { background: var(--bg-card); padding: 25px; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.05); }
+        .card h3 { margin: 0; font-size: 32px; color: white; }
+        .card p { margin: 5px 0 0; color: var(--text-sub); font-size: 14px; }
+        .icon-box { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        
+        /* TABLES & LISTS */
+        .box { background: var(--bg-card); padding: 25px; border-radius: 16px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { text-align: left; color: var(--text-sub); padding: 10px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        td { padding: 15px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); color: white; font-size: 14px; }
+        
+        /* INPUTS & BUTTONS */
+        .inp-field { width: 100%; background: #0f172a; border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; color: white; outline: none; margin-bottom: 10px; }
+        .inp-field:focus { border-color: var(--primary); }
+        .btn-action { padding: 8px 15px; border-radius: 6px; border: none; cursor: pointer; color: white; font-size: 12px; margin-right: 5px; }
+        .btn-green { background: var(--primary); }
+        .btn-red { background: var(--danger); }
+        .btn-blue { background: var(--accent); }
 
-        .input-group i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-gray);
+        /* Responsive */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; flex-direction: row; overflow-x: auto; padding: 15px; box-sizing: border-box; }
+            .brand { display: none; }
+            .menu-item { flex-direction: column; font-size: 10px; padding: 10px; min-width: 70px; text-align: center; gap: 5px; }
+            .main-content { padding: 15px; }
         }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px 15px 12px 45px;
-            border: none;
-            border-radius: 10px;
-            background-color: var(--bg-sidebar);
-            color: var(--text-light);
-            outline: none;
-            transition: background-color 0.3s;
-        }
-
-        .input-group input:focus {
-            background-color: #2d3748;
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            background-color: var(--primary-color);
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .login-btn:hover {
-            background-color: #059669;
-        }
-
-        #login-message {
-            color: #ef4444;
-            margin-top: 15px;
-            font-size: 14px;
-        }
-
-        /* Admin Panel Styles */
-        #admin-panel {
-            display: none;
-            height: 100vh;
-            flex-direction: row;
-        }
-
-        .sidebar {
-            width: 260px;
-            background-color: var(--bg-sidebar);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sidebar-header {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 40px;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            padding: 15px 20px;
-            margin-bottom: 10px;
-            border-radius: 12px;
-            color: var(--text-gray);
-            text-decoration: none;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .menu-item i {
-            margin-right: 15px;
-            font-size: 18px;
-        }
-
-        .menu-item:hover, .menu-item.active {
-            background-color: var(--bg-card);
-            color: var(--primary-color);
-        }
-
-        .main-content {
-            flex: 1;
-            padding: 30px;
-            overflow-y: auto;
-        }
-
-        .page-header {
-            margin-bottom: 30px;
-        }
-
-        .page-header h1 {
-            margin: 0;
-            font-size: 28px;
-        }
-
-        .dashboard-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            background-color: var(--bg-card);
-            padding: 25px;
-            border-radius: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-info h2 {
-            margin: 0;
-            font-size: 32px;
-        }
-
-        .card-info p {
-            margin: 5px 0 0;
-            color: var(--text-gray);
-        }
-
-        .card-icon {
-            font-size: 36px;
-            padding: 15px;
-            border-radius: 12px;
-        }
-
-        .card-users .card-icon { background-color: rgba(59, 130, 246, 0.2); color: var(--blue-color); }
-        .card-pending .card-icon { background-color: rgba(245, 158, 11, 0.2); color: var(--accent-color); }
-        .card-tasks .card-icon { background-color: rgba(16, 185, 129, 0.2); color: var(--primary-color); }
-
-        .notice-section {
-            background-color: var(--bg-card);
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .notice-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            font-size: 20px;
-            font-weight: 600;
-        }
-
-        .notice-header i {
-            margin-right: 10px;
-            color: var(--accent-color);
-        }
-
-        .notice-input {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            background-color: var(--bg-sidebar);
-            color: var(--text-light);
-            margin-bottom: 15px;
-            outline: none;
-        }
-
-        .update-btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 10px;
-            background-color: var(--primary-color);
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .update-btn:hover {
-            background-color: #059669;
-        }
-
-        /* Content Sections */
-        .content-section {
-            display: none;
-        }
-        .content-section.active {
-            display: block;
-        }
-
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <div class="login-card">
-            <h2>অ্যাডমিন লগইন</h2>
-            <div class="input-group">
-                <i class="fas fa-user"></i>
-                <input type="text" id="username" placeholder="ইউজারনেম">
-            </div>
-            <div class="input-group">
-                <i class="fas fa-lock"></i>
-                <input type="password" id="password" placeholder="পাসওয়ার্ড">
-            </div>
-            <button class="login-btn" onclick="login()">লগইন করুন</button>
-            <p id="login-message"></p>
+        <div class="login-box">
+            <i class="fas fa-shield-cat" style="font-size: 50px; color: var(--primary); margin-bottom: 20px;"></i>
+            <h2 style="color:white; margin-bottom: 5px;">Admin Login</h2>
+            <p style="color:var(--text-sub); margin-bottom: 20px; font-size: 12px;">Restricted Access Area</p>
+            
+            <input type="text" id="l-user" class="login-inp" placeholder="Username">
+            <input type="password" id="l-pass" class="login-inp" placeholder="Password">
+            
+            <button class="login-btn" onclick="doLogin()">ACCESS PANEL</button>
+            <p id="login-msg" style="color: var(--danger); font-size: 12px; margin-top: 10px;"></p>
         </div>
     </div>
 
-    <div id="admin-panel">
+    <div id="admin-panel" style="display: none;">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <i class="fas fa-tree"></i> টাকার গাছ
-            </div>
-            <div class="menu-item active" onclick="showSection('dashboard')">
-                <i class="fas fa-home"></i> ড্যাশবোর্ড
-            </div>
-            <div class="menu-item" onclick="showSection('task-manager')">
-                <i class="fas fa-tasks"></i> টাস্ক ম্যানেজার
-            </div>
-            <div class="menu-item" onclick="showSection('users')">
-                <i class="fas fa-users"></i> ইউজার্স
-            </div>
-            <div class="menu-item" onclick="showSection('requests')">
-                <i class="fas fa-exchange-alt"></i> রিকোয়েস্টস
-            </div>
-            <div class="menu-item" onclick="showSection('settings')">
-                <i class="fas fa-cog"></i> সেটিংস
-            </div>
+            <div class="brand"><i class="fas fa-tree"></i> টাকার গাছ</div>
+            <div class="menu-item active" onclick="nav('dashboard', this)"><i class="fas fa-chart-pie"></i> Dashboard</div>
+            <div class="menu-item" onclick="nav('tasks', this)"><i class="fas fa-list-check"></i> Tasks</div>
+            <div class="menu-item" onclick="nav('users', this)"><i class="fas fa-users"></i> Users</div>
+            <div class="menu-item" onclick="nav('requests', this)"><i class="fas fa-money-bill-transfer"></i> Requests</div>
+            <div class="menu-item" onclick="location.reload()" style="margin-top: auto; color: var(--danger);"><i class="fas fa-sign-out-alt"></i> Logout</div>
         </div>
 
         <div class="main-content">
-            <div id="dashboard" class="content-section active">
-                <div class="page-header">
-                    <h1>ওভারভিউ</h1>
-                </div>
-                <div class="dashboard-cards">
-                    <div class="card card-users">
-                        <div class="card-info">
-                            <h2>১</h2>
-                            <p>মোট ইউজার</p>
-                        </div>
-                        <div class="card-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
+            
+            <div id="dashboard" class="section active">
+                <h2>Overview</h2>
+                <div class="grid">
+                    <div class="card">
+                        <div><h3><span id="st-users">0</span></h3><p>Total Users</p></div>
+                        <div class="icon-box" style="background: rgba(59, 130, 246, 0.2); color: var(--accent);"><i class="fas fa-users"></i></div>
                     </div>
-                    <div class="card card-pending">
-                        <div class="card-info">
-                            <h2>০</h2>
-                            <p>পেন্ডিং রিকোয়েস্ট</p>
-                        </div>
-                        <div class="card-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
+                    <div class="card">
+                        <div><h3><span id="st-pending">0</span></h3><p>Pending Requests</p></div>
+                        <div class="icon-box" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;"><i class="fas fa-clock"></i></div>
                     </div>
-                    <div class="card card-tasks">
-                        <div class="card-info">
-                            <h2>১</h2>
-                            <p>অ্যাক্টিভ টাস্ক</p>
-                        </div>
-                        <div class="card-icon">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
+                    <div class="card">
+                        <div><h3><span id="st-tasks">0</span></h3><p>Active Tasks</p></div>
+                        <div class="icon-box" style="background: rgba(16, 185, 129, 0.2); color: var(--primary);"><i class="fas fa-check-circle"></i></div>
                     </div>
                 </div>
-                <div class="notice-section">
-                    <div class="notice-header">
-                        <i class="fas fa-bullhorn"></i> আপডেট নোটিশ
+
+                <div class="box">
+                    <h3 style="margin-top:0; color:var(--accent);">📢 অ্যাপ নোটিশ আপডেট</h3>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="notice-txt" class="inp-field" placeholder="নতুন নোটিশ লিখুন..." style="margin:0;">
+                        <button class="btn-action btn-blue" style="font-size:14px; width:100px;" onclick="updateNotice()">Update</button>
                     </div>
-                    <textarea class="notice-input" rows="4" placeholder="নোটিশ লিখুন..."></textarea>
-                    <button class="update-btn">আপডেট করুন</button>
                 </div>
             </div>
 
-            <div id="task-manager" class="content-section">
-                <div class="page-header"><h1>টাস্ক ম্যানেজার</h1></div>
-                <p>এখানে টাস্ক ম্যানেজমেন্টের কন্টেন্ট থাকবে।</p>
+            <div id="tasks" class="section">
+                <h2>Task Manager</h2>
+                <div class="box">
+                    <h3 style="margin-top:0;">➕ Add New Task</h3>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <input type="text" id="t-title" class="inp-field" placeholder="Task Title">
+                        <input type="number" id="t-reward" class="inp-field" placeholder="Reward (Tk)">
+                    </div>
+                    <input type="text" id="t-link" class="inp-field" placeholder="Link URL">
+                    <select id="t-type" class="inp-field">
+                        <option value="telegram">Telegram</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="facebook">Facebook</option>
+                    </select>
+                    <button class="btn-action btn-green" style="width:100%; padding:12px;" onclick="addTask()">Publish Task</button>
+                </div>
+
+                <div class="box">
+                    <h3 style="margin-top:0;">📋 Active Tasks</h3>
+                    <table id="task-table">
+                        <thead><tr><th>Task</th><th>Reward</th><th>Action</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
-            <div id="users" class="content-section">
-                <div class="page-header"><h1>ইউজার্স</h1></div>
-                <p>এখানে ইউজার লিস্ট থাকবে।</p>
+
+            <div id="users" class="section">
+                <h2>User Management</h2>
+                <div class="box">
+                    <input type="text" id="search-user" class="inp-field" placeholder="🔍 ফোন নম্বর দিয়ে খুঁজুন..." onkeyup="searchUser()">
+                    <div id="user-result"></div>
+                </div>
             </div>
-            <div id="requests" class="content-section">
-                <div class="page-header"><h1>রিকোয়েস্টস</h1></div>
-                <p>এখানে পেন্ডিং রিকোয়েস্ট থাকবে।</p>
+
+            <div id="requests" class="section">
+                <h2>Payment Requests</h2>
+                <div class="box">
+                    <table id="req-table">
+                        <thead><tr><th>User</th><th>Request</th><th>Amt</th><th>Action</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
-            <div id="settings" class="content-section">
-                <div class="page-header"><h1>সেটিংস</h1></div>
-                <p>এখানে সেটিংস থাকবে।</p>
-            </div>
+
         </div>
     </div>
 
     <script>
-        function login() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const message = document.getElementById('login-message');
+        const firebaseConfig = { apiKey: "AIzaSyDgI-d8iwWr40tmknbY6jhH0oRb2Tvg4d0", authDomain: "takar-gach-a1d84.firebaseapp.com", databaseURL: "https://takar-gach-a1d84-default-rtdb.firebaseio.com", projectId: "takar-gach-a1d84", storageBucket: "takar-gach-a1d84.firebasestorage.app", messagingSenderId: "637802367074", appId: "1:637802367074:web:2e7f6c0670ec47f3a1693b", measurementId: "G-0QL9LB7BSK" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-            if (username === 'জিহাদ' && password === '198373ZA') {
+        // 1. LOGIN LOGIC
+        function doLogin() {
+            const u = document.getElementById('l-user').value;
+            const p = document.getElementById('l-pass').value;
+            
+            if(u === "জিহাদ" && p === "198373ZA") {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('admin-panel').style.display = 'flex';
+                initData();
             } else {
-                message.textContent = 'ভুল ইউজারনেম বা পাসওয়ার্ড!';
+                document.getElementById('login-msg').innerText = "❌ ভুল ইউজারনেম বা পাসওয়ার্ড!";
             }
         }
 
-        function showSection(sectionId) {
-            // Hide all sections
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.remove('active');
+        // NAVIGATION
+        function nav(id, el) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        // 2. DATA LOADING
+        function initData() {
+            // Stats & Requests
+            db.ref('users').on('value', s => {
+                const users = s.val() || {};
+                document.getElementById('st-users').innerText = Object.keys(users).length;
+                
+                let pendingCount = 0;
+                const tbody = document.querySelector('#req-table tbody');
+                tbody.innerHTML = '';
+
+                Object.keys(users).forEach(uid => {
+                    const u = users[uid];
+                    if(u.history) {
+                        Object.keys(u.history).forEach(k => {
+                            const h = u.history[k];
+                            if(h.status === 'Pending') {
+                                pendingCount++;
+                                const isBuy = h.type.includes('Buy');
+                                tbody.innerHTML += `
+                                <tr>
+                                    <td>${u.name}<br><small style="color:#64748b">${u.phone}</small></td>
+                                    <td><span style="color:${isBuy?'var(--accent)':'var(--danger)'}">${h.type}</span><br><small>${h.method||h.trx}</small></td>
+                                    <td>৳${h.amount}</td>
+                                    <td>
+                                        <button class="btn-action btn-green" onclick="setStatus('${uid}','${k}','Success','${h.type}')">✔</button>
+                                        <button class="btn-action btn-red" onclick="setStatus('${uid}','${k}','Rejected','${h.type}')">✘</button>
+                                    </td>
+                                </tr>`;
+                            }
+                        });
+                    }
+                });
+                document.getElementById('st-pending').innerText = pendingCount;
             });
 
-            // Deactivate all menu items
-            document.querySelectorAll('.menu-item').forEach(item => {
-                item.classList.remove('active');
+            // Load Tasks
+            db.ref('settings/tasks').on('value', s => {
+                const tasks = s.val() || {};
+                document.getElementById('st-tasks').innerText = Object.keys(tasks).length;
+                const tbody = document.querySelector('#task-table tbody');
+                tbody.innerHTML = '';
+                
+                Object.keys(tasks).forEach(key => {
+                    const t = tasks[key];
+                    tbody.innerHTML += `
+                    <tr>
+                        <td><b>${t.title}</b><br><a href="${t.link}" target="_blank" style="color:var(--accent); font-size:12px;">Link</a></td>
+                        <td>৳${t.reward}</td>
+                        <td><button class="btn-action btn-red" onclick="deleteTask('${key}')"><i class="fas fa-trash"></i></button></td>
+                    </tr>`;
+                });
             });
+        }
 
-            // Show the selected section
-            document.getElementById(sectionId).classList.add('active');
+        // 3. ACTIONS
+        function updateNotice() {
+            db.ref('settings/notice').set(document.getElementById('notice-txt').value);
+            alert("✅ Notice Updated!");
+        }
 
-            // Activate the clicked menu item
-            event.currentTarget.classList.add('active');
+        function addTask() {
+            const title = document.getElementById('t-title').value;
+            const reward = parseInt(document.getElementById('t-reward').value);
+            const link = document.getElementById('t-link').value;
+            const type = document.getElementById('t-type').value;
+            
+            if(!title || !reward || !link) return alert("Fill all fields!");
+            
+            let icon = type === 'youtube' ? 'youtube' : (type === 'telegram' ? 'telegram' : 'facebook');
+            let color = type === 'youtube' ? 'red' : (type === 'telegram' ? '#229ED9' : 'blue');
+
+            db.ref('settings/tasks').push({ title, reward, link, type, icon, color });
+            alert("✅ Task Published!");
+            document.getElementById('t-title').value = '';
+            document.getElementById('t-link').value = '';
+        }
+
+        function deleteTask(key) {
+            if(confirm("Delete this task?")) db.ref('settings/tasks/'+key).remove();
+        }
+
+        function setStatus(uid, key, status, type) {
+            if(!confirm(`Mark as ${status}?`)) return;
+            const updates = {};
+            updates[`users/${uid}/history/${key}/status`] = status;
+            
+            if(status === 'Success' && type.includes('Buy')) {
+                updates[`users/${uid}/isVip`] = true;
+                updates[`users/${uid}/vipExpiry`] = Date.now() + (3*86400000);
+            }
+            db.ref().update(updates);
+        }
+
+        // User Search
+        function searchUser() {
+            const q = document.getElementById('search-user').value;
+            const res = document.getElementById('user-result');
+            res.innerHTML = '';
+            
+            if(q.length < 5) return;
+
+            db.ref('users/'+q).once('value', s => {
+                if(s.exists()) {
+                    const u = s.val();
+                    res.innerHTML = `
+                    <div style="background:#0f172a; padding:15px; border-radius:10px; margin-top:10px; border:1px solid #334155;">
+                        <h3 style="margin:0; color:var(--primary)">${u.name} <span style="font-size:12px; background:var(--accent); padding:2px 8px; border-radius:10px; color:white;">${u.isVip?'VIP':'Free'}</span></h3>
+                        <p style="color:#94a3b8; font-size:13px;">${u.phone} | UID: ${u.uid}</p>
+                        <p style="font-size:20px; font-weight:bold;">৳ ${u.balance}</p>
+                        <div style="margin-top:10px;">
+                            <button class="btn-action btn-green" onclick="editBal('${q}', ${u.balance}, 'add')">+ Add Money</button>
+                            <button class="btn-action btn-red" onclick="editBal('${q}', ${u.balance}, 'sub')">- Cut Money</button>
+                        </div>
+                    </div>`;
+                } else {
+                    res.innerHTML = '<p style="color:var(--danger)">User Not Found!</p>';
+                }
+            });
+        }
+
+        function editBal(uid, oldBal, action) {
+            const amt = prompt("Amount:");
+            if(!amt) return;
+            const newBal = action === 'add' ? oldBal + parseInt(amt) : oldBal - parseInt(amt);
+            db.ref('users/'+uid).update({ balance: newBal });
+            alert("Updated!");
+            searchUser(); 
         }
     </script>
-
 </body>
 </html>
 
