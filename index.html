@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Admin V4 - JIHAD</title>
+    <title>Admin V4.1 - JIHAD</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600&display=swap" rel="stylesheet">
@@ -11,10 +11,10 @@
     
     <style>
         :root {
-            --bg: #0b1120; /* Deepest Blue */
-            --card: rgba(30, 41, 59, 0.7); /* Glass */
-            --primary: #00e5ff; /* Cyan Neon */
-            --accent: #d946ef; /* Magenta Neon */
+            --bg: #0b1120;
+            --card: rgba(30, 41, 59, 0.7);
+            --primary: #00e5ff;
+            --accent: #d946ef;
             --text: #f8fafc;
             --text-gray: #94a3b8;
         }
@@ -26,7 +26,8 @@
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0b1120; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; background-image: radial-gradient(circle at 50% 50%, #1e293b 0%, #0b1120 100%); }
         .login-box { background: rgba(255,255,255,0.05); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); width: 85%; max-width: 350px; text-align: center; backdrop-filter: blur(10px); box-shadow: 0 0 30px rgba(0, 229, 255, 0.1); }
         .login-inp { width: 100%; padding: 15px; margin: 10px 0; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: var(--primary); font-size: 16px; text-align: center; font-weight: bold; letter-spacing: 1px; }
-        .login-btn { width: 100%; padding: 15px; background: linear-gradient(45deg, var(--primary), #2979ff); border: none; border-radius: 10px; color: #000; font-weight: 800; font-size: 16px; cursor: pointer; text-transform: uppercase; margin-top: 10px; box-shadow: 0 5px 15px rgba(0, 229, 255, 0.3); }
+        .login-btn { width: 100%; padding: 15px; background: linear-gradient(45deg, var(--primary), #2979ff); border: none; border-radius: 10px; color: #000; font-weight: 800; font-size: 16px; cursor: pointer; text-transform: uppercase; margin-top: 10px; box-shadow: 0 5px 15px rgba(0, 229, 255, 0.3); transition: 0.2s; }
+        .login-btn:active { transform: scale(0.95); }
 
         /* HEADER */
         .top-bar { padding: 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(11, 17, 32, 0.9); backdrop-filter: blur(5px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -58,7 +59,7 @@
         .bg-green { background: #10b981; color: white; }
         .bg-red { background: #ef4444; color: white; }
 
-        /* BOTTOM NAVIGATION (The Fix) */
+        /* BOTTOM NAVIGATION */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #0f172a; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-around; padding: 12px 0; z-index: 999; backdrop-filter: blur(10px); }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-gray); font-size: 10px; cursor: pointer; transition: 0.3s; width: 25%; }
         .nav-item i { font-size: 20px; margin-bottom: 4px; transition: 0.3s; }
@@ -91,12 +92,12 @@
             <div class="grid">
                 <div class="stat-card">
                     <i class="fas fa-users icon-glow" style="color: #3b82f6;"></i>
-                    <h2 id="st-users">0</h2>
+                    <h2 id="st-users">...</h2>
                     <p>Total Users</p>
                 </div>
                 <div class="stat-card">
                     <i class="fas fa-clock icon-glow" style="color: #f59e0b;"></i>
-                    <h2 id="st-pending">0</h2>
+                    <h2 id="st-pending">...</h2>
                     <p>Pending</p>
                 </div>
             </div>
@@ -176,19 +177,26 @@
 
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDgI-d8iwWr40tmknbY6jhH0oRb2Tvg4d0", authDomain: "takar-gach-a1d84.firebaseapp.com", databaseURL: "https://takar-gach-a1d84-default-rtdb.firebaseio.com", projectId: "takar-gach-a1d84", storageBucket: "takar-gach-a1d84.firebasestorage.app", messagingSenderId: "637802367074", appId: "1:637802367074:web:2e7f6c0670ec47f3a1693b", measurementId: "G-0QL9LB7BSK" };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        
+        let db;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.database();
+        } catch(e) {
+            alert("⚠️ Internet Error or Firebase Issue! Please reload.");
+        }
 
-        // 1. LOGIN SYSTEM
+        // 1. LOGIN SYSTEM (FIXED)
         function doLogin() {
-            const u = document.getElementById('l-user').value;
-            const p = document.getElementById('l-pass').value;
+            var u = document.getElementById('l-user').value.trim();
+            var p = document.getElementById('l-pass').value.trim();
             
             if(u === 'JIHAD' && p === '198373ZA') {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('admin-panel').style.display = 'block';
                 initData();
             } else {
+                alert("❌ ভুল ইউজারনেম বা পাসওয়ার্ড!\n\nUsername: JIHAD (বড় হাতের)\nPassword: 198373ZA");
                 document.getElementById('msg').innerText = "WRONG CREDENTIALS!";
             }
         }
@@ -203,6 +211,8 @@
 
         // 2. DATA LOAD
         function initData() {
+            if(!db) return;
+
             // Stats & Requests
             db.ref('users').on('value', s => {
                 const users = s.val() || {};
@@ -312,5 +322,19 @@
                         </div>
                     </div>`;
                 } else {
-                    res.innerHTML = '<p style="color:var(--text
+                    res.innerHTML = '<p style="color:var(--text-gray)">No user found</p>';
+                }
+            });
+        }
 
+        function editBal(uid, oldBal, action) {
+            const amt = prompt("Amount:");
+            if(!amt) return;
+            const newBal = action === 'add' ? oldBal + parseInt(amt) : oldBal - parseInt(amt);
+            db.ref('users/'+uid).update({ balance: newBal });
+            alert("Done!");
+            searchUser();
+        }
+    </script>
+</body>
+</html>
