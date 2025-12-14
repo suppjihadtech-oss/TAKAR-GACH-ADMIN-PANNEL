@@ -3,47 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>টাকার গাছ - Admin</title>
+    <title>টাকার গাছ - Super Admin</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; background: #f0fdf4; padding: 20px; }
-        .card { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .inp { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px; }
-        .btn { padding: 10px 15px; background: #059669; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        :root { --primary: #059669; --dark: #1e293b; --light: #f3f4f6; }
+        body { font-family: 'Hind Siliguri', sans-serif; background: var(--light); margin: 0; color: #334155; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* SIDEBAR */
+        .sidebar { width: 250px; background: var(--dark); color: white; display: flex; flex-direction: column; padding: 20px; transition: 0.3s; }
+        .brand { font-size: 22px; font-weight: bold; margin-bottom: 40px; color: #34d399; display: flex; align-items: center; gap: 10px; }
+        .nav-item { padding: 12px 15px; margin-bottom: 5px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 15px; transition: 0.2s; opacity: 0.8; }
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); opacity: 1; color: #34d399; }
+        
+        /* MAIN CONTENT */
+        .main { flex: 1; padding: 30px; overflow-y: auto; }
+        .section { display: none; animation: fadeIn 0.3s; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* CARDS */
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; }
+        .stat-info h3 { margin: 0; font-size: 28px; color: var(--dark); }
+        .stat-info p { margin: 0; font-size: 14px; color: #64748b; }
+        .stat-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: white; }
+
+        /* TABLES & LISTS */
+        .box { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        .box-title { margin: 0; font-size: 18px; font-weight: 600; color: var(--dark); }
+
         table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+        th { color: #64748b; font-weight: 600; background: #f8fafc; }
+        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+        .bg-green { background: #dcfce7; color: #166534; } .bg-red { background: #fee2e2; color: #991b1b; } .bg-yellow { background: #fef3c7; color: #92400e; }
+
+        /* FORMS */
+        .inp { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #e2e8f0; border-radius: 8px; outline: none; transition: 0.3s; }
+        .inp:focus { border-color: var(--primary); }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+        /* MOBILE RESPONSIVE */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; flex-direction: row; overflow-x: auto; padding: 10px; }
+            .brand { display: none; }
+            .nav-item { flex-direction: column; gap: 5px; font-size: 10px; padding: 8px; text-align: center; min-width: 60px; }
+            .nav-item i { font-size: 18px; }
+            .main { padding: 15px; }
+        }
+
+        /* LOGIN OVERLAY */
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark); z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .login-box { background: white; padding: 40px; border-radius: 20px; text-align: center; width: 90%; max-width: 350px; }
     </style>
 </head>
 <body>
-    <h2>🌳 Admin Dashboard</h2>
 
-    <div class="card">
-        <h3>📢 Update Notice</h3>
-        <input type="text" id="notice-txt" class="inp" placeholder="নোটিশ লিখুন...">
-        <button class="btn" onclick="updateNotice()">Update</button>
+    <div id="login-overlay">
+        <div class="login-box">
+            <i class="fas fa-user-shield" style="font-size: 50px; color: var(--primary); margin-bottom: 20px;"></i>
+            <h2 style="margin-top:0;">Admin Access</h2>
+            <input type="password" id="pin" class="inp" placeholder="Enter Secret PIN">
+            <button class="btn btn-primary" style="width:100%;" onclick="doLogin()">Unlock Panel</button>
+        </div>
     </div>
 
-    <div class="card">
-        <h3>➕ Add New Task</h3>
-        <input type="text" id="t-title" class="inp" placeholder="Title (e.g. Join Group)">
-        <input type="number" id="t-reward" class="inp" placeholder="Reward (e.g. 5)">
-        <input type="text" id="t-link" class="inp" placeholder="Link (https://...)">
-        <select id="t-icon" class="inp">
-            <option value="telegram">Telegram</option>
-            <option value="youtube">YouTube</option>
-            <option value="facebook">Facebook</option>
-        </select>
-        <button class="btn" onclick="addTask()">Add Task</button>
+    <div class="sidebar">
+        <div class="brand"><i class="fas fa-tree"></i> টাকার গাছ</div>
+        <div class="nav-item active" onclick="nav('dashboard', this)"><i class="fas fa-home"></i> Dashboard</div>
+        <div class="nav-item" onclick="nav('tasks', this)"><i class="fas fa-tasks"></i> Task Manager</div>
+        <div class="nav-item" onclick="nav('users', this)"><i class="fas fa-users"></i> Users</div>
+        <div class="nav-item" onclick="nav('requests', this)"><i class="fas fa-exchange-alt"></i> Requests</div>
+        <div class="nav-item" onclick="nav('settings', this)"><i class="fas fa-cog"></i> Settings</div>
     </div>
 
-    <div class="card">
-        <h3>⏳ Pending Requests</h3>
-        <table id="req-table">
-            <thead><tr><th>User</th><th>Type</th><th>Amt</th><th>Action</th></tr></thead>
-            <tbody></tbody>
-        </table>
+    <div class="main">
+        
+        <div id="dashboard" class="section active">
+            <h2 style="margin-top:0;">Overview</h2>
+            <div class="card-grid">
+                <div class="stat-card">
+                    <div class="stat-info"><h3><span id="st-users">0</span></h3><p>Total Users</p></div>
+                    <div class="stat-icon" style="background:#3b82f6;"><i class="fas fa-users"></i></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info"><h3><span id="st-pending">0</span></h3><p>Pending Req</p></div>
+                    <div class="stat-icon" style="background:#f59e0b;"><i class="fas fa-clock"></i></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info"><h3><span id="st-tasks">0</span></h3><p>Active Tasks</p></div>
+                    <div class="stat-icon" style="background:#10b981;"><i class="fas fa-check-circle"></i></div>
+                </div>
+            </div>
+
+            <div class="box">
+                <div class="box-header"><h3 class="box-title">📢 আপডেট নোটিশ</h3></div>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="notice-txt" class="inp" placeholder="নোটিশ লিখুন..." style="margin:0;">
+                    <button class="btn btn-primary" onclick="updateNotice()">Update</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="tasks" class="section">
+            <h2 style="margin-top:0;">Task Management</h2>
+            
+            <div class="box">
+                <div class="box-header"><h3 class="box-title">➕ নতুন টাস্ক যোগ করুন</h3></div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <input type="text" id="t-title" class="inp" placeholder="Title (e.g. Join TG)">
+                    <input type="number" id="t-reward" class="inp" placeholder="Reward (e.g. 5)">
+                </div>
+                <input type="text" id="t-link" class="inp" placeholder="Link URL (https://...)">
+                <select id="t-type" class="inp">
+                    <option value="telegram">Telegram</option>
+                    <option value="youtube">YouTube</option>
+                    <option value="facebook">Facebook</option>
+                </select>
+                <button class="btn btn-primary" onclick="addTask()">Add Task</button>
+            </div>
+
+            <div class="box">
+                <div class="box-header"><h3 class="box-title">📋 লাইভ টাস্ক লিস্ট</h3></div>
+                <table id="task-table">
+                    <thead><tr><th>Task Info</th><th>Reward</th><th>Type</th><th>Action</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="users" class="section">
+            <h2 style="margin-top:0;">User Management</h2>
+            <div class="box">
+                <input type="text" id="search-user" class="inp" placeholder="🔍 ফোন নাম্বার দিয়ে খুঁজুন..." onkeyup="searchUser()">
+                <div id="user-result" style="margin-top:20px;"></div>
+            </div>
+        </div>
+
+        <div id="requests" class="section">
+            <h2 style="margin-top:0;">Payment & VIP Requests</h2>
+            <div class="box">
+                <table id="req-table">
+                    <thead><tr><th>User</th><th>Request</th><th>Amount</th><th>Method</th><th>Action</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="settings" class="section">
+            <h2>Settings</h2>
+            <div class="box">
+                <p>Coming Soon...</p>
+                <button class="btn btn-danger" onclick="location.reload()">Logout</button>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -51,62 +173,157 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        function updateNotice() {
-            db.ref('settings/notice').set(document.getElementById('notice-txt').value);
-            alert("Updated!");
+        // 1. LOGIN
+        function doLogin() {
+            if(document.getElementById('pin').value === "1234") {
+                document.getElementById('login-overlay').style.display = 'none';
+                initAdmin();
+            } else alert("Wrong PIN!");
         }
 
-        function addTask() {
-            const title = document.getElementById('t-title').value;
-            const reward = parseInt(document.getElementById('t-reward').value);
-            const link = document.getElementById('t-link').value;
-            const icon = document.getElementById('t-icon').value;
-            let color = icon === 'youtube' ? 'red' : (icon === 'telegram' ? '#229ED9' : 'blue');
-
-            db.ref('settings/tasks').push({ title, reward, link, type: icon, icon, color });
-            alert("Task Added!");
+        function nav(id, el) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if(el) el.classList.add('active');
         }
 
-        // Load Pending Requests
-        db.ref('users').on('value', s => {
-            const users = s.val();
-            const tbody = document.querySelector('#req-table tbody');
-            tbody.innerHTML = '';
-            
-            if(users) {
+        // 2. INIT DATA
+        function initAdmin() {
+            // Stats & Requests
+            db.ref('users').on('value', s => {
+                const users = s.val() || {};
+                document.getElementById('st-users').innerText = Object.keys(users).length;
+                
+                let pendingCount = 0;
+                const reqBody = document.querySelector('#req-table tbody');
+                reqBody.innerHTML = '';
+
                 Object.keys(users).forEach(uid => {
                     const u = users[uid];
                     if(u.history) {
                         Object.keys(u.history).forEach(k => {
                             const h = u.history[k];
                             if(h.status === 'Pending') {
-                                tbody.innerHTML += `
+                                pendingCount++;
+                                const isBuy = h.type.includes('Buy');
+                                reqBody.innerHTML += `
                                 <tr>
-                                    <td>${u.phone}</td>
-                                    <td>${h.type}</td>
-                                    <td>${h.amount}</td>
+                                    <td>${u.name}<br><small>${u.phone}</small></td>
+                                    <td><span class="status-badge ${isBuy?'bg-green':'bg-yellow'}">${h.type}</span></td>
+                                    <td>৳${h.amount}</td>
+                                    <td>${h.method || 'Trx: '+h.trx}</td>
                                     <td>
-                                        <button onclick="setStatus('${uid}','${k}','Success')" style="background:green;color:white;">✔</button>
-                                        <button onclick="setStatus('${uid}','${k}','Rejected')" style="background:red;color:white;">✘</button>
+                                        <button class="btn btn-primary btn-sm" onclick="setStatus('${uid}','${k}','Success', '${h.type}')"><i class="fas fa-check"></i></button>
+                                        <button class="btn btn-danger btn-sm" onclick="setStatus('${uid}','${k}','Rejected', '${h.type}')"><i class="fas fa-times"></i></button>
                                     </td>
                                 </tr>`;
                             }
                         });
                     }
                 });
-            }
-        });
+                document.getElementById('st-pending').innerText = pendingCount;
+            });
 
-        function setStatus(uid, key, status) {
-            db.ref(`users/${uid}/history/${key}`).update({ status });
-            if(status === 'Success') {
-                // If it was VIP buy, enable VIP
-                db.ref(`users/${uid}/history/${key}`).once('value', s => {
-                    if(s.val().type.includes('Buy')) {
-                        db.ref(`users/${uid}`).update({ isVip: true, vipExpiry: Date.now() + (3*86400000) });
-                    }
+            // Load Tasks
+            db.ref('settings/tasks').on('value', s => {
+                const tasks = s.val() || {};
+                document.getElementById('st-tasks').innerText = Object.keys(tasks).length;
+                const tb = document.querySelector('#task-table tbody');
+                tb.innerHTML = '';
+                
+                Object.keys(tasks).forEach(key => {
+                    const t = tasks[key];
+                    tb.innerHTML += `
+                    <tr>
+                        <td><b>${t.title}</b><br><a href="${t.link}" target="_blank" style="font-size:11px;">Link</a></td>
+                        <td>৳${t.reward}</td>
+                        <td>${t.type}</td>
+                        <td><button class="btn btn-danger btn-sm" onclick="deleteTask('${key}')"><i class="fas fa-trash"></i></button></td>
+                    </tr>`;
                 });
+            });
+        }
+
+        // 3. ACTIONS
+        function updateNotice() {
+            db.ref('settings/notice').set(document.getElementById('notice-txt').value);
+            alert("✅ Notice Updated!");
+        }
+
+        function addTask() {
+            const title = document.getElementById('t-title').value;
+            const reward = parseInt(document.getElementById('t-reward').value);
+            const link = document.getElementById('t-link').value;
+            const type = document.getElementById('t-type').value;
+            
+            if(!title || !reward || !link) return alert("All fields required!");
+            
+            let color = type === 'youtube' ? 'red' : (type === 'telegram' ? '#229ED9' : 'blue');
+            let icon = type === 'youtube' ? 'youtube' : (type === 'telegram' ? 'telegram' : 'facebook');
+
+            db.ref('settings/tasks').push({ title, reward, link, type, color, icon });
+            alert("✅ Task Added!");
+            
+            // Clear inputs
+            document.getElementById('t-title').value = '';
+            document.getElementById('t-link').value = '';
+        }
+
+        function deleteTask(key) {
+            if(confirm("Delete this task?")) {
+                db.ref('settings/tasks/'+key).remove();
             }
+        }
+
+        function setStatus(uid, key, status, type) {
+            if(!confirm(`Mark as ${status}?`)) return;
+            
+            const updates = {};
+            updates[`users/${uid}/history/${key}/status`] = status;
+            
+            if(status === 'Success' && type.includes('Buy')) {
+                updates[`users/${uid}/isVip`] = true;
+                updates[`users/${uid}/vipExpiry`] = Date.now() + (3*86400000);
+            }
+            
+            db.ref().update(updates);
+        }
+
+        // 4. USER SEARCH & EDIT
+        function searchUser() {
+            const q = document.getElementById('search-user').value;
+            const res = document.getElementById('user-result');
+            res.innerHTML = '';
+            
+            if(q.length < 5) return; // Search after 5 digits
+
+            db.ref('users/'+q).once('value', s => {
+                if(s.exists()) {
+                    const u = s.val();
+                    res.innerHTML = `
+                    <div style="background:#f1f5f9; padding:15px; border-radius:10px;">
+                        <h3>${u.name} <span class="status-badge ${u.isVip?'bg-green':'bg-yellow'}">${u.isVip?'VIP':'Free'}</span></h3>
+                        <p>Phone: ${u.phone} | UID: ${u.uid}</p>
+                        <p>Balance: <b style="font-size:20px;">৳${u.balance}</b></p>
+                        <div style="display:flex; gap:10px; margin-top:10px;">
+                            <button class="btn btn-primary btn-sm" onclick="editBal('${q}', ${u.balance}, 'add')">+ Add Money</button>
+                            <button class="btn btn-danger btn-sm" onclick="editBal('${q}', ${u.balance}, 'sub')">- Cut Money</button>
+                        </div>
+                    </div>`;
+                } else {
+                    res.innerHTML = '<p style="color:red;">User not found!</p>';
+                }
+            });
+        }
+
+        function editBal(uid, oldBal, action) {
+            const amt = prompt("Enter Amount:");
+            if(!amt) return;
+            const newBal = action === 'add' ? oldBal + parseInt(amt) : oldBal - parseInt(amt);
+            db.ref('users/'+uid).update({ balance: newBal });
+            alert("Balance Updated!");
+            searchUser(); // Refresh
         }
     </script>
 </body>
