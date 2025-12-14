@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>টাকার গাছ - Admin</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: sans-serif; background: #f0fdf4; padding: 20px; }
+        .card { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .inp { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px; }
+        .btn { padding: 10px 15px; background: #059669; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
+    </style>
+</head>
+<body>
+    <h2>🌳 Admin Dashboard</h2>
+
+    <div class="card">
+        <h3>📢 Update Notice</h3>
+        <input type="text" id="notice-txt" class="inp" placeholder="নোটিশ লিখুন...">
+        <button class="btn" onclick="updateNotice()">Update</button>
+    </div>
+
+    <div class="card">
+        <h3>➕ Add New Task</h3>
+        <input type="text" id="t-title" class="inp" placeholder="Title (e.g. Join Group)">
+        <input type="number" id="t-reward" class="inp" placeholder="Reward (e.g. 5)">
+        <input type="text" id="t-link" class="inp" placeholder="Link (https://...)">
+        <select id="t-icon" class="inp">
+            <option value="telegram">Telegram</option>
+            <option value="youtube">YouTube</option>
+            <option value="facebook">Facebook</option>
+        </select>
+        <button class="btn" onclick="addTask()">Add Task</button>
+    </div>
+
+    <div class="card">
+        <h3>⏳ Pending Requests</h3>
+        <table id="req-table">
+            <thead><tr><th>User</th><th>Type</th><th>Amt</th><th>Action</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyDgI-d8iwWr40tmknbY6jhH0oRb2Tvg4d0", authDomain: "takar-gach-a1d84.firebaseapp.com", databaseURL: "https://takar-gach-a1d84-default-rtdb.firebaseio.com", projectId: "takar-gach-a1d84", storageBucket: "takar-gach-a1d84.firebasestorage.app", messagingSenderId: "637802367074", appId: "1:637802367074:web:2e7f6c0670ec47f3a1693b", measurementId: "G-0QL9LB7BSK" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        function updateNotice() {
+            db.ref('settings/notice').set(document.getElementById('notice-txt').value);
+            alert("Updated!");
+        }
+
+        function addTask() {
+            const title = document.getElementById('t-title').value;
+            const reward = parseInt(document.getElementById('t-reward').value);
+            const link = document.getElementById('t-link').value;
+            const icon = document.getElementById('t-icon').value;
+            let color = icon === 'youtube' ? 'red' : (icon === 'telegram' ? '#229ED9' : 'blue');
+
+            db.ref('settings/tasks').push({ title, reward, link, type: icon, icon, color });
+            alert("Task Added!");
+        }
+
+        // Load Pending Requests
+        db.ref('users').on('value', s => {
+            const users = s.val();
+            const tbody = document.querySelector('#req-table tbody');
+            tbody.innerHTML = '';
+            
+            if(users) {
+                Object.keys(users).forEach(uid => {
+                    const u = users[uid];
+                    if(u.history) {
+                        Object.keys(u.history).forEach(k => {
+                            const h = u.history[k];
+                            if(h.status === 'Pending') {
+                                tbody.innerHTML += `
+                                <tr>
+                                    <td>${u.phone}</td>
+                                    <td>${h.type}</td>
+                                    <td>${h.amount}</td>
+                                    <td>
+                                        <button onclick="setStatus('${uid}','${k}','Success')" style="background:green;color:white;">✔</button>
+                                        <button onclick="setStatus('${uid}','${k}','Rejected')" style="background:red;color:white;">✘</button>
+                                    </td>
+                                </tr>`;
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+        function setStatus(uid, key, status) {
+            db.ref(`users/${uid}/history/${key}`).update({ status });
+            if(status === 'Success') {
+                // If it was VIP buy, enable VIP
+                db.ref(`users/${uid}/history/${key}`).once('value', s => {
+                    if(s.val().type.includes('Buy')) {
+                        db.ref(`users/${uid}`).update({ isVip: true, vipExpiry: Date.now() + (3*86400000) });
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
