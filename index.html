@@ -3,224 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Admin V4.1 - JIHAD</title>
+    <title>Admin V5 - Green Super</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #0b1120;
-            --card: rgba(30, 41, 59, 0.7);
-            --primary: #00e5ff;
-            --accent: #d946ef;
-            --text: #f8fafc;
-            --text-gray: #94a3b8;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Hind Siliguri', sans-serif; outline: none; }
+        body { background: #f0fdf4; margin: 0; padding-bottom: 90px; color: #1f2937; height: 100vh; overflow: hidden; }
 
-        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; font-family: 'Rajdhani', sans-serif; background: var(--bg); color: var(--text); padding-bottom: 80px; overflow-x: hidden; }
-        
+        /* SPLASH SCREEN */
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #dcfce7, #f0fdf4); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s; }
+        .jumping-tree { font-size: 80px; animation: bounce 1.2s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        .loading-text { margin-top: 20px; color: #059669; font-weight: bold; font-size: 18px; letter-spacing: 1px; }
+
         /* LOGIN SCREEN */
-        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0b1120; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; background-image: radial-gradient(circle at 50% 50%, #1e293b 0%, #0b1120 100%); }
-        .login-box { background: rgba(255,255,255,0.05); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); width: 85%; max-width: 350px; text-align: center; backdrop-filter: blur(10px); box-shadow: 0 0 30px rgba(0, 229, 255, 0.1); }
-        .login-inp { width: 100%; padding: 15px; margin: 10px 0; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: var(--primary); font-size: 16px; text-align: center; font-weight: bold; letter-spacing: 1px; }
-        .login-btn { width: 100%; padding: 15px; background: linear-gradient(45deg, var(--primary), #2979ff); border: none; border-radius: 10px; color: #000; font-weight: 800; font-size: 16px; cursor: pointer; text-transform: uppercase; margin-top: 10px; box-shadow: 0 5px 15px rgba(0, 229, 255, 0.3); transition: 0.2s; }
-        .login-btn:active { transform: scale(0.95); }
-
-        /* HEADER */
-        .top-bar { padding: 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(11, 17, 32, 0.9); backdrop-filter: blur(5px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .brand { font-size: 24px; font-weight: 700; color: var(--primary); letter-spacing: 1px; }
-        .logout-btn { color: var(--accent); font-size: 20px; cursor: pointer; }
-
-        /* SECTIONS */
-        .section { display: none; padding: 15px; animation: fadeIn 0.4s; }
-        .section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* CARDS */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .stat-card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); text-align: center; }
-        .stat-card h2 { margin: 0; font-size: 32px; color: var(--text); }
-        .stat-card p { margin: 5px 0 0; color: var(--text-gray); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
-        .icon-glow { font-size: 24px; margin-bottom: 5px; filter: drop-shadow(0 0 5px currentColor); }
-
-        /* INPUTS & TABLES */
-        .box { background: var(--card); padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); }
-        .inp-field { width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; margin-bottom: 10px; font-family: 'Hind Siliguri', sans-serif; }
-        .action-btn { width: 100%; padding: 12px; background: var(--primary); border: none; border-radius: 8px; color: #000; font-weight: bold; cursor: pointer; }
+        #login-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0fdf4; z-index: 5000; display: flex; flex-direction: column; justify-content: center; padding: 30px; }
+        .login-card { background: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(5, 150, 105, 0.1); border: 1px solid #e5e7eb; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; color: var(--text-gray); font-size: 11px; text-transform: uppercase; padding: 5px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        td { padding: 10px 5px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05); font-family: 'Hind Siliguri', sans-serif; }
-        
-        .status-btn { padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer; font-size: 12px; font-weight: bold; margin-right: 5px; }
-        .bg-green { background: #10b981; color: white; }
-        .bg-red { background: #ef4444; color: white; }
+        /* GENERAL UI */
+        .header { background: linear-gradient(135deg, #059669, #047857); padding: 20px; padding-bottom: 40px; border-radius: 0 0 30px 30px; color: white; text-align: center; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3); }
+        .page { display: none; padding: 20px; height: calc(100vh - 160px); overflow-y: auto; animation: slideUp 0.3s; }
+        .page.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* BOTTOM NAVIGATION */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #0f172a; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-around; padding: 12px 0; z-index: 999; backdrop-filter: blur(10px); }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-gray); font-size: 10px; cursor: pointer; transition: 0.3s; width: 25%; }
-        .nav-item i { font-size: 20px; margin-bottom: 4px; transition: 0.3s; }
-        .nav-item.active { color: var(--primary); }
-        .nav-item.active i { transform: translateY(-3px); filter: drop-shadow(0 0 5px var(--primary)); }
+        .card { background: white; padding: 15px; border-radius: 16px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 1px solid #e5e7eb; position: relative; }
+        .inp { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 10px; margin-bottom: 10px; background: #f9fafb; font-size: 15px; }
+        .inp:focus { border-color: #059669; background: white; }
+        
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; color: white; background: linear-gradient(135deg, #059669, #10b981); transition: 0.2s; }
+        .btn:active { transform: scale(0.97); }
+        .btn-red { background: #ef4444; } .btn-blue { background: #3b82f6; } .btn-sm { width: auto; padding: 5px 12px; font-size: 12px; }
+
+        /* BOTTOM NAV */
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #e5e7eb; z-index: 1000; border-radius: 20px 20px 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); }
+        .nav-item { text-align: center; flex: 1; color: #9ca3af; font-size: 10px; cursor: pointer; transition: 0.3s; }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; }
+        .nav-item.active { color: #059669; font-weight: bold; }
+        .nav-item.active i { transform: translateY(-3px); }
+
+        /* USER LIST & MODAL */
+        .user-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed #eee; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 6000; justify-content: center; align-items: center; backdrop-filter: blur(3px); }
+        .modal { background: white; width: 90%; max-width: 320px; border-radius: 20px; padding: 20px; animation: popUp 0.3s; }
+        @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* STATS GRID */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: -30px; padding: 0 15px; margin-bottom: 20px; }
+        .stat-box { background: white; padding: 15px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .stat-num { font-size: 22px; font-weight: 800; color: #059669; }
+        .stat-label { font-size: 11px; color: #6b7280; }
 
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
-        <div class="login-box">
-            <i class="fas fa-fingerprint" style="font-size: 50px; color: var(--primary); margin-bottom: 20px;"></i>
-            <h2 style="margin: 0 0 20px 0; font-family: 'Rajdhani'; letter-spacing: 2px;">SECURE ACCESS</h2>
-            <input type="text" id="l-user" class="login-inp" placeholder="USERNAME">
-            <input type="password" id="l-pass" class="login-inp" placeholder="PASSWORD">
-            <button class="login-btn" onclick="doLogin()">UNLOCK</button>
-            <p id="msg" style="color: #ef4444; margin-top: 10px; font-size: 12px;"></p>
+    <div id="splash-screen"><div class="jumping-tree">🌳</div><div class="loading-text">টাকার গাছ Admin</div></div>
+
+    <div id="login-view" style="display:none;">
+        <div class="login-card">
+            <i class="fas fa-user-shield" style="font-size: 50px; color: #059669; margin-bottom: 15px;"></i>
+            <h2 style="color:#1f2937; margin-bottom: 5px;">এডমিন প্যানেল</h2>
+            <p style="font-size:12px; color:#6b7280; margin-bottom: 20px;">শুধুমাত্র এডমিন এক্সেস</p>
+            <input type="text" id="l-user" class="inp" placeholder="Username">
+            <input type="password" id="l-pass" class="inp" placeholder="Password">
+            <button class="btn" onclick="doLogin()">লগইন করুন</button>
         </div>
     </div>
 
-    <div id="admin-panel" style="display: none;">
-        
-        <div class="top-bar">
-            <div class="brand"><i class="fas fa-tree"></i> ADMIN v4</div>
-            <i class="fas fa-power-off logout-btn" onclick="location.reload()"></i>
+    <div id="main-view" style="display:none;">
+        <div class="header">
+            <h3><i class="fas fa-tree"></i> সুপার এডমিন</h3>
+            <p style="font-size:12px; opacity:0.8;">সম্পূর্ণ অ্যাপ নিয়ন্ত্রণ করুন</p>
         </div>
 
-        <div id="dashboard" class="section active">
-            <div class="grid">
-                <div class="stat-card">
-                    <i class="fas fa-users icon-glow" style="color: #3b82f6;"></i>
-                    <h2 id="st-users">...</h2>
-                    <p>Total Users</p>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-clock icon-glow" style="color: #f59e0b;"></i>
-                    <h2 id="st-pending">...</h2>
-                    <p>Pending</p>
-                </div>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-num" id="st-users">0</div>
+                <div class="stat-label">মোট ইউজার</div>
             </div>
-
-            <div class="box">
-                <h3 style="margin-top:0; color:var(--primary);">📢 অ্যাপ নোটিশ</h3>
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" id="notice-txt" class="inp-field" placeholder="নোটিশ লিখুন..." style="margin:0;">
-                    <button class="action-btn" style="width: auto;" onclick="updateNotice()">Send</button>
-                </div>
+            <div class="stat-box">
+                <div class="stat-num" id="st-pending" style="color:#f59e0b;">0</div>
+                <div class="stat-label">পেন্ডিং রিকোয়েস্ট</div>
             </div>
         </div>
 
-        <div id="tasks" class="section">
-            <div class="box">
-                <h3 style="margin-top:0;">➕ নতুন টাস্ক</h3>
+        <div id="home" class="page active">
+            <div class="card">
+                <h4 style="margin:0 0 10px 0; color:#059669;">📢 নোটিশ আপডেট</h4>
+                <div style="display:flex; gap:5px;">
+                    <input type="text" id="notice-txt" class="inp" placeholder="নতুন নোটিশ..." style="margin:0;">
+                    <button class="btn btn-sm" onclick="updateNotice()">Send</button>
+                </div>
+            </div>
+            
+            <h4 style="margin: 10px 0;">পেমেন্ট রিকোয়েস্ট</h4>
+            <div class="card" id="req-list">
+                <p style="text-align:center; color:#ccc;">লোড হচ্ছে...</p>
+            </div>
+        </div>
+
+        <div id="users" class="page">
+            <div class="card">
+                <input type="text" id="search-inp" class="inp" placeholder="🔍 ফোন নম্বর দিয়ে খুঁজুন..." onkeyup="searchUser()" style="margin:0;">
+            </div>
+            <div id="user-result"></div>
+        </div>
+
+        <div id="tasks" class="page">
+            <div class="card">
+                <h4 style="margin:0 0 10px 0;">➕ নতুন টাস্ক</h4>
+                <input type="text" id="t-title" class="inp" placeholder="Title">
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <input type="text" id="t-title" class="inp-field" placeholder="টাইটেল">
-                    <input type="number" id="t-reward" class="inp-field" placeholder="টাকা">
+                    <input type="number" id="t-reward" class="inp" placeholder="Tk">
+                    <select id="t-type" class="inp">
+                        <option value="telegram">Telegram</option>
+                        <option value="youtube">YouTube</option>
+                    </select>
                 </div>
-                <input type="text" id="t-link" class="inp-field" placeholder="লিংক (https://)">
-                <select id="t-type" class="inp-field" style="background:#0b1120;">
-                    <option value="telegram">Telegram</option>
-                    <option value="youtube">YouTube</option>
-                    <option value="facebook">Facebook</option>
-                </select>
-                <button class="action-btn" onclick="addTask()">PUBLISH TASK</button>
+                <input type="text" id="t-link" class="inp" placeholder="Link">
+                <button class="btn" onclick="addTask()">Add Task</button>
             </div>
 
-            <div class="box" style="padding: 10px;">
-                <h3 style="margin: 10px;">📋 লাইভ টাস্ক</h3>
-                <table id="task-table">
-                    <thead><tr><th>Task</th><th>Tk</th><th>Del</th></tr></thead>
-                    <tbody></tbody>
-                </table>
+            <div class="card" style="border:1px solid #f59e0b;">
+                <h4 style="margin:0 0 10px 0; color:#d97706;">💎 VIP প্ল্যান সেটআপ</h4>
+                <p style="font-size:11px; color:#666;">এখানে নতুন প্ল্যান বানালে সেটা অ্যাপে দেখাবে।</p>
+                <input type="text" id="v-name" class="inp" placeholder="Plan Name (e.g. Diamond)">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <input type="number" id="v-price" class="inp" placeholder="Price (Tk)">
+                    <input type="number" id="v-daily" class="inp" placeholder="Daily Income">
+                </div>
+                <button class="btn" style="background:#f59e0b;" onclick="addVipPlan()">Add VIP Plan</button>
+            </div>
+
+            <h4 style="margin:10px 0;">Active Tasks</h4>
+            <div id="task-list"></div>
+        </div>
+
+        <div id="settings" class="page">
+            <div class="card">
+                <h4>👤 এডমিন প্রোফাইল</h4>
+                <p>Username: <b>JIHAD</b></p>
+                <button class="btn btn-red" onclick="location.reload()">লগ আউট</button>
             </div>
         </div>
 
-        <div id="users" class="section">
-            <div class="box">
-                <h3 style="margin-top:0;">👥 ইউজার খুঁজুন</h3>
-                <input type="text" id="search-user" class="inp-field" placeholder="ফোন নম্বর (01...)" onkeyup="searchUser()">
-                <div id="user-result"></div>
-            </div>
+        <div class="nav-bar">
+            <div class="nav-item active" onclick="nav('home', this)"><i class="fas fa-home"></i>Home</div>
+            <div class="nav-item" onclick="nav('users', this)"><i class="fas fa-users"></i>Users</div>
+            <div class="nav-item" onclick="nav('tasks', this)"><i class="fas fa-list-check"></i>Tasks</div>
+            <div class="nav-item" onclick="nav('settings', this)"><i class="fas fa-cog"></i>Settings</div>
         </div>
+    </div>
 
-        <div id="requests" class="section">
-            <div class="box" style="padding: 10px;">
-                <h3 style="margin: 10px;">💸 পেমেন্ট রিকোয়েস্ট</h3>
-                <table id="req-table">
-                    <thead><tr><th>User</th><th>Method</th><th>Amt</th><th>Action</th></tr></thead>
-                    <tbody></tbody>
-                </table>
+    <div id="user-modal" class="modal-overlay">
+        <div class="modal">
+            <div style="text-align:right;"><i class="fas fa-times" onclick="document.getElementById('user-modal').style.display='none'" style="cursor:pointer;"></i></div>
+            <div style="text-align:center; margin-bottom:15px;">
+                <div style="width:60px; height:60px; background:#d1fae5; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; color:#059669; font-size:25px;"><i class="fas fa-user"></i></div>
+                <h3 id="m-name" style="margin:5px 0;">Name</h3>
+                <span id="m-type" style="background:#f59e0b; color:white; padding:2px 8px; border-radius:10px; font-size:10px;">FREE</span>
             </div>
+            <div style="background:#f9fafb; padding:10px; border-radius:10px; font-size:13px;">
+                <p>📞 Phone: <b id="m-phone">...</b></p>
+                <p>🔑 Pass: <b id="m-pass" style="color:red;">...</b></p>
+                <p>💰 Balance: <b id="m-bal" style="font-size:16px; color:#059669;">0</b></p>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:15px;">
+                <button class="btn" onclick="editUserBal('add')">+ Add</button>
+                <button class="btn btn-red" onclick="editUserBal('sub')">- Cut</button>
+            </div>
+            <input type="hidden" id="m-uid">
         </div>
-
-        <div class="bottom-nav">
-            <div class="nav-item active" onclick="nav('dashboard', this)">
-                <i class="fas fa-chart-pie"></i>
-                <span>Home</span>
-            </div>
-            <div class="nav-item" onclick="nav('tasks', this)">
-                <i class="fas fa-list-check"></i>
-                <span>Tasks</span>
-            </div>
-            <div class="nav-item" onclick="nav('users', this)">
-                <i class="fas fa-search"></i>
-                <span>Users</span>
-            </div>
-            <div class="nav-item" onclick="nav('requests', this)">
-                <i class="fas fa-bell"></i>
-                <span>Reqs</span>
-            </div>
-        </div>
-
     </div>
 
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDgI-d8iwWr40tmknbY6jhH0oRb2Tvg4d0", authDomain: "takar-gach-a1d84.firebaseapp.com", databaseURL: "https://takar-gach-a1d84-default-rtdb.firebaseio.com", projectId: "takar-gach-a1d84", storageBucket: "takar-gach-a1d84.firebasestorage.app", messagingSenderId: "637802367074", appId: "1:637802367074:web:2e7f6c0670ec47f3a1693b", measurementId: "G-0QL9LB7BSK" };
-        
-        let db;
-        try {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.database();
-        } catch(e) {
-            alert("⚠️ Internet Error or Firebase Issue! Please reload.");
+        try { firebase.initializeApp(firebaseConfig); } catch(e) {}
+        const db = firebase.database();
+
+        // SPLASH & LOGIN
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('splash-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('splash-screen').style.display = 'none';
+                    document.getElementById('login-view').style.display = 'flex';
+                }, 500);
+            }, 2000);
         }
 
-        // 1. LOGIN SYSTEM (FIXED)
         function doLogin() {
-            var u = document.getElementById('l-user').value.trim();
-            var p = document.getElementById('l-pass').value.trim();
-            
+            const u = document.getElementById('l-user').value.trim();
+            const p = document.getElementById('l-pass').value.trim();
             if(u === 'JIHAD' && p === '198373ZA') {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('admin-panel').style.display = 'block';
-                initData();
-            } else {
-                alert("❌ ভুল ইউজারনেম বা পাসওয়ার্ড!\n\nUsername: JIHAD (বড় হাতের)\nPassword: 198373ZA");
-                document.getElementById('msg').innerText = "WRONG CREDENTIALS!";
-            }
+                document.getElementById('login-view').style.display = 'none';
+                document.getElementById('main-view').style.display = 'block';
+                initAdmin();
+            } else alert("❌ ভুল তথ্য!");
         }
 
-        // NAV LOGIC
         function nav(id, el) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
         }
 
-        // 2. DATA LOAD
-        function initData() {
-            if(!db) return;
-
-            // Stats & Requests
+        // DATA LOADING
+        function initAdmin() {
+            // USERS & REQUESTS
             db.ref('users').on('value', s => {
                 const users = s.val() || {};
                 document.getElementById('st-users').innerText = Object.keys(users).length;
                 
                 let pending = 0;
-                const tbody = document.querySelector('#req-table tbody');
-                tbody.innerHTML = '';
+                const reqBox = document.getElementById('req-list');
+                reqBox.innerHTML = '';
 
                 Object.keys(users).forEach(uid => {
                     const u = users[uid];
@@ -230,44 +231,46 @@
                             if(h.status === 'Pending') {
                                 pending++;
                                 const isBuy = h.type.includes('Buy');
-                                tbody.innerHTML += `
-                                <tr>
-                                    <td>${u.name}<br><small style="color:#64748b">${u.phone}</small></td>
-                                    <td><span style="color:${isBuy?'var(--accent)':'var(--primary)'}">${h.type}</span><br><small>${h.method||'Trx'}</small></td>
-                                    <td style="font-weight:bold;">${h.amount}</td>
-                                    <td>
-                                        <button class="status-btn bg-green" onclick="setStatus('${uid}','${k}','Success','${h.type}')">✔</button>
-                                        <button class="status-btn bg-red" onclick="setStatus('${uid}','${k}','Rejected','${h.type}')">✘</button>
-                                    </td>
-                                </tr>`;
+                                reqBox.innerHTML += `
+                                <div class="user-row">
+                                    <div>
+                                        <b>${u.name}</b> <small>(${u.phone})</small><br>
+                                        <span style="color:${isBuy?'#8b5cf6':'#ef4444'}; font-weight:bold;">${h.type}</span> - ৳${h.amount}<br>
+                                        <small style="color:#666;">${h.method||'Trx: '+h.trx}</small>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm" onclick="setStatus('${uid}','${k}','Success','${h.type}')">✔</button>
+                                        <button class="btn btn-sm btn-red" onclick="setStatus('${uid}','${k}','Rejected','${h.type}')">✘</button>
+                                    </div>
+                                </div>`;
                             }
                         });
                     }
                 });
+                if(pending===0) reqBox.innerHTML = '<p style="text-align:center;color:#999;">কোনো রিকোয়েস্ট নেই</p>';
                 document.getElementById('st-pending').innerText = pending;
             });
 
-            // Tasks Load
+            // TASKS
             db.ref('settings/tasks').on('value', s => {
+                const list = document.getElementById('task-list');
+                list.innerHTML = '';
                 const tasks = s.val() || {};
-                const tbody = document.querySelector('#task-table tbody');
-                tbody.innerHTML = '';
-                Object.keys(tasks).forEach(key => {
-                    const t = tasks[key];
-                    tbody.innerHTML += `
-                    <tr>
-                        <td>${t.title}</td>
-                        <td style="color:var(--primary)">${t.reward}</td>
-                        <td><button class="status-btn bg-red" onclick="delTask('${key}')"><i class="fas fa-trash"></i></button></td>
-                    </tr>`;
+                Object.keys(tasks).forEach(k => {
+                    const t = tasks[k];
+                    list.innerHTML += `
+                    <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+                        <div><b>${t.title}</b><br><small>৳${t.reward}</small></div>
+                        <button class="btn btn-sm btn-red" onclick="delTask('${k}')"><i class="fas fa-trash"></i></button>
+                    </div>`;
                 });
             });
         }
 
-        // 3. ACTIONS
+        // ACTIONS
         function updateNotice() {
             db.ref('settings/notice').set(document.getElementById('notice-txt').value);
-            alert("Notice Updated!");
+            alert("✅ নোটিশ আপডেট হয়েছে!");
         }
 
         function addTask() {
@@ -275,66 +278,77 @@
             const reward = parseInt(document.getElementById('t-reward').value);
             const link = document.getElementById('t-link').value;
             const type = document.getElementById('t-type').value;
-            
-            if(!title || !reward || !link) return alert("Fill all!");
-            
-            let icon = type === 'youtube' ? 'youtube' : (type === 'telegram' ? 'telegram' : 'facebook');
-            let color = type === 'youtube' ? 'red' : (type === 'telegram' ? '#229ED9' : 'blue');
-
-            db.ref('settings/tasks').push({ title, reward, link, type, icon, color });
-            alert("Task Added!");
-            document.getElementById('t-title').value = '';
-            document.getElementById('t-link').value = '';
+            if(!title || !reward) return alert("তথ্য দিন!");
+            db.ref('settings/tasks').push({ title, reward, link, type, icon: type, color: type==='youtube'?'red':'#229ED9' });
+            alert("✅ টাস্ক যোগ হয়েছে!");
         }
 
-        function delTask(key) {
-            if(confirm("Delete?")) db.ref('settings/tasks/'+key).remove();
+        function addVipPlan() {
+            const name = document.getElementById('v-name').value;
+            const price = parseInt(document.getElementById('v-price').value);
+            const daily = parseInt(document.getElementById('v-daily').value);
+            if(!name || !price) return alert("তথ্য দিন!");
+            // Note: User app needs update to read dynamic plans. For now this saves to DB.
+            db.ref('settings/vipPlans').push({ name, price, dailyIncome: daily });
+            alert("✅ VIP প্ল্যান সেভ হয়েছে!");
         }
 
-        function setStatus(uid, key, status, type) {
-            if(!confirm(status + "?")) return;
-            const updates = {};
-            updates[`users/${uid}/history/${key}/status`] = status;
-            if(status === 'Success' && type.includes('Buy')) {
-                updates[`users/${uid}/isVip`] = true;
-                updates[`users/${uid}/vipExpiry`] = Date.now() + (3*86400000);
+        function delTask(k) { if(confirm("মুছে ফেলবেন?")) db.ref('settings/tasks/'+k).remove(); }
+
+        function setStatus(uid, k, st, type) {
+            if(!confirm(st+" করবেন?")) return;
+            const up = {}; up[`users/${uid}/history/${k}/status`] = st;
+            if(st==='Success' && type.includes('Buy')) {
+                up[`users/${uid}/isVip`] = true;
+                up[`users/${uid}/vipExpiry`] = Date.now() + (3*86400000); // 3 Days Default
             }
-            db.ref().update(updates);
+            db.ref().update(up);
         }
 
+        // USER SEARCH & MODAL
         function searchUser() {
-            const q = document.getElementById('search-user').value;
-            const res = document.getElementById('user-result');
-            res.innerHTML = '';
+            const q = document.getElementById('search-inp').value;
+            const r = document.getElementById('user-result');
+            r.innerHTML = '';
             if(q.length < 5) return;
 
             db.ref('users/'+q).once('value', s => {
                 if(s.exists()) {
                     const u = s.val();
-                    res.innerHTML = `
-                    <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; margin-top:10px;">
-                        <h3 style="margin:0; color:var(--primary)">${u.name} <span style="font-size:10px; background:var(--accent); padding:2px 5px; border-radius:5px; color:black;">${u.isVip?'VIP':'Free'}</span></h3>
-                        <p style="font-size:12px; color:var(--text-gray);">${u.phone}</p>
-                        <p>Bal: <b style="font-size:18px;">${u.balance}</b></p>
-                        <div style="margin-top:5px;">
-                            <button class="status-btn bg-green" onclick="editBal('${q}', ${u.balance}, 'add')">+ Add</button>
-                            <button class="status-btn bg-red" onclick="editBal('${q}', ${u.balance}, 'sub')">- Cut</button>
+                    r.innerHTML = `
+                    <div class="card" onclick="openUserModal('${q}', '${u.name}', '${u.phone}', '${u.pass}', ${u.balance}, ${u.isVip})">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="background:#d1fae5; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#059669;"><i class="fas fa-user"></i></div>
+                            <div><b>${u.name}</b><br><small>${u.phone}</small></div>
+                            <div style="margin-left:auto; font-weight:bold; color:#059669;">৳${u.balance}</div>
                         </div>
                     </div>`;
-                } else {
-                    res.innerHTML = '<p style="color:var(--text-gray)">No user found</p>';
-                }
+                } else r.innerHTML = '<p style="text-align:center; color:red;">পাওয়া যায়নি!</p>';
             });
         }
 
-        function editBal(uid, oldBal, action) {
-            const amt = prompt("Amount:");
+        function openUserModal(uid, n, p, pass, b, vip) {
+            document.getElementById('m-uid').value = uid;
+            document.getElementById('m-name').innerText = n;
+            document.getElementById('m-phone').innerText = p;
+            document.getElementById('m-pass').innerText = pass; // Password visible to admin
+            document.getElementById('m-bal').innerText = b;
+            document.getElementById('m-type').innerText = vip ? "VIP USER" : "FREE USER";
+            document.getElementById('m-type').style.background = vip ? "#059669" : "#f59e0b";
+            document.getElementById('user-modal').style.display = 'flex';
+        }
+
+        function editUserBal(act) {
+            const uid = document.getElementById('m-uid').value;
+            const curr = parseInt(document.getElementById('m-bal').innerText);
+            const amt = prompt("টাকার পরিমাণ:");
             if(!amt) return;
-            const newBal = action === 'add' ? oldBal + parseInt(amt) : oldBal - parseInt(amt);
-            db.ref('users/'+uid).update({ balance: newBal });
-            alert("Done!");
-            searchUser();
+            const nBal = act==='add' ? curr+parseInt(amt) : curr-parseInt(amt);
+            db.ref('users/'+uid).update({ balance: nBal });
+            document.getElementById('m-bal').innerText = nBal; // Instant update UI
+            alert("✅ ব্যালেন্স আপডেট হয়েছে!");
         }
     </script>
 </body>
 </html>
+
