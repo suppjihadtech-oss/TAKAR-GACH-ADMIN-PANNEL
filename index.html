@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Admin V5 - Green Super</title>
+    <title>Admin V6 - Ultimate</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -13,70 +13,90 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Hind Siliguri', sans-serif; outline: none; }
         body { background: #f0fdf4; margin: 0; padding-bottom: 90px; color: #1f2937; height: 100vh; overflow: hidden; }
 
+        /* TOAST NOTIFICATION */
+        #toast-box { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 350px; pointer-events: none; }
+        .toast { background: white; padding: 12px 15px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; animation: slideDown 0.3s; pointer-events: auto; border-left: 5px solid #059669; }
+        @keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .toast i { font-size: 20px; }
+        .t-success { border-color: #059669; } .t-success i { color: #059669; }
+        .t-error { border-color: #ef4444; } .t-error i { color: #ef4444; }
+
         /* SPLASH SCREEN */
-        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #dcfce7, #f0fdf4); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s; }
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #dcfce7, #f0fdf4); z-index: 5000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s; }
         .jumping-tree { font-size: 80px; animation: bounce 1.2s infinite; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-        .loading-text { margin-top: 20px; color: #059669; font-weight: bold; font-size: 18px; letter-spacing: 1px; }
 
         /* LOGIN SCREEN */
-        #login-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0fdf4; z-index: 5000; display: flex; flex-direction: column; justify-content: center; padding: 30px; }
-        .login-card { background: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(5, 150, 105, 0.1); border: 1px solid #e5e7eb; }
+        #login-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0fdf4; z-index: 4000; display: flex; flex-direction: column; justify-content: center; padding: 30px; }
+        .login-card { background: white; padding: 30px; border-radius: 25px; text-align: center; box-shadow: 0 15px 40px rgba(5, 150, 105, 0.15); }
         
-        /* GENERAL UI */
-        .header { background: linear-gradient(135deg, #059669, #047857); padding: 20px; padding-bottom: 40px; border-radius: 0 0 30px 30px; color: white; text-align: center; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3); }
-        .page { display: none; padding: 20px; height: calc(100vh - 160px); overflow-y: auto; animation: slideUp 0.3s; }
+        /* MAIN UI */
+        .header { background: linear-gradient(135deg, #059669, #047857); padding: 25px 20px 50px 20px; border-radius: 0 0 35px 35px; color: white; text-align: center; box-shadow: 0 5px 20px rgba(5, 150, 105, 0.3); }
+        .page { display: none; padding: 20px; height: calc(100vh - 160px); overflow-y: auto; animation: fadeIn 0.3s; }
         .page.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .card { background: white; padding: 15px; border-radius: 16px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 1px solid #e5e7eb; position: relative; }
-        .inp { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 10px; margin-bottom: 10px; background: #f9fafb; font-size: 15px; }
-        .inp:focus { border-color: #059669; background: white; }
+        .card { background: white; padding: 20px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f3f4f6; position: relative; }
         
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; color: white; background: linear-gradient(135deg, #059669, #10b981); transition: 0.2s; }
+        /* INPUTS & BUTTONS */
+        .inp-group { margin-bottom: 15px; text-align: left; }
+        .inp-label { font-size: 12px; color: #6b7280; margin-left: 5px; font-weight: 600; }
+        .inp { width: 100%; padding: 14px; border: 1px solid #e5e7eb; border-radius: 12px; background: #f9fafb; font-size: 15px; transition: 0.2s; }
+        .inp:focus { border-color: #059669; background: white; box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1); }
+        
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; color: white; background: linear-gradient(135deg, #059669, #10b981); box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3); transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 15px; }
         .btn:active { transform: scale(0.97); }
-        .btn-red { background: #ef4444; } .btn-blue { background: #3b82f6; } .btn-sm { width: auto; padding: 5px 12px; font-size: 12px; }
+        .btn-red { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3); } 
+        .btn-blue { background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3); }
+        .btn-vip { background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 5px 15px rgba(217, 119, 6, 0.3); }
 
         /* BOTTOM NAV */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #e5e7eb; z-index: 1000; border-radius: 20px 20px 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); }
-        .nav-item { text-align: center; flex: 1; color: #9ca3af; font-size: 10px; cursor: pointer; transition: 0.3s; }
-        .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; }
-        .nav-item.active { color: #059669; font-weight: bold; }
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #f3f4f6; z-index: 1000; border-radius: 25px 25px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.03); }
+        .nav-item { text-align: center; flex: 1; color: #9ca3af; font-size: 11px; cursor: pointer; transition: 0.3s; font-weight: 500; }
+        .nav-item i { font-size: 22px; display: block; margin-bottom: 4px; }
+        .nav-item.active { color: #059669; font-weight: 700; }
         .nav-item.active i { transform: translateY(-3px); }
 
         /* USER LIST & MODAL */
-        .user-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed #eee; }
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 6000; justify-content: center; align-items: center; backdrop-filter: blur(3px); }
-        .modal { background: white; width: 90%; max-width: 320px; border-radius: 20px; padding: 20px; animation: popUp 0.3s; }
+        .user-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid #f3f4f6; border-radius: 12px; margin-bottom: 8px; background: #f9fafb; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 6000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal { background: white; width: 90%; max-width: 320px; border-radius: 25px; padding: 25px; animation: popUp 0.3s; }
         @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
         /* STATS GRID */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: -30px; padding: 0 15px; margin-bottom: 20px; }
-        .stat-box { background: white; padding: 15px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .stat-num { font-size: 22px; font-weight: 800; color: #059669; }
-        .stat-label { font-size: 11px; color: #6b7280; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: -40px; padding: 0 20px; margin-bottom: 20px; }
+        .stat-box { background: white; padding: 20px; border-radius: 18px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .stat-num { font-size: 26px; font-weight: 800; color: #059669; line-height: 1; margin-bottom: 5px; }
+        .stat-label { font-size: 12px; color: #6b7280; font-weight: 500; }
+
+        /* TABS */
+        .tab-menu { display: flex; gap: 10px; margin-bottom: 15px; background: #f1f5f9; padding: 5px; border-radius: 12px; }
+        .tab-btn { flex: 1; padding: 10px; text-align: center; border-radius: 8px; font-size: 13px; font-weight: 600; color: #64748b; cursor: pointer; transition: 0.2s; }
+        .tab-btn.active { background: white; color: #059669; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
     </style>
 </head>
 <body>
 
+    <div id="toast-box"></div>
+
     <div id="splash-screen"><div class="jumping-tree">🌳</div><div class="loading-text">টাকার গাছ Admin</div></div>
 
     <div id="login-view" style="display:none;">
         <div class="login-card">
-            <i class="fas fa-user-shield" style="font-size: 50px; color: #059669; margin-bottom: 15px;"></i>
-            <h2 style="color:#1f2937; margin-bottom: 5px;">এডমিন প্যানেল</h2>
-            <p style="font-size:12px; color:#6b7280; margin-bottom: 20px;">শুধুমাত্র এডমিন এক্সেস</p>
-            <input type="text" id="l-user" class="inp" placeholder="Username">
-            <input type="password" id="l-pass" class="inp" placeholder="Password">
-            <button class="btn" onclick="doLogin()">লগইন করুন</button>
+            <div style="background:#ecfdf5; width:80px; height:80px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; margin-bottom:15px;"><i class="fas fa-user-shield" style="font-size: 40px; color: #059669;"></i></div>
+            <h2 style="color:#1f2937; margin:0;">এডমিন প্যানেল</h2>
+            <p style="font-size:13px; color:#6b7280; margin: 5px 0 25px 0;">সিকিউরড এক্সেস এরিয়া</p>
+            <div class="inp-group"><input type="text" id="l-user" class="inp" placeholder="Username"></div>
+            <div class="inp-group"><input type="password" id="l-pass" class="inp" placeholder="Password"></div>
+            <button class="btn" onclick="doLogin()">লগইন করুন <i class="fas fa-arrow-right"></i></button>
         </div>
     </div>
 
     <div id="main-view" style="display:none;">
         <div class="header">
             <h3><i class="fas fa-tree"></i> সুপার এডমিন</h3>
-            <p style="font-size:12px; opacity:0.8;">সম্পূর্ণ অ্যাপ নিয়ন্ত্রণ করুন</p>
+            <p style="font-size:12px; opacity:0.9;">Takar Gach Control Center</p>
         </div>
 
         <div class="stats-grid">
@@ -92,61 +112,110 @@
 
         <div id="home" class="page active">
             <div class="card">
-                <h4 style="margin:0 0 10px 0; color:#059669;">📢 নোটিশ আপডেট</h4>
-                <div style="display:flex; gap:5px;">
-                    <input type="text" id="notice-txt" class="inp" placeholder="নতুন নোটিশ..." style="margin:0;">
-                    <button class="btn btn-sm" onclick="updateNotice()">Send</button>
+                <h4 style="margin:0 0 15px 0; color:#059669;"><i class="fas fa-bullhorn"></i> নোটিশ আপডেট</h4>
+                <div style="display:flex; gap:8px;">
+                    <input type="text" id="notice-txt" class="inp" placeholder="নতুন নোটিশ লিখুন..." style="margin:0;">
+                    <button class="btn btn-blue" style="width:auto;" onclick="updateNotice()"><i class="fas fa-paper-plane"></i></button>
                 </div>
             </div>
             
-            <h4 style="margin: 10px 0;">পেমেন্ট রিকোয়েস্ট</h4>
-            <div class="card" id="req-list">
-                <p style="text-align:center; color:#ccc;">লোড হচ্ছে...</p>
+            <h4 style="margin: 15px 0 10px 0; font-size:16px;">পেমেন্ট রিকোয়েস্ট</h4>
+            <div id="req-list">
+                <p style="text-align:center; color:#9ca3af; font-size:13px;">লোড হচ্ছে...</p>
             </div>
         </div>
 
         <div id="users" class="page">
             <div class="card">
-                <input type="text" id="search-inp" class="inp" placeholder="🔍 ফোন নম্বর দিয়ে খুঁজুন..." onkeyup="searchUser()" style="margin:0;">
+                <h4 style="margin:0 0 10px 0;">🔍 ইউজার খুঁজুন</h4>
+                <input type="text" id="search-inp" class="inp" placeholder="ফোন নম্বর লিখুন (01...)" onkeyup="searchUser()">
             </div>
             <div id="user-result"></div>
         </div>
 
         <div id="tasks" class="page">
-            <div class="card">
-                <h4 style="margin:0 0 10px 0;">➕ নতুন টাস্ক</h4>
-                <input type="text" id="t-title" class="inp" placeholder="Title">
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <input type="number" id="t-reward" class="inp" placeholder="Tk">
-                    <select id="t-type" class="inp">
-                        <option value="telegram">Telegram</option>
-                        <option value="youtube">YouTube</option>
-                    </select>
-                </div>
-                <input type="text" id="t-link" class="inp" placeholder="Link">
-                <button class="btn" onclick="addTask()">Add Task</button>
+            <div class="tab-menu">
+                <div class="tab-btn active" onclick="switchTab('tab-task', this)">ফ্রি টাস্ক</div>
+                <div class="tab-btn" onclick="switchTab('tab-vip', this)">VIP প্ল্যান</div>
             </div>
 
-            <div class="card" style="border:1px solid #f59e0b;">
-                <h4 style="margin:0 0 10px 0; color:#d97706;">💎 VIP প্ল্যান সেটআপ</h4>
-                <p style="font-size:11px; color:#666;">এখানে নতুন প্ল্যান বানালে সেটা অ্যাপে দেখাবে।</p>
-                <input type="text" id="v-name" class="inp" placeholder="Plan Name (e.g. Diamond)">
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <input type="number" id="v-price" class="inp" placeholder="Price (Tk)">
-                    <input type="number" id="v-daily" class="inp" placeholder="Daily Income">
+            <div id="tab-task">
+                <div class="card">
+                    <h4 style="margin:0 0 15px 0;">➕ নতুন টাস্ক দিন</h4>
+                    <div class="inp-group"><input type="text" id="t-title" class="inp" placeholder="টাস্ক টাইটেল (যেমন: Join Group)"></div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
+                        <input type="number" id="t-reward" class="inp" placeholder="টাকা">
+                        <select id="t-type" class="inp">
+                            <option value="telegram">Telegram</option>
+                            <option value="youtube">YouTube</option>
+                            <option value="facebook">Facebook</option>
+                        </select>
+                    </div>
+                    <div class="inp-group"><input type="text" id="t-link" class="inp" placeholder="লিংক (https://...)"></div>
+                    <button class="btn" onclick="addTask()"><i class="fas fa-plus-circle"></i> টাস্ক পাবলিশ করুন</button>
                 </div>
-                <button class="btn" style="background:#f59e0b;" onclick="addVipPlan()">Add VIP Plan</button>
+                <h4 style="margin:10px 0;">লাইভ টাস্ক</h4>
+                <div id="task-list"></div>
             </div>
 
-            <h4 style="margin:10px 0;">Active Tasks</h4>
-            <div id="task-list"></div>
+            <div id="tab-vip" style="display:none;">
+                <div class="card" style="border:1px solid #f59e0b;">
+                    <h4 style="margin:0 0 15px 0; color:#d97706;"><i class="fas fa-crown"></i> নতুন VIP প্ল্যান</h4>
+                    
+                    <div class="inp-group">
+                        <div class="inp-label">প্ল্যান এর নাম</div>
+                        <input type="text" id="v-name" class="inp" placeholder="যেমন: Diamond Plan">
+                    </div>
+                    
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
+                        <div>
+                            <div class="inp-label">দাম (টাকা)</div>
+                            <input type="number" id="v-price" class="inp" placeholder="500">
+                        </div>
+                        <div>
+                            <div class="inp-label">ডেইলি ইনকাম</div>
+                            <input type="number" id="v-daily" class="inp" placeholder="25">
+                        </div>
+                    </div>
+
+                    <div class="inp-group">
+                        <div class="inp-label">মেয়াদ (দিন)</div>
+                        <input type="number" id="v-validity" class="inp" placeholder="যেমন: 30">
+                    </div>
+
+                    <button class="btn btn-vip" onclick="addVipPlan()"><i class="fas fa-check-circle"></i> প্ল্যান তৈরি করুন</button>
+                </div>
+                <h4 style="margin:10px 0;">বর্তমান প্ল্যান</h4>
+                <div id="vip-list"></div>
+            </div>
         </div>
 
         <div id="settings" class="page">
             <div class="card">
-                <h4>👤 এডমিন প্রোফাইল</h4>
-                <p>Username: <b>JIHAD</b></p>
-                <button class="btn btn-red" onclick="location.reload()">লগ আউট</button>
+                <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;">
+                    <div style="width:50px; height:50px; background:#dbeafe; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#2563eb; font-size:22px;"><i class="fas fa-user-cog"></i></div>
+                    <div><h3 style="margin:0;">JIHAD</h3><small style="color:#6b7280;">Super Admin</small></div>
+                </div>
+                
+                <div style="border-top:1px solid #f3f4f6; padding-top:15px;">
+                    <div class="inp-group">
+                        <div class="inp-label">সাপোর্ট লিংক</div>
+                        <div style="display:flex; gap:5px;">
+                            <input type="text" id="support-link" class="inp" placeholder="https://t.me/..." style="margin:0;">
+                            <button class="btn btn-sm btn-blue" onclick="updateSupport()">Save</button>
+                        </div>
+                    </div>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:#fff1f2; padding:15px; border-radius:12px; margin-bottom:15px;">
+                        <b style="color:#e11d48; font-size:14px;">মেইনটেন্যান্স মোড</b>
+                        <label style="position:relative; display:inline-block; width:40px; height:20px;">
+                            <input type="checkbox" id="maint-mode" onchange="toggleMaintenance()" style="opacity:0; width:0; height:0;">
+                            <span style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#ccc; transition:.4s; border-radius:34px;" id="maint-switch"></span>
+                        </label>
+                    </div>
+
+                    <button class="btn btn-red" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i> লগ আউট</button>
+                </div>
             </div>
         </div>
 
@@ -160,20 +229,20 @@
 
     <div id="user-modal" class="modal-overlay">
         <div class="modal">
-            <div style="text-align:right;"><i class="fas fa-times" onclick="document.getElementById('user-modal').style.display='none'" style="cursor:pointer;"></i></div>
+            <div style="text-align:right;"><i class="fas fa-times" onclick="document.getElementById('user-modal').style.display='none'" style="cursor:pointer; color:#999;"></i></div>
             <div style="text-align:center; margin-bottom:15px;">
-                <div style="width:60px; height:60px; background:#d1fae5; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; color:#059669; font-size:25px;"><i class="fas fa-user"></i></div>
-                <h3 id="m-name" style="margin:5px 0;">Name</h3>
-                <span id="m-type" style="background:#f59e0b; color:white; padding:2px 8px; border-radius:10px; font-size:10px;">FREE</span>
+                <div style="width:70px; height:70px; background:#d1fae5; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; color:#059669; font-size:30px; margin-bottom:10px;"><i class="fas fa-user"></i></div>
+                <h3 id="m-name" style="margin:0;">Name</h3>
+                <span id="m-type" style="background:#f59e0b; color:white; padding:3px 10px; border-radius:20px; font-size:10px; font-weight:bold;">FREE</span>
             </div>
-            <div style="background:#f9fafb; padding:10px; border-radius:10px; font-size:13px;">
-                <p>📞 Phone: <b id="m-phone">...</b></p>
-                <p>🔑 Pass: <b id="m-pass" style="color:red;">...</b></p>
-                <p>💰 Balance: <b id="m-bal" style="font-size:16px; color:#059669;">0</b></p>
+            <div style="background:#f9fafb; padding:15px; border-radius:15px; font-size:13px; text-align:left;">
+                <p style="margin:5px 0;">📞 <span id="m-phone" style="font-weight:600;">...</span></p>
+                <p style="margin:5px 0;">🔑 Pass: <b id="m-pass" style="color:#ef4444;">...</b></p>
+                <p style="margin:5px 0;">💰 Balance: <b id="m-bal" style="font-size:18px; color:#059669;">0</b></p>
             </div>
-            <div style="display:flex; gap:10px; margin-top:15px;">
-                <button class="btn" onclick="editUserBal('add')">+ Add</button>
-                <button class="btn btn-red" onclick="editUserBal('sub')">- Cut</button>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn btn-sm" onclick="editUserBal('add')"><i class="fas fa-plus"></i> Add</button>
+                <button class="btn btn-sm btn-red" onclick="editUserBal('sub')"><i class="fas fa-minus"></i> Cut</button>
             </div>
             <input type="hidden" id="m-uid">
         </div>
@@ -184,7 +253,17 @@
         try { firebase.initializeApp(firebaseConfig); } catch(e) {}
         const db = firebase.database();
 
-        // SPLASH & LOGIN
+        // TOAST NOTIFICATION
+        function showToast(msg, type='success') {
+            const box = document.getElementById('toast-box');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type==='error'?'t-error':'t-success'}`;
+            toast.innerHTML = `<i class="fas ${type==='error'?'fa-exclamation-circle':'fa-check-circle'}"></i> <span>${msg}</span>`;
+            box.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // INIT
         window.onload = () => {
             setTimeout(() => {
                 document.getElementById('splash-screen').style.opacity = '0';
@@ -201,8 +280,9 @@
             if(u === 'JIHAD' && p === '198373ZA') {
                 document.getElementById('login-view').style.display = 'none';
                 document.getElementById('main-view').style.display = 'block';
+                showToast("লগইন সফল হয়েছে!");
                 initAdmin();
-            } else alert("❌ ভুল তথ্য!");
+            } else showToast("ভুল ইউজারনেম বা পাসওয়ার্ড!", "error");
         }
 
         function nav(id, el) {
@@ -212,9 +292,16 @@
             el.classList.add('active');
         }
 
-        // DATA LOADING
+        function switchTab(id, el) {
+            document.getElementById('tab-task').style.display = id==='tab-task'?'block':'none';
+            document.getElementById('tab-vip').style.display = id==='tab-vip'?'block':'none';
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        // DATA LOGIC
         function initAdmin() {
-            // USERS & REQUESTS
+            // Stats & Requests
             db.ref('users').on('value', s => {
                 const users = s.val() || {};
                 document.getElementById('st-users').innerText = Object.keys(users).length;
@@ -234,24 +321,24 @@
                                 reqBox.innerHTML += `
                                 <div class="user-row">
                                     <div>
-                                        <b>${u.name}</b> <small>(${u.phone})</small><br>
-                                        <span style="color:${isBuy?'#8b5cf6':'#ef4444'}; font-weight:bold;">${h.type}</span> - ৳${h.amount}<br>
-                                        <small style="color:#666;">${h.method||'Trx: '+h.trx}</small>
+                                        <b style="font-size:14px;">${u.name}</b> <small style="color:#666;">(${u.phone})</small><br>
+                                        <span style="color:${isBuy?'#8b5cf6':'#ef4444'}; font-weight:bold; font-size:13px;">${h.type}</span> - ৳${h.amount}<br>
+                                        <small style="color:#9ca3af; font-size:11px;">${h.method||'Trx: '+h.trx}</small>
                                     </div>
-                                    <div>
-                                        <button class="btn btn-sm" onclick="setStatus('${uid}','${k}','Success','${h.type}')">✔</button>
-                                        <button class="btn btn-sm btn-red" onclick="setStatus('${uid}','${k}','Rejected','${h.type}')">✘</button>
+                                    <div style="display:flex; gap:5px;">
+                                        <button class="btn btn-sm" onclick="setStatus('${uid}','${k}','Success','${h.type}')"><i class="fas fa-check"></i></button>
+                                        <button class="btn btn-sm btn-red" onclick="setStatus('${uid}','${k}','Rejected','${h.type}')"><i class="fas fa-times"></i></button>
                                     </div>
                                 </div>`;
                             }
                         });
                     }
                 });
-                if(pending===0) reqBox.innerHTML = '<p style="text-align:center;color:#999;">কোনো রিকোয়েস্ট নেই</p>';
+                if(pending===0) reqBox.innerHTML = '<p style="text-align:center;color:#ccc; font-size:13px;">কোনো পেন্ডিং রিকোয়েস্ট নেই</p>';
                 document.getElementById('st-pending').innerText = pending;
             });
 
-            // TASKS
+            // Load Tasks
             db.ref('settings/tasks').on('value', s => {
                 const list = document.getElementById('task-list');
                 list.innerHTML = '';
@@ -259,9 +346,27 @@
                 Object.keys(tasks).forEach(k => {
                     const t = tasks[k];
                     list.innerHTML += `
-                    <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-                        <div><b>${t.title}</b><br><small>৳${t.reward}</small></div>
+                    <div class="user-row">
+                        <div><b style="font-size:14px;">${t.title}</b><br><small style="color:#059669;">৳${t.reward}</small></div>
                         <button class="btn btn-sm btn-red" onclick="delTask('${k}')"><i class="fas fa-trash"></i></button>
+                    </div>`;
+                });
+            });
+
+            // Load VIP Plans
+            db.ref('settings/vipPlans').on('value', s => {
+                const list = document.getElementById('vip-list');
+                list.innerHTML = '';
+                const plans = s.val() || {};
+                Object.keys(plans).forEach(k => {
+                    const p = plans[k];
+                    list.innerHTML += `
+                    <div class="user-row" style="border-left:4px solid #f59e0b;">
+                        <div>
+                            <b style="font-size:14px;">${p.name}</b><br>
+                            <small>Price: ৳${p.price} | Daily: ৳${p.dailyIncome} | <i class="fas fa-clock"></i> ${p.validity} Days</small>
+                        </div>
+                        <button class="btn btn-sm btn-red" onclick="db.ref('settings/vipPlans/'+'${k}').remove()"><i class="fas fa-trash"></i></button>
                     </div>`;
                 });
             });
@@ -270,7 +375,7 @@
         // ACTIONS
         function updateNotice() {
             db.ref('settings/notice').set(document.getElementById('notice-txt').value);
-            alert("✅ নোটিশ আপডেট হয়েছে!");
+            showToast("নোটিশ আপডেট হয়েছে!");
         }
 
         function addTask() {
@@ -278,34 +383,52 @@
             const reward = parseInt(document.getElementById('t-reward').value);
             const link = document.getElementById('t-link').value;
             const type = document.getElementById('t-type').value;
-            if(!title || !reward) return alert("তথ্য দিন!");
+            if(!title || !reward) return showToast("সব তথ্য দিন!", "error");
+            
             db.ref('settings/tasks').push({ title, reward, link, type, icon: type, color: type==='youtube'?'red':'#229ED9' });
-            alert("✅ টাস্ক যোগ হয়েছে!");
+            showToast("টাস্ক পাবলিশ হয়েছে!");
+            document.getElementById('t-title').value = '';
         }
 
         function addVipPlan() {
             const name = document.getElementById('v-name').value;
             const price = parseInt(document.getElementById('v-price').value);
             const daily = parseInt(document.getElementById('v-daily').value);
-            if(!name || !price) return alert("তথ্য দিন!");
-            // Note: User app needs update to read dynamic plans. For now this saves to DB.
-            db.ref('settings/vipPlans').push({ name, price, dailyIncome: daily });
-            alert("✅ VIP প্ল্যান সেভ হয়েছে!");
+            const val = parseInt(document.getElementById('v-validity').value);
+            
+            if(!name || !price || !val) return showToast("সব তথ্য দিন!", "error");
+            
+            db.ref('settings/vipPlans').push({ name, price, dailyIncome: daily, validity: val });
+            showToast("VIP প্ল্যান তৈরি হয়েছে!");
+            document.getElementById('v-name').value = '';
         }
 
-        function delTask(k) { if(confirm("মুছে ফেলবেন?")) db.ref('settings/tasks/'+k).remove(); }
+        function delTask(k) { if(confirm("মুছে ফেলবেন?")) { db.ref('settings/tasks/'+k).remove(); showToast("টাস্ক ডিলিট হয়েছে!"); } }
 
         function setStatus(uid, k, st, type) {
             if(!confirm(st+" করবেন?")) return;
             const up = {}; up[`users/${uid}/history/${k}/status`] = st;
             if(st==='Success' && type.includes('Buy')) {
+                // Determine Validity based on plan (simplified for now, assumes 3 days if not found)
                 up[`users/${uid}/isVip`] = true;
-                up[`users/${uid}/vipExpiry`] = Date.now() + (3*86400000); // 3 Days Default
+                up[`users/${uid}/vipExpiry`] = Date.now() + (3*86400000); 
             }
             db.ref().update(up);
+            showToast("রিকোয়েস্ট আপডেট হয়েছে!");
         }
 
-        // USER SEARCH & MODAL
+        function updateSupport() {
+            db.ref('settings/support').set(document.getElementById('support-link').value);
+            showToast("সাপোর্ট লিংক সেভ হয়েছে!");
+        }
+
+        function toggleMaintenance() {
+            const isOn = document.getElementById('maint-mode').checked;
+            db.ref('settings/maintenance').set(isOn);
+            showToast(isOn ? "মেইনটেন্যান্স অন করা হয়েছে!" : "মেইনটেন্যান্স অফ করা হয়েছে!");
+            document.getElementById('maint-switch').style.backgroundColor = isOn ? '#ef4444' : '#ccc';
+        }
+
         function searchUser() {
             const q = document.getElementById('search-inp').value;
             const r = document.getElementById('user-result');
@@ -316,14 +439,14 @@
                 if(s.exists()) {
                     const u = s.val();
                     r.innerHTML = `
-                    <div class="card" onclick="openUserModal('${q}', '${u.name}', '${u.phone}', '${u.pass}', ${u.balance}, ${u.isVip})">
+                    <div class="user-row" onclick="openUserModal('${q}', '${u.name}', '${u.phone}', '${u.pass}', ${u.balance}, ${u.isVip})" style="cursor:pointer; background:white; border:1px solid #059669;">
                         <div style="display:flex; align-items:center; gap:10px;">
                             <div style="background:#d1fae5; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#059669;"><i class="fas fa-user"></i></div>
                             <div><b>${u.name}</b><br><small>${u.phone}</small></div>
-                            <div style="margin-left:auto; font-weight:bold; color:#059669;">৳${u.balance}</div>
                         </div>
+                        <b style="color:#059669;">৳${u.balance}</b>
                     </div>`;
-                } else r.innerHTML = '<p style="text-align:center; color:red;">পাওয়া যায়নি!</p>';
+                } else r.innerHTML = '<p style="text-align:center; color:#ef4444; font-size:13px;">ইউজার পাওয়া যায়নি!</p>';
             });
         }
 
@@ -331,7 +454,7 @@
             document.getElementById('m-uid').value = uid;
             document.getElementById('m-name').innerText = n;
             document.getElementById('m-phone').innerText = p;
-            document.getElementById('m-pass').innerText = pass; // Password visible to admin
+            document.getElementById('m-pass').innerText = pass;
             document.getElementById('m-bal').innerText = b;
             document.getElementById('m-type').innerText = vip ? "VIP USER" : "FREE USER";
             document.getElementById('m-type').style.background = vip ? "#059669" : "#f59e0b";
@@ -345,8 +468,8 @@
             if(!amt) return;
             const nBal = act==='add' ? curr+parseInt(amt) : curr-parseInt(amt);
             db.ref('users/'+uid).update({ balance: nBal });
-            document.getElementById('m-bal').innerText = nBal; // Instant update UI
-            alert("✅ ব্যালেন্স আপডেট হয়েছে!");
+            document.getElementById('m-bal').innerText = nBal; 
+            showToast("ব্যালেন্স আপডেট হয়েছে!");
         }
     </script>
 </body>
