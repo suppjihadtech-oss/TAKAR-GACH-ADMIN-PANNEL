@@ -3,228 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Admin V8 - Professional</title>
+    <title>টাকার গাছ - Admin V8</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; outline: none; font-family: 'Poppins', 'Hind Siliguri', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: #f3f4f6; margin: 0; color: #1f2937; height: 100vh; display: flex; flex-direction: column; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Hind Siliguri', sans-serif; outline: none; }
+        body { background: #f0fdf4; margin: 0; padding-bottom: 90px; color: #1f2937; height: 100vh; overflow: hidden; }
 
-        /* TOAST */
-        #toast-box { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .toast { background: white; padding: 15px 20px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 12px; animation: slideIn 0.3s; pointer-events: auto; border-left: 5px solid #10b981; font-size: 14px; font-weight: 500; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        /* TOAST MESSAGE */
+        #toast-box { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; width: 90%; max-width: 350px; pointer-events: none; }
+        .toast { background: #333; color: white; padding: 12px 20px; border-radius: 50px; text-align: center; margin-bottom: 10px; animation: fadeIn 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.2); font-size: 13px; }
 
-        /* LOGIN */
-        #login-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 5000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .login-box { width: 90%; max-width: 350px; text-align: center; }
-        .login-logo { font-size: 50px; color: #10b981; margin-bottom: 20px; }
+        /* 1. SPLASH SCREEN */
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #dcfce7, #f0fdf4); z-index: 9000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s; }
+        .jumping-tree { font-size: 80px; animation: bounce 1.2s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
+        /* 2. LOGIN SCREEN */
+        #login-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0fdf4; z-index: 5000; display: flex; flex-direction: column; justify-content: center; padding: 30px; transition: opacity 0.5s; }
+        .login-card { background: white; padding: 30px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(5, 150, 105, 0.15); border: 1px solid #e5e7eb; }
         
-        /* DASHBOARD LAYOUT */
-        .header { background: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
-        .brand { font-weight: 700; font-size: 20px; color: #064e3b; display: flex; align-items: center; gap: 10px; }
-        
-        .main-content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 80px; }
-        .page { display: none; animation: fadeUp 0.3s; }
+        /* 3. MAIN DASHBOARD UI */
+        .header { background: linear-gradient(135deg, #059669, #047857); padding: 20px 20px 40px 20px; border-radius: 0 0 30px 30px; color: white; text-align: center; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3); }
+        .page { display: none; padding: 20px; height: calc(100vh - 160px); overflow-y: auto; animation: slideUp 0.3s; }
         .page.active { display: block; }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* CARDS & STATS */
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .stat-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e5e7eb; position: relative; overflow: hidden; }
-        .stat-num { font-size: 28px; font-weight: 700; color: #1f2937; margin: 0; }
-        .stat-label { font-size: 13px; color: #6b7280; font-weight: 500; }
-        .stat-icon { position: absolute; right: -10px; bottom: -10px; font-size: 60px; opacity: 0.1; color: #10b981; }
-
-        .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid #e5e7eb; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .card-title { font-size: 16px; font-weight: 600; margin: 0 0 15px 0; color: #374151; display: flex; align-items: center; gap: 8px; }
-
-        /* INPUTS */
-        .inp-group { margin-bottom: 15px; }
-        .label { display: block; font-size: 12px; font-weight: 600; color: #6b7280; margin-bottom: 5px; }
-        .inp { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 14px; background: #f9fafb; transition: 0.2s; }
-        .inp:focus { border-color: #10b981; background: white; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); }
+        /* COMPONENTS */
+        .card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); border: 1px solid #f3f4f6; }
+        .inp { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 10px; margin-bottom: 10px; background: #f9fafb; font-size: 15px; }
+        .inp:focus { border-color: #059669; background: white; }
         
-        /* BUTTONS */
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-primary { background: #10b981; color: white; } .btn-primary:active { background: #059669; }
-        .btn-danger { background: #ef4444; color: white; }
-        .btn-icon { padding: 8px; border-radius: 8px; font-size: 14px; width: auto; }
-
-        /* LIST ITEMS */
-        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #f3f4f6; border-radius: 12px; margin-bottom: 10px; background: #f9fafb; transition: 0.2s; }
-        .list-item:hover { border-color: #10b981; background: white; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; color: white; background: linear-gradient(135deg, #059669, #10b981); transition: 0.2s; font-size: 14px; }
+        .btn:active { transform: scale(0.97); }
+        .btn-red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .btn-vip { background: linear-gradient(135deg, #f59e0b, #d97706); }
 
         /* BOTTOM NAV */
-        .nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid #e5e7eb; z-index: 100; box-shadow: 0 -5px 20px rgba(0,0,0,0.03); }
-        .nav-item { color: #9ca3af; font-size: 20px; cursor: pointer; transition: 0.2s; padding: 10px; border-radius: 12px; }
-        .nav-item.active { color: #10b981; background: #ecfdf5; }
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #f3f4f6; z-index: 1000; border-radius: 20px 20px 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); }
+        .nav-item { text-align: center; flex: 1; color: #9ca3af; font-size: 10px; cursor: pointer; transition: 0.3s; }
+        .nav-item i { font-size: 22px; display: block; margin-bottom: 3px; }
+        .nav-item.active { color: #059669; font-weight: bold; }
+        .nav-item.active i { transform: translateY(-3px); }
 
-        /* MODAL */
-        .modal-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(3px); }
-        .modal { background: white; width: 90%; max-width: 350px; border-radius: 20px; padding: 25px; animation: popIn 0.3s; }
-        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        /* STATS */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: -30px; padding: 0 15px; margin-bottom: 15px; }
+        .stat-box { background: white; padding: 15px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .stat-num { font-size: 20px; font-weight: 800; color: #059669; }
+
+        /* LIST ITEMS */
+        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px dashed #eee; font-size: 13px; }
+        
+        /* TABS */
+        .tab-menu { display: flex; background: #e5e7eb; padding: 4px; border-radius: 10px; margin-bottom: 15px; }
+        .tab-btn { flex: 1; text-align: center; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 600; color: #666; cursor: pointer; }
+        .tab-btn.active { background: white; color: #059669; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        /* USER MODAL */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 6000; justify-content: center; align-items: center; }
+        .modal { background: white; width: 90%; max-width: 320px; border-radius: 20px; padding: 20px; animation: popUp 0.3s; }
+        @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
     </style>
 </head>
 <body>
+
     <div id="toast-box"></div>
 
-    <div id="login-view">
-        <div class="login-box">
-            <i class="fas fa-cube login-logo"></i>
-            <h2 style="margin:0 0 10px 0;">Admin V8</h2>
-            <p style="color:#6b7280; margin-bottom: 30px; font-size: 14px;">Professional Control Panel</p>
-            <div class="inp-group"><input type="text" id="l-user" class="inp" placeholder="Username"></div>
-            <div class="inp-group"><input type="password" id="l-pass" class="inp" placeholder="Password"></div>
-            <button class="btn btn-primary" onclick="doLogin()">ACCESS DASHBOARD</button>
+    <div id="splash-screen"><div class="jumping-tree">🌳</div></div>
+
+    <div id="login-view" style="display:none;">
+        <div class="login-card">
+            <h2 style="color:#059669; margin:0 0 5px 0;">টাকার গাছ</h2>
+            <p style="font-size:14px; color:#4b5563; margin-bottom:20px;">এডমিন প্যানেল</p>
+            <input type="text" id="l-user" class="inp" placeholder="ইউজার নেম">
+            <input type="password" id="l-pass" class="inp" placeholder="পাসওয়ার্ড">
+            <button class="btn" onclick="doLogin()">লগইন করুন</button>
         </div>
     </div>
 
     <div id="main-view" style="display:none;">
         <div class="header">
-            <div class="brand"><i class="fas fa-cube"></i> Takar Gach</div>
-            <div style="font-size:12px; color:#6b7280;">Super Admin</div>
+            <h3><i class="fas fa-tree"></i> ড্যাশবোর্ড</h3>
+            <p style="font-size:12px; opacity:0.8;">Full Control Panel</p>
         </div>
 
-        <div class="main-content">
-            <div id="home" class="page active">
-                <div class="grid-2">
-                    <div class="stat-card">
-                        <h1 class="stat-num" id="st-users">0</h1>
-                        <span class="stat-label">Total Users</span>
-                        <i class="fas fa-users stat-icon"></i>
-                    </div>
-                    <div class="stat-card">
-                        <h1 class="stat-num" id="st-pending" style="color:#f59e0b;">0</h1>
-                        <span class="stat-label">Pending</span>
-                        <i class="fas fa-clock stat-icon" style="color:#f59e0b;"></i>
-                    </div>
-                </div>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-num" id="st-users">0</div>
+                <small>মোট ইউজার</small>
+            </div>
+            <div class="stat-box">
+                <div class="stat-num" id="st-pending" style="color:#d97706;">0</div>
+                <small>পেন্ডিং</small>
+            </div>
+        </div>
 
-                <div class="card">
-                    <div class="card-title"><i class="fas fa-bullhorn" style="color:#10b981;"></i> Update Notice</div>
+        <div id="home" class="page active">
+            <div class="card">
+                <h4 style="margin:0 0 10px 0; color:#059669;">📢 নোটিশ আপডেট</h4>
+                <div style="display:flex; gap:5px;">
+                    <input type="text" id="notice-txt" class="inp" placeholder="নোটিশ লিখুন..." style="margin:0;">
+                    <button class="btn" style="width:auto;" onclick="updateNotice()">Update</button>
+                </div>
+            </div>
+            
+            <h4 style="margin:10px 0;">পেমেন্ট রিকোয়েস্ট</h4>
+            <div class="card" id="req-list" style="min-height: 100px;">
+                <p style="text-align:center; color:#ccc; font-size:12px;">লোড হচ্ছে...</p>
+            </div>
+        </div>
+
+        <div id="users" class="page">
+            <div class="card">
+                <input type="text" id="search-inp" class="inp" placeholder="🔍 ফোন নম্বর দিয়ে খুঁজুন..." onkeyup="searchUser()" style="margin:0;">
+            </div>
+            <div id="user-result"></div>
+        </div>
+
+        <div id="tasks" class="page">
+            <div class="tab-menu">
+                <div class="tab-btn active" onclick="switchTab('tab-vip', this)">VIP প্ল্যান</div>
+                <div class="tab-btn" onclick="switchTab('tab-task', this)">টাস্ক</div>
+            </div>
+
+            <div id="tab-vip">
+                <div class="card" style="border:1px solid #f59e0b;">
+                    <h4 style="margin:0 0 10px 0; color:#d97706;">💎 নতুন VIP প্ল্যান</h4>
+                    <input type="text" id="v-name" class="inp" placeholder="প্ল্যানের নাম (যেমন: Gold)">
                     <div style="display:flex; gap:10px;">
-                        <input type="text" id="notice-txt" class="inp" placeholder="Write notice here..." style="margin:0;">
-                        <button class="btn btn-primary" style="width:auto;" onclick="updateNotice()">Post</button>
+                        <input type="number" id="v-price" class="inp" placeholder="দাম (৳)">
+                        <input type="number" id="v-daily" class="inp" placeholder="ডেইলি আয়">
                     </div>
+                    <input type="number" id="v-valid" class="inp" placeholder="মেয়াদ (দিন)">
+                    <button class="btn btn-vip" onclick="addVipPlan()">প্ল্যান সেভ করুন</button>
                 </div>
-
-                <h4 style="margin: 15px 0 10px 0; color:#6b7280;">Payment Requests</h4>
-                <div id="req-list"></div>
+                <div id="vip-list"></div>
             </div>
 
-            <div id="users" class="page">
+            <div id="tab-task" style="display:none;">
                 <div class="card">
-                    <input type="text" id="search-inp" class="inp" placeholder="🔍 Search User (Phone)" onkeyup="searchUser()" style="margin:0;">
-                </div>
-                <div id="user-result"></div>
-            </div>
-
-            <div id="tasks" class="page">
-                <div class="card" style="border-left: 4px solid #ec4899;">
-                    <div class="card-title" style="color:#ec4899;"><i class="fas fa-crown"></i> Create VIP Plan</div>
-                    <div class="inp-group"><input type="text" id="p-name" class="inp" placeholder="Plan Name (e.g. Platinum)"></div>
-                    <div class="grid-2" style="margin-bottom:0;">
-                        <div class="inp-group"><label class="label">Price</label><input type="number" id="p-price" class="inp" placeholder="500"></div>
-                        <div class="inp-group"><label class="label">Daily Income</label><input type="number" id="p-daily" class="inp" placeholder="25"></div>
+                    <h4 style="margin:0 0 10px 0;">➕ নতুন টাস্ক</h4>
+                    <input type="text" id="t-title" class="inp" placeholder="টাইটেল">
+                    <div style="display:flex; gap:10px;">
+                        <input type="number" id="t-reward" class="inp" placeholder="টাকা">
+                        <select id="t-type" class="inp">
+                            <option value="telegram">Telegram</option>
+                            <option value="youtube">YouTube</option>
+                        </select>
                     </div>
-                    <div class="inp-group"><label class="label">Validity (Days)</label><input type="number" id="p-valid" class="inp" placeholder="30"></div>
-                    <button class="btn" style="background:#ec4899; color:white;" onclick="addPlan()">Create Plan</button>
+                    <input type="text" id="t-link" class="inp" placeholder="লিংক">
+                    <button class="btn" onclick="addTask()">টাস্ক দিন</button>
                 </div>
-                
-                <h4 style="margin:20px 0 10px 0;">Current Plans</h4>
-                <div id="plan-list"></div>
-
-                <hr style="border:0; border-top:1px solid #e5e7eb; margin:30px 0;">
-
-                <div class="card">
-                    <div class="card-title"><i class="fas fa-tasks" style="color:#3b82f6;"></i> Add Social Task</div>
-                    <div class="inp-group"><input type="text" id="t-title" class="inp" placeholder="Task Title (e.g. Follow Page)"></div>
-                    <div class="grid-2" style="margin-bottom:0;">
-                        <div class="inp-group"><label class="label">Reward</label><input type="number" id="t-reward" class="inp" placeholder="Tk"></div>
-                        <div class="inp-group">
-                            <label class="label">Platform</label>
-                            <select id="t-type" class="inp">
-                                <option value="telegram">Telegram</option>
-                                <option value="youtube">YouTube</option>
-                                <option value="facebook">Facebook</option>
-                                <option value="instagram">Instagram</option>
-                                <option value="tiktok">TikTok</option>
-                                <option value="twitter">Twitter</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="inp-group"><input type="text" id="t-link" class="inp" placeholder="Link URL"></div>
-                    <button class="btn btn-primary" onclick="addTask()">Publish Task</button>
-                </div>
-                <h4 style="margin:20px 0 10px 0;">Live Tasks</h4>
                 <div id="task-list"></div>
             </div>
-
-            <div id="settings" class="page">
-                <div class="card">
-                    <div class="card-title">⚙️ App Configuration</div>
-                    
-                    <div class="inp-group">
-                        <label class="label">Bkash Number</label>
-                        <div style="display:flex; gap:5px;">
-                            <input type="text" id="set-bkash" class="inp" style="margin:0;">
-                            <button class="btn btn-primary" style="width:auto;" onclick="saveSet('bkash')">Save</button>
-                        </div>
-                    </div>
-
-                    <div class="inp-group">
-                        <label class="label">Nagad Number</label>
-                        <div style="display:flex; gap:5px;">
-                            <input type="text" id="set-nagad" class="inp" style="margin:0;">
-                            <button class="btn btn-primary" style="width:auto;" onclick="saveSet('nagad')">Save</button>
-                        </div>
-                    </div>
-
-                    <div class="inp-group">
-                        <label class="label">Support Link</label>
-                        <div style="display:flex; gap:5px;">
-                            <input type="text" id="set-support" class="inp" style="margin:0;">
-                            <button class="btn btn-primary" style="width:auto;" onclick="saveSet('support')">Save</button>
-                        </div>
-                    </div>
-
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:#fee2e2; padding:15px; border-radius:12px; margin-top:20px;">
-                        <div style="color:#991b1b; font-weight:600;">Maintenance Mode</div>
-                        <input type="checkbox" id="maint-check" onchange="toggleMaint()" style="width:20px; height:20px;">
-                    </div>
-                </div>
-                <button class="btn btn-danger" onclick="location.reload()">Logout</button>
-            </div>
         </div>
 
-        <div class="nav">
-            <div class="nav-item active" onclick="nav('home', this)"><i class="fas fa-th-large"></i></div>
-            <div class="nav-item" onclick="nav('users', this)"><i class="fas fa-users"></i></div>
-            <div class="nav-item" onclick="nav('tasks', this)"><i class="fas fa-layer-group"></i></div>
-            <div class="nav-item" onclick="nav('settings', this)"><i class="fas fa-cog"></i></div>
+        <div id="settings" class="page">
+            <div class="card">
+                <h4 style="margin:0 0 15px 0;">⚙️ অ্যাপ কনফিগ</h4>
+                
+                <label style="font-size:12px; color:#666;">বিকাশ নাম্বার</label>
+                <div style="display:flex; gap:5px; margin-bottom:10px;">
+                    <input type="text" id="conf-bkash" class="inp" style="margin:0;">
+                    <button class="btn" style="width:auto;" onclick="saveConf('bkash')">Save</button>
+                </div>
+
+                <label style="font-size:12px; color:#666;">নগদ নাম্বার</label>
+                <div style="display:flex; gap:5px; margin-bottom:10px;">
+                    <input type="text" id="conf-nagad" class="inp" style="margin:0;">
+                    <button class="btn" style="width:auto;" onclick="saveConf('nagad')">Save</button>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; background:#fee2e2; padding:10px; border-radius:10px; margin-top:15px;">
+                    <b style="color:#b91c1c; font-size:13px;">মেইনটেন্যান্স মোড</b>
+                    <input type="checkbox" id="maint-mode" onchange="toggleMaint()">
+                </div>
+            </div>
+            <button class="btn btn-red" onclick="location.reload()">লগ আউট</button>
+        </div>
+
+        <div class="nav-bar">
+            <div class="nav-item active" onclick="nav('home', this)"><i class="fas fa-home"></i>Home</div>
+            <div class="nav-item" onclick="nav('users', this)"><i class="fas fa-users"></i>Users</div>
+            <div class="nav-item" onclick="nav('tasks', this)"><i class="fas fa-list-check"></i>Tasks</div>
+            <div class="nav-item" onclick="nav('settings', this)"><i class="fas fa-cog"></i>Settings</div>
         </div>
     </div>
 
-    <div id="user-modal" class="modal-bg">
+    <div id="user-modal" class="modal-overlay">
         <div class="modal">
-            <div style="text-align:right;"><i class="fas fa-times" style="cursor:pointer; color:#9ca3af;" onclick="document.getElementById('user-modal').style.display='none'"></i></div>
-            <div style="text-align:center; margin-bottom:20px;">
-                <div style="width:60px; height:60px; background:#d1fae5; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; color:#10b981; font-size:24px; margin-bottom:10px;"><i class="fas fa-user"></i></div>
-                <h3 id="m-name" style="margin:0; color:#1f2937;">Name</h3>
-                <span id="m-plan" style="background:#f3f4f6; padding:3px 10px; border-radius:20px; font-size:12px; color:#6b7280;">Free Plan</span>
+            <div style="text-align:right;"><i class="fas fa-times" onclick="document.getElementById('user-modal').style.display='none'" style="cursor:pointer;"></i></div>
+            <h3 id="m-name" style="text-align:center; margin:0 0 5px 0;">User</h3>
+            <p style="text-align:center; font-size:12px; color:#666; margin-bottom:15px;" id="m-phone">...</p>
+            
+            <div style="background:#f9fafb; padding:10px; border-radius:10px; font-size:13px; margin-bottom:15px;">
+                <p>UID: <b id="m-uid-txt">...</b></p>
+                <p>Pass: <b id="m-pass" style="color:#ef4444;">...</b></p>
+                <p>Bal: <b id="m-bal" style="color:#059669; font-size:16px;">0</b></p>
             </div>
-            <div style="background:#f9fafb; padding:15px; border-radius:12px; margin-bottom:20px;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="color:#6b7280; font-size:13px;">Phone</span> <b id="m-phone" style="font-size:13px;">...</b></div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span style="color:#6b7280; font-size:13px;">Password</span> <b id="m-pass" style="font-size:13px; color:#ef4444;">...</b></div>
-                <div style="display:flex; justify-content:space-between;"><span style="color:#6b7280; font-size:13px;">Balance</span> <b id="m-bal" style="font-size:15px; color:#10b981;">0</b></div>
-            </div>
-            <div class="grid-2">
-                <button class="btn btn-primary" onclick="editBal('add')">+ Add</button>
-                <button class="btn btn-danger" onclick="editBal('sub')">- Cut</button>
+            
+            <div style="display:flex; gap:10px;">
+                <button class="btn" style="font-size:12px;" onclick="editBal('add')">+ টাকা দিন</button>
+                <button class="btn btn-red" style="font-size:12px;" onclick="editBal('sub')">- টাকা কাটুন</button>
             </div>
             <input type="hidden" id="m-uid">
         </div>
@@ -235,21 +219,33 @@
         try { firebase.initializeApp(firebaseConfig); } catch(e) {}
         const db = firebase.database();
 
-        function toast(m, t='s') {
+        function toast(msg) {
             const b = document.getElementById('toast-box');
-            const el = document.createElement('div');
-            el.className = 'toast';
-            el.style.borderLeftColor = t==='e'?'#ef4444':'#10b981';
-            el.innerHTML = `<i class="fas ${t==='e'?'fa-exclamation-circle':'fa-check-circle'}" style="color:${t==='e'?'#ef4444':'#10b981'}"></i> ${m}`;
-            b.appendChild(el); setTimeout(()=>el.remove(), 3000);
+            const d = document.createElement('div');
+            d.className = 'toast'; d.innerText = msg;
+            b.appendChild(d); setTimeout(()=>d.remove(), 2500);
+        }
+
+        // 1. SPLASH & LOGIN
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('splash-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('splash-screen').style.display = 'none';
+                    document.getElementById('login-view').style.display = 'flex';
+                }, 500);
+            }, 3000);
         }
 
         function doLogin() {
-            if(document.getElementById('l-user').value === 'JIHAD' && document.getElementById('l-pass').value === '198373ZA') {
-                document.getElementById('login-view').style.display='none';
-                document.getElementById('main-view').style.display='flex';
-                init();
-            } else toast('Invalid Credentials', 'e');
+            const u = document.getElementById('l-user').value.trim();
+            const p = document.getElementById('l-pass').value.trim();
+            if(u === 'JIHAD' && p === '198373ZA') {
+                document.getElementById('login-view').style.display = 'none';
+                document.getElementById('main-view').style.display = 'block';
+                toast('স্বাগতম এডমিন!');
+                initData();
+            } else alert('ভুল তথ্য!');
         }
 
         function nav(id, el) {
@@ -259,123 +255,152 @@
             el.classList.add('active');
         }
 
-        function init() {
+        function switchTab(id, el) {
+            document.getElementById('tab-vip').style.display = id==='tab-vip'?'block':'none';
+            document.getElementById('tab-task').style.display = id==='tab-task'?'block':'none';
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        // 2. DATA HANDLING
+        function initData() {
             // USERS & REQUESTS
             db.ref('users').on('value', s => {
                 const u = s.val() || {};
                 document.getElementById('st-users').innerText = Object.keys(u).length;
-                let p = 0; const rl = document.getElementById('req-list'); rl.innerHTML='';
+                
+                let pend = 0;
+                const rl = document.getElementById('req-list'); rl.innerHTML = '';
                 
                 Object.keys(u).forEach(uid => {
-                    if(u[uid].history) {
-                        Object.keys(u[uid].history).forEach(k => {
-                            const h = u[uid].history[k];
+                    const usr = u[uid];
+                    if(usr.history) {
+                        Object.keys(usr.history).forEach(k => {
+                            const h = usr.history[k];
                             if(h.status === 'Pending') {
-                                p++;
+                                pend++;
                                 rl.innerHTML += `
-                                <div class="list-item">
-                                    <div><b style="font-size:14px;">${u[uid].name}</b><br><small style="color:#6b7280;">${h.type} - ৳${h.amount}</small></div>
+                                <div class="item-row">
+                                    <div>
+                                        <b>${usr.name}</b> <small>(${usr.phone})</small><br>
+                                        <span style="color:${h.type.includes('Buy')?'#8b5cf6':'#ef4444'}; font-weight:bold;">${h.type}</span> ৳${h.amount}<br>
+                                        <small style="color:#666;">${h.trx||h.method}</small>
+                                    </div>
                                     <div style="display:flex; gap:5px;">
-                                        <button class="btn-icon btn-primary" onclick="setStatus('${uid}','${k}','Success','${h.type}')"><i class="fas fa-check"></i></button>
-                                        <button class="btn-icon btn-danger" onclick="setStatus('${uid}','${k}','Rejected','${h.type}')"><i class="fas fa-times"></i></button>
+                                        <button class="btn" style="width:30px;height:30px;padding:0;" onclick="setStatus('${uid}','${k}','Success','${h.type}')">✔</button>
+                                        <button class="btn btn-red" style="width:30px;height:30px;padding:0;" onclick="setStatus('${uid}','${k}','Rejected','${h.type}')">✘</button>
                                     </div>
                                 </div>`;
                             }
                         });
                     }
                 });
-                if(p===0) rl.innerHTML='<p style="text-align:center; color:#d1d5db;">No pending requests</p>';
-                document.getElementById('st-pending').innerText = p;
+                document.getElementById('st-pending').innerText = pend;
+                if(pend===0) rl.innerHTML='<p style="text-align:center;color:#ccc;font-size:12px;">No Requests</p>';
             });
 
-            // LOAD TASKS & PLANS
+            // TASKS
             db.ref('settings/tasks').on('value', s => {
-                const l = document.getElementById('task-list'); l.innerHTML='';
-                const t = s.val() || {};
-                Object.keys(t).forEach(k => {
-                    l.innerHTML += `<div class="list-item"><div><b>${t[k].title}</b><br><small class="stat-label">৳${t[k].reward}</small></div><i class="fas fa-trash" style="color:#ef4444; cursor:pointer;" onclick="db.ref('settings/tasks/${k}').remove()"></i></div>`;
+                const tl = document.getElementById('task-list'); tl.innerHTML='';
+                const ts = s.val() || {};
+                Object.keys(ts).forEach(k => {
+                    const t = ts[k];
+                    tl.innerHTML += `<div class="item-row"><div><b>${t.title}</b> <small>৳${t.reward}</small></div><i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="db.ref('settings/tasks/${k}').remove()"></i></div>`;
                 });
             });
 
+            // VIP PLANS
             db.ref('settings/vipPlans').on('value', s => {
-                const l = document.getElementById('plan-list'); l.innerHTML='';
-                const p = s.val() || {};
-                Object.keys(p).forEach(k => {
-                    l.innerHTML += `<div class="list-item" style="border-left:4px solid #ec4899;"><div><b>${p[k].name}</b><br><small>৳${p[k].price} | ${p[k].validity} Days</small></div><i class="fas fa-trash" style="color:#ef4444; cursor:pointer;" onclick="db.ref('settings/vipPlans/${k}').remove()"></i></div>`;
+                const vl = document.getElementById('vip-list'); vl.innerHTML='';
+                const ps = s.val() || {};
+                Object.keys(ps).forEach(k => {
+                    const p = ps[k];
+                    vl.innerHTML += `<div class="item-row" style="border-left:3px solid #f59e0b;"><div><b>${p.name}</b><br><small>৳${p.price} | দিন: ${p.validity}</small></div><i class="fas fa-trash" style="color:red; cursor:pointer;" onclick="db.ref('settings/vipPlans/${k}').remove()"></i></div>`;
                 });
             });
 
-            // SETTINGS
-            db.ref('settings/config').once('value', s => {
+            // CONFIG
+            db.ref('settings/config').on('value', s => {
                 const c = s.val() || {};
-                if(c.bkash) document.getElementById('set-bkash').value = c.bkash;
-                if(c.nagad) document.getElementById('set-nagad').value = c.nagad;
-                if(c.support) document.getElementById('set-support').value = c.support;
-                if(c.maint) document.getElementById('maint-check').checked = c.maint;
+                if(c.bkash) document.getElementById('conf-bkash').value = c.bkash;
+                if(c.nagad) document.getElementById('conf-nagad').value = c.nagad;
+                if(c.maint) document.getElementById('maint-mode').checked = c.maint;
             });
         }
 
-        // ACTIONS
+        // 3. ACTIONS
         function updateNotice() { db.ref('settings/notice').set(document.getElementById('notice-txt').value); toast('Notice Updated'); }
         
         function addTask() {
-            const t=document.getElementById('t-title').value, r=document.getElementById('t-reward').value, l=document.getElementById('t-link').value, ty=document.getElementById('t-type').value;
-            if(!t||!r) return toast('Fill all fields', 'e');
-            const colors = {telegram:'#229ED9', youtube:'red', facebook:'#1877F2', instagram:'#E1306C', tiktok:'#000000', twitter:'#1DA1F2'};
-            db.ref('settings/tasks').push({ title:t, reward:parseInt(r), link:l, type:ty, icon:ty, color:colors[ty] });
-            toast('Task Published');
+            const t=document.getElementById('t-title').value, r=document.getElementById('t-reward').value, l=document.getElementById('t-link').value;
+            if(!t||!r) return alert('তথ্য দিন');
+            db.ref('settings/tasks').push({ title:t, reward:parseInt(r), link:l, type:'telegram', icon:'telegram', color:'#229ED9' });
+            toast('Task Added');
         }
 
-        function addPlan() {
-            const n=document.getElementById('p-name').value, p=document.getElementById('p-price').value, d=document.getElementById('p-daily').value, v=document.getElementById('p-valid').value;
-            if(!n||!p) return toast('Fill all fields', 'e');
+        function addVipPlan() {
+            const n=document.getElementById('v-name').value, p=document.getElementById('v-price').value, d=document.getElementById('v-daily').value, v=document.getElementById('v-valid').value;
+            if(!n||!p||!v) return alert('তথ্য দিন');
             db.ref('settings/vipPlans').push({ name:n, price:parseInt(p), dailyIncome:parseInt(d), validity:parseInt(v) });
-            toast('VIP Plan Created');
+            toast('VIP Plan Added');
         }
 
         function setStatus(uid, k, st, type) {
-            if(!confirm('Are you sure?')) return;
-            const up={}; up[`users/${uid}/history/${k}/status`] = st;
+            if(!confirm(st+' করবেন?')) return;
+            const up = {}; up[`users/${uid}/history/${k}/status`] = st;
             if(st==='Success' && type.includes('Buy')) {
+                const pName = type.replace('Buy ', '');
                 up[`users/${uid}/isVip`] = true;
-                up[`users/${uid}/currentPlan`] = type.replace('Buy ', '');
-                up[`users/${uid}/vipExpiry`] = Date.now() + (30*86400000); 
+                up[`users/${uid}/currentPlan`] = pName;
             }
-            db.ref().update(up); toast('Status Updated');
+            db.ref().update(up); toast('Updated');
         }
 
-        function saveSet(k) { db.ref('settings/config/'+k).set(document.getElementById('set-'+k).value); toast('Saved!'); }
-        function toggleMaint() { const s=document.getElementById('maint-check').checked; db.ref('settings/config/maint').set(s); toast('Maintenance '+(s?'ON':'OFF')); }
+        function saveConf(k) {
+            db.ref('settings/config/'+k).set(document.getElementById('conf-'+k).value);
+            toast('Saved');
+        }
+        function toggleMaint() {
+            const s = document.getElementById('maint-mode').checked;
+            db.ref('settings/config/maint').set(s);
+            toast('Maintenance ' + (s?'ON':'OFF'));
+        }
 
+        // USER SEARCH
         function searchUser() {
-            const q=document.getElementById('search-inp').value;
-            const r=document.getElementById('user-result'); r.innerHTML='';
+            const q = document.getElementById('search-inp').value;
+            const r = document.getElementById('user-result'); r.innerHTML='';
             if(q.length<5) return;
-            db.ref('users/'+q).once('value', s=>{
+            db.ref('users/'+q).once('value', s => {
                 if(s.exists()){
-                    const u=s.val();
-                    r.innerHTML=`<div class="list-item" onclick="openU('${q}','${u.name}','${u.phone}','${u.pass}',${u.balance},'${u.currentPlan||'Free'}')" style="cursor:pointer;"><b>${u.name}</b> <b style="color:#10b981;">৳${u.balance}</b></div>`;
-                } else r.innerHTML='<p style="text-align:center; color:#9ca3af;">Not found</p>';
+                    const u = s.val();
+                    r.innerHTML = `<div class="card" onclick="openU('${q}','${u.name}','${u.phone}','${u.pass}',${u.balance},'${u.uid}')" style="cursor:pointer; border:1px solid #059669;">
+                        <div style="display:flex; justify-content:space-between;"><b>${u.name}</b> <b style="color:#059669;">৳${u.balance}</b></div>
+                        <small>${u.phone}</small>
+                    </div>`;
+                } else r.innerHTML = '<p style="text-align:center;color:red;font-size:12px;">Not Found</p>';
             });
         }
 
-        function openU(uid,n,p,pass,b,plan) {
+        function openU(uid,n,p,pass,b,uuid) {
             document.getElementById('m-uid').value=uid;
             document.getElementById('m-name').innerText=n;
             document.getElementById('m-phone').innerText=p;
             document.getElementById('m-pass').innerText=pass;
             document.getElementById('m-bal').innerText=b;
-            document.getElementById('m-plan').innerText=plan;
+            document.getElementById('m-uid-txt').innerText=uuid;
             document.getElementById('user-modal').style.display='flex';
         }
 
         function editBal(act) {
             const uid=document.getElementById('m-uid').value;
             const cur=parseInt(document.getElementById('m-bal').innerText);
-            const amt=prompt('Enter Amount:'); if(!amt) return;
+            const amt=prompt('টাকার পরিমাণ:');
+            if(!amt) return;
             const nb = act==='add'?cur+parseInt(amt):cur-parseInt(amt);
             db.ref('users/'+uid).update({balance:nb});
-            document.getElementById('m-bal').innerText=nb; toast('Balance Updated');
+            document.getElementById('m-bal').innerText=nb;
+            toast('Balance Updated');
         }
     </script>
 </body>
