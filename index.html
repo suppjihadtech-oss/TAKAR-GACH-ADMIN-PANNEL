@@ -3,266 +3,374 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin V15 Ultimate</title>
+    <title>ADMIN PANNEL</title>
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --primary: #059669; --bg: #f3f4f6; --white: #ffffff; --text: #1f2937;
-            --sidebar-w: 240px;
-        }
-        [data-theme="dark"] {
-            --bg: #111827; --white: #1f2937; --text: #f9fafb;
-        }
-        body { margin: 0; font-family: 'Urbanist', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
-        
-        /* SIDEBAR */
-        .sidebar { width: var(--sidebar-w); background: var(--white); height: 100%; padding: 20px; display: flex; flex-direction: column; border-right: 1px solid rgba(0,0,0,0.05); transition: 0.3s; }
-        .brand { font-size: 22px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; margin-bottom: 30px; }
-        .nav-item { padding: 12px 15px; border-radius: 12px; margin-bottom: 5px; cursor: pointer; color: #6b7280; font-weight: 600; transition: 0.2s; display: flex; align-items: center; gap: 10px; }
-        .nav-item:hover, .nav-item.active { background: #ecfdf5; color: var(--primary); }
-        .nav-item i { width: 20px; text-align: center; }
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-        /* CONTENT */
-        .main { flex: 1; padding: 25px; overflow-y: auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .card { background: var(--white); padding: 20px; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); margin-bottom: 20px; }
+    <style>
+        /* --- 1. THEME VARIABLES (MATCHING V76) --- */
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --accent: #fbbf24;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --border: #e2e8f0;
+            --sidebar-w: 260px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        [data-theme="dark"] {
+            --primary: #34d399;
+            --primary-dark: #059669;
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --border: #334155;
+        }
+
+        /* --- 2. RESET & LAYOUT --- */
+        * { box-sizing: border-box; outline: none; transition: background 0.3s, color 0.3s; }
+        body { margin: 0; padding: 0; font-family: 'Urbanist', 'Hind Siliguri', sans-serif; background: var(--bg); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+
+        /* --- 3. SIDEBAR (GLASSY) --- */
+        .sidebar {
+            width: var(--sidebar-w); background: var(--surface); height: 100%;
+            border-right: 1px solid var(--border); display: flex; flex-direction: column;
+            padding: 20px; z-index: 100; position: relative;
+        }
+        .brand {
+            font-size: 24px; font-weight: 800; color: var(--primary);
+            display: flex; align-items: center; gap: 10px; margin-bottom: 40px; padding: 0 10px;
+        }
+        .nav-list { flex: 1; overflow-y: auto; }
+        .nav-item {
+            padding: 14px 15px; border-radius: 12px; margin-bottom: 8px; cursor: pointer;
+            color: var(--text-sub); font-weight: 600; display: flex; align-items: center; gap: 12px;
+            transition: 0.2s;
+        }
+        .nav-item:hover { background: rgba(16, 185, 129, 0.1); color: var(--primary); }
+        .nav-item.active { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3); }
+        .nav-item i { width: 20px; text-align: center; font-size: 18px; }
+
+        /* --- 4. MAIN CONTENT --- */
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
         
-        /* GRID & STATS */
-        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px; }
-        .stat-box { background: var(--white); padding: 20px; border-radius: 20px; display: flex; align-items: center; gap: 15px; position: relative; overflow: hidden; }
-        .stat-icon { width: 50px; height: 50px; border-radius: 12px; background: #ecfdf5; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 20px; }
-        .stat-val { font-size: 24px; font-weight: 800; margin: 0; }
+        /* Top Bar */
+        .topbar {
+            height: 70px; background: var(--surface); border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 30px;
+        }
+        .page-title { font-size: 20px; font-weight: 700; }
+        .theme-btn {
+            width: 40px; height: 40px; border-radius: 50%; background: var(--bg);
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            color: var(--text-main); border: 1px solid var(--border);
+        }
+
+        /* Content Area */
+        .content-area { flex: 1; padding: 30px; overflow-y: auto; }
+
+        /* --- 5. CARDS & STATS --- */
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px; }
         
-        /* TABLES */
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid rgba(0,0,0,0.05); }
-        th { color: #9ca3af; font-size: 12px; text-transform: uppercase; }
-        
-        /* ELEMENTS */
-        .btn { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .stat-card {
+            background: var(--surface); padding: 25px; border-radius: 20px;
+            box-shadow: var(--shadow); border: 1px solid var(--border);
+            display: flex; align-items: center; gap: 20px; position: relative; overflow: hidden;
+        }
+        .stat-icon {
+            width: 60px; height: 60px; border-radius: 16px; background: rgba(16, 185, 129, 0.1);
+            display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--primary);
+        }
+        .stat-info h3 { margin: 0; font-size: 28px; font-weight: 800; }
+        .stat-info p { margin: 0; color: var(--text-sub); font-size: 14px; }
+
+        /* --- 6. REQUEST LIST (PREMIUM) --- */
+        .req-card {
+            background: var(--surface); border-radius: 16px; padding: 20px; margin-bottom: 15px;
+            border: 1px solid var(--border); border-left: 5px solid var(--accent);
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: var(--shadow);
+        }
+        .req-info b { display: block; font-size: 16px; margin-bottom: 4px; }
+        .req-info small { color: var(--text-sub); }
+        .proof-badge { background: #eff6ff; color: #3b82f6; padding: 4px 8px; border-radius: 6px; font-size: 11px; margin-top: 5px; display: inline-block; cursor: pointer;}
+
+        /* --- 7. ELEMENTS --- */
+        .btn { padding: 10px 20px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-danger { background: #ef4444; color: white; }
-        .inp { width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 10px; background: var(--bg); color: var(--text); margin-bottom: 10px; }
-        
-        /* REQUEST CARDS */
-        .req-item { background: var(--white); border-radius: 15px; padding: 15px; margin-bottom: 10px; border-left: 4px solid #f59e0b; display: flex; justify-content: space-between; align-items: center; }
-        .proof-img { max-width: 100px; max-height: 100px; border-radius: 8px; margin-top: 5px; cursor: pointer; }
+        .inp { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text-main); margin-bottom: 15px; }
+        .inp:focus { border-color: var(--primary); background: var(--surface); }
 
-        /* SECTIONS */
-        .section { display: none; animation: fadeIn 0.3s; }
+        /* Sections */
+        .section { display: none; animation: fadeIn 0.4s; }
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* MOBILE */
-        @media (max-width: 768px) { .sidebar { position: fixed; left: -250px; z-index: 1000; } .sidebar.open { left: 0; } }
+        /* --- LOGIN --- */
+        #login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg); z-index: 9999; display: flex; justify-content: center; align-items: center;
+        }
+        .login-box {
+            background: var(--surface); padding: 40px; border-radius: 30px; width: 90%; max-width: 400px;
+            text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.1); border: 1px solid var(--border);
+        }
+
+        /* --- MOBILE RESPONSIVE FIX --- */
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; left: -280px; height: 100%; transition: 0.3s; box-shadow: 10px 0 30px rgba(0,0,0,0.1); }
+            .sidebar.active { left: 0; }
+            .mobile-toggle { display: block !important; font-size: 24px; cursor: pointer; margin-right: 15px; }
+            .topbar { padding: 0 20px; }
+        }
+        .mobile-toggle { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="sidebar" id="sidebar">
-        <div class="brand"><i class="fas fa-leaf"></i> Takar Gach</div>
-        <div class="nav-item active" onclick="nav('dash', this)"><i class="fas fa-chart-pie"></i> Dashboard</div>
-        <div class="nav-item" onclick="nav('req', this)"><i class="fas fa-bell"></i> Requests <span id="badge-req" style="margin-left:auto;background:red;color:white;padding:2px 6px;border-radius:10px;font-size:10px">0</span></div>
-        <div class="nav-item" onclick="nav('users', this)"><i class="fas fa-users"></i> Users</div>
-        <div class="nav-item" onclick="nav('tasks', this)"><i class="fas fa-tasks"></i> Task Manager</div>
-        <div class="nav-item" onclick="nav('vip', this)"><i class="fas fa-gem"></i> VIP Plans</div>
-        <div class="nav-item" onclick="nav('settings', this)"><i class="fas fa-cog"></i> Settings</div>
-        <div style="margin-top: auto;">
-            <div class="nav-item" onclick="toggleTheme()"><i class="fas fa-moon"></i> Dark Mode</div>
-            <div class="nav-item" style="color:red" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i> Logout</div>
+    <div id="login-overlay">
+        <div class="login-box">
+            <i class="fas fa-shield-alt" style="font-size: 50px; color: var(--primary); margin-bottom: 20px;"></i>
+            <h2 style="margin: 0 0 10px 0;">Admin Access</h2>
+            <p style="color: var(--text-sub); margin-bottom: 30px;">Secure Panel V16</p>
+            <input type="text" id="adm-user" class="inp" placeholder="Username">
+            <input type="password" id="adm-pass" class="inp" placeholder="Password">
+            <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="tryLogin()">Login Dashboard</button>
         </div>
     </div>
 
-    <div class="main">
-        <div class="header">
-            <div>
-                <h1 style="margin:0">Overview</h1>
-                <small style="color:#9ca3af">Admin Panel V15</small>
+    <div class="sidebar" id="sidebar">
+        <div class="brand">
+            <i class="fas fa-tree"></i> Takar Gach
+        </div>
+        <div class="nav-list">
+            <div class="nav-item active" onclick="nav('dash', this)"><i class="fas fa-chart-pie"></i> Dashboard</div>
+            <div class="nav-item" onclick="nav('req', this)"><i class="fas fa-bell"></i> Requests <span id="badg-req" style="margin-left:auto;background:red;color:white;padding:2px 6px;border-radius:10px;font-size:10px">0</span></div>
+            <div class="nav-item" onclick="nav('users', this)"><i class="fas fa-users"></i> Users List</div>
+            <div class="nav-item" onclick="nav('tasks', this)"><i class="fas fa-list-check"></i> Task Manager</div>
+            <div class="nav-item" onclick="nav('vip', this)"><i class="fas fa-gem"></i> VIP Plans</div>
+            <div class="nav-item" onclick="nav('settings', this)"><i class="fas fa-cog"></i> App Settings</div>
+        </div>
+        <div class="nav-item" style="color: #ef4444; margin-top: auto;" onclick="location.reload()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="topbar">
+            <div style="display: flex; align-items: center;">
+                <i class="fas fa-bars mobile-toggle" onclick="document.getElementById('sidebar').classList.toggle('active')"></i>
+                <div class="page-title" id="page-head">Dashboard</div>
             </div>
-            <button class="btn btn-primary" onclick="document.getElementById('sidebar').classList.toggle('open')"><i class="fas fa-bars"></i></button>
+            <div class="theme-btn" onclick="toggleTheme()"><i class="fas fa-moon" id="t-icon"></i></div>
         </div>
 
-        <div id="dash" class="section active">
-            <div class="grid-4">
-                <div class="stat-box">
-                    <div class="stat-icon"><i class="fas fa-users"></i></div>
-                    <div><p class="stat-val" id="st-users">0</p><small>Total Users</small></div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-icon" style="color:#f59e0b; background:#fffbeb"><i class="fas fa-clock"></i></div>
-                    <div><p class="stat-val" id="st-pend">0</p><small>Pending Req</small></div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-icon" style="color:#ef4444; background:#fef2f2"><i class="fas fa-money-bill-wave"></i></div>
-                    <div><p class="stat-val" id="st-pay">0</p><small>Total Paid</small></div>
-                </div>
-            </div>
+        <div class="content-area">
             
-            <div class="card">
-                <h3>📈 Activity Analysis</h3>
-                <canvas id="myChart" height="100"></canvas>
-            </div>
-        </div>
-
-        <div id="req" class="section">
-            <div class="grid-4">
-                <button class="btn btn-primary" onclick="filterReq('all')">All</button>
-                <button class="btn" style="background:#f59e0b;color:white" onclick="filterReq('withdraw')">Withdrawals</button>
-                <button class="btn" style="background:#3b82f6;color:white" onclick="filterReq('proof')">Task Proofs</button>
-            </div>
-            <div id="req-container"></div>
-        </div>
-
-        <div id="users" class="section">
-            <div class="card">
-                <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                    <h3>All Users</h3>
-                    <input type="text" class="inp" style="width:200px; margin:0;" placeholder="Search..." onkeyup="searchU(this.value)">
+            <div id="dash" class="section active">
+                <div class="grid-4">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-info"><h3 id="st-users">0</h3><p>Total Users</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color:var(--accent); background:rgba(251,191,36,0.1)"><i class="fas fa-hourglass-half"></i></div>
+                        <div class="stat-info"><h3 id="st-pend">0</h3><p>Pending</p></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="color:#ef4444; background:rgba(239,68,68,0.1)"><i class="fas fa-money-bill-wave"></i></div>
+                        <div class="stat-info"><h3 id="st-paid">0</h3><p>Paid Out</p></div>
+                    </div>
                 </div>
-                <table>
-                    <thead><tr><th>Name</th><th>Phone</th><th>Balance</th><th>Action</th></tr></thead>
-                    <tbody id="user-list"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="tasks" class="section">
-            <div class="card" style="border-left:5px solid var(--primary)">
-                <h3>➕ Add New Task</h3>
-                <div style="display:flex; gap:10px;">
-                    <select id="t-target" class="inp"><option value="free">Free Users</option><option value="vip">VIP Users</option></select>
-                    <select id="t-plat" class="inp"><option value="yt">YouTube</option><option value="fb">Facebook</option><option value="web">Website</option></select>
+                
+                <div class="card" style="background:var(--surface); padding:20px; border-radius:20px; border:1px solid var(--border);">
+                    <h3>📈 User Growth</h3>
+                    <canvas id="chart" height="80"></canvas>
                 </div>
-                <input id="t-title" class="inp" placeholder="Task Title">
-                <div style="display:flex; gap:10px;">
-                    <input id="t-reward" type="number" class="inp" placeholder="Reward">
-                    <input id="t-link" class="inp" placeholder="Link">
-                </div>
-                <button class="btn btn-primary" onclick="addTask()">Publish Task</button>
             </div>
-            <div id="task-list"></div>
-        </div>
 
-        <div id="settings" class="section">
-            <div class="card">
-                <h3>⚙️ App Config</h3>
-                <label>Bkash Number</label><input id="c-b" class="inp">
-                <label>Nagad Number</label><input id="c-n" class="inp">
-                <label>Global Notice</label><textarea id="c-no" class="inp" rows="3"></textarea>
-                <div style="display:flex; align-items:center; gap:10px; margin-top:10px;">
-                    <input type="checkbox" id="c-maint" style="width:20px;height:20px;"> <b>Maintenance Mode</b>
+            <div id="req" class="section">
+                <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+                    <button class="btn btn-primary" onclick="filterReq('all')">All</button>
+                    <button class="btn" style="background:var(--accent); color:white" onclick="filterReq('withdraw')">Withdraw</button>
+                    <button class="btn" style="background:#3b82f6; color:white" onclick="filterReq('proof')">Proofs</button>
                 </div>
-                <button class="btn btn-primary" style="margin-top:15px" onclick="saveConf()">Save Changes</button>
+                <div id="req-list">
+                    <div style="text-align:center; padding:40px; color:var(--text-sub)">No pending requests!</div>
+                </div>
             </div>
-        </div>
-        
-        <div id="vip" class="section">
-            <div class="card">
-                <h3>💎 Add VIP Plan</h3>
-                <input id="v-name" class="inp" placeholder="Name">
-                <input id="v-price" type="number" class="inp" placeholder="Price">
-                <input id="v-daily" type="number" class="inp" placeholder="Daily">
-                <input id="v-valid" type="number" class="inp" placeholder="Validity">
-                <button class="btn btn-primary" onclick="addVip()">Save Plan</button>
-                <div id="vip-list" style="margin-top:20px"></div>
-            </div>
-        </div>
 
+            <div id="users" class="section">
+                <div style="background:var(--surface); padding:20px; border-radius:20px; border:1px solid var(--border);">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                        <h3>Users List</h3>
+                        <input type="text" class="inp" style="width:200px; margin:0;" placeholder="Search..." onkeyup="searchUser(this.value)">
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%; text-align:left; border-collapse:collapse;">
+                            <thead><tr style="color:var(--text-sub); border-bottom:1px solid var(--border);">
+                                <th style="padding:10px;">Name</th>
+                                <th style="padding:10px;">Phone</th>
+                                <th style="padding:10px;">Balance</th>
+                                <th style="padding:10px;">Action</th>
+                            </tr></thead>
+                            <tbody id="user-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tasks" class="section">
+                <div class="grid-4">
+                    <div class="stat-card" style="display:block; grid-column: span 1;">
+                        <h3 style="margin-top:0;">Add Task</h3>
+                        <label style="font-size:12px; color:var(--text-sub)">Target</label>
+                        <select id="t-target" class="inp"><option value="free">Free User</option><option value="vip">VIP User</option></select>
+                        <label style="font-size:12px; color:var(--text-sub)">Title</label>
+                        <input id="t-title" class="inp" placeholder="Subscribe Channel">
+                        <div style="display:flex; gap:10px">
+                            <input id="t-reward" type="number" class="inp" placeholder="Reward">
+                            <input id="t-link" class="inp" placeholder="Link">
+                        </div>
+                        <button class="btn btn-primary" style="width:100%" onclick="addTask()">Publish</button>
+                    </div>
+                    <div class="stat-card" style="display:block; grid-column: span 2;">
+                        <h3 style="margin-top:0;">Live Tasks</h3>
+                        <div id="task-list-con"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="settings" class="section">
+                <div class="grid-4">
+                    <div class="stat-card" style="display:block;">
+                        <h3>⚙️ Config</h3>
+                        <label>Bkash</label><input id="c-bkash" class="inp">
+                        <label>Nagad</label><input id="c-nagad" class="inp">
+                        <label>Notice</label><textarea id="c-notice" class="inp"></textarea>
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <input type="checkbox" id="c-maint" style="width:20px;height:20px;"> <b>Maintenance Mode</b>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top:10px" onclick="saveConf()">Save</button>
+                    </div>
+                    
+                    <div class="stat-card" style="display:block;">
+                        <h3>💎 VIP Plans</h3>
+                        <input id="v-name" class="inp" placeholder="Name">
+                        <div style="display:flex; gap:10px">
+                            <input id="v-price" class="inp" placeholder="Price">
+                            <input id="v-day" class="inp" placeholder="Days">
+                        </div>
+                        <input id="v-inc" class="inp" placeholder="Daily Income">
+                        <button class="btn" style="background:var(--accent); width:100%" onclick="addVip()">Add Plan</button>
+                        <div id="vip-list-con" style="margin-top:15px;"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
 
     <script>
+        // CONFIG
         const firebaseConfig = { apiKey: "AIzaSyDgI-d8iwWr40tmknbY6jhH0oRb2Tvg4d0", authDomain: "takar-gach-a1d84.firebaseapp.com", databaseURL: "https://takar-gach-a1d84-default-rtdb.firebaseio.com", projectId: "takar-gach-a1d84", storageBucket: "takar-gach-a1d84.firebasestorage.app", messagingSenderId: "637802367074", appId: "1:637802367074:web:2e7f6c0670ec47f3a1693b", measurementId: "G-0QL9LB7BSK" };
         firebase.initializeApp(firebaseConfig); const db = firebase.database();
 
-        // INIT CHART
-        const ctx = document.getElementById('myChart');
+        // CHART INIT
+        const ctx = document.getElementById('chart');
         new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                datasets: [{ label: 'New Users', data: [12, 19, 3, 5, 2, 3, 10], borderColor: '#059669', tension: 0.4 }]
-            }
+            type: 'bar',
+            data: { labels: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], datasets: [{ label: 'New Users', data: [12, 19, 3, 5, 2, 3, 9], backgroundColor: '#10b981', borderRadius: 5 }] },
+            options: { scales: { y: { beginAtZero: true, grid: {display: false} }, x: { grid: {display: false} } } }
         });
 
-        // AUTH CHECK (Simple)
-        let pass = prompt("Admin Password:");
-        if(pass !== "198373ZA") { document.body.innerHTML="<h1 style='text-align:center;margin-top:50px;color:red'>Access Denied</h1>"; throw new Error("Stop"); }
+        // AUTH
+        function tryLogin() {
+            const u = document.getElementById('adm-user').value;
+            const p = document.getElementById('adm-pass').value;
+            if(u==='JIHAD' && p==='198373ZA') { document.getElementById('login-overlay').style.display='none'; initAdmin(); }
+            else Swal.fire('Error', 'Wrong Credentials', 'error');
+        }
 
         // LOAD DATA
-        db.ref('users').on('value', s => {
-            const u = s.val() || {};
-            const keys = Object.keys(u);
-            document.getElementById('st-users').innerText = keys.length;
-            
-            let pend = 0; let reqHtml = ''; let userHtml = '';
-            
-            keys.forEach(k => {
-                const user = u[k];
-                // User Table
-                userHtml += `<tr><td>${user.name}</td><td>${user.phone}</td><td>${user.balance}</td><td><button class="btn btn-primary" style="padding:5px 10px" onclick="editBal('${k}')">Edit</button></td></tr>`;
+        function initAdmin() {
+            // USERS & REQUESTS
+            db.ref('users').on('value', s => {
+                const u = s.val() || {};
+                document.getElementById('st-users').innerText = Object.keys(u).length;
                 
-                // Requests
-                if(user.history) {
-                    Object.keys(user.history).forEach(h => {
-                        const d = user.history[h];
-                        if(d.status === 'Pending') {
-                            pend++;
-                            let proof = d.proof ? `<div style="background:#f3f4f6;padding:5px;border-radius:5px;margin-top:5px;font-size:12px">Proof: ${d.proof}</div>` : '';
-                            reqHtml += `
-                            <div class="req-item name-${d.type.toLowerCase()}">
-                                <div>
-                                    <b>${user.name}</b> <small>(${user.phone})</small><br>
-                                    <span style="color:${d.type.includes('With')?'red':'green'}">${d.type}</span> - ৳${d.amount}
-                                    ${proof}
-                                </div>
-                                <div>
-                                    <button class="btn btn-primary" onclick="act('${k}','${h}','Success','${d.type}')">✔</button>
-                                    <button class="btn btn-danger" onclick="act('${k}','${h}','Rejected','${d.type}')">✘</button>
-                                </div>
-                            </div>`;
-                        }
-                    });
-                }
-            });
-            
-            document.getElementById('st-pend').innerText = pend;
-            document.getElementById('badge-req').innerText = pend;
-            document.getElementById('req-container').innerHTML = reqHtml || '<p style="text-align:center">No Requests</p>';
-            document.getElementById('user-list').innerHTML = userHtml;
-        });
-
-        // SETTINGS LOAD
-        db.ref('settings').on('value', s => {
-            const d = s.val() || {};
-            const c = d.config || {};
-            document.getElementById('c-b').value = c.bkash || '';
-            document.getElementById('c-n').value = c.nagad || '';
-            document.getElementById('c-no').value = d.notice || '';
-            document.getElementById('c-maint').checked = c.maint || false;
-            
-            // Tasks
-            const tl = document.getElementById('task-list'); tl.innerHTML = '';
-            if(d.tasks) Object.keys(d.tasks).forEach(k => {
-                const t = d.tasks[k];
-                tl.innerHTML += `<div class="req-item" style="border-left:4px solid var(--primary)"><div><b>${t.title}</b><br><small>${t.target.toUpperCase()} | ৳${t.reward}</small></div><i class="fas fa-trash" style="color:red;cursor:pointer" onclick="db.ref('settings/tasks/${k}').remove()"></i></div>`;
+                let pend = 0; let reqHtml = ''; let uHtml = '';
+                Object.keys(u).forEach(k => {
+                    const usr = u[k];
+                    // User Table
+                    uHtml += `<tr><td style="padding:10px">${usr.name}</td><td>${usr.phone}</td><td>৳${usr.balance}</td><td><button class="btn btn-primary" style="padding:5px 10px;font-size:12px" onclick="editBal('${k}')">Edit</button></td></tr>`;
+                    
+                    // Requests
+                    if(usr.history) {
+                        Object.keys(usr.history).forEach(h => {
+                            const d = usr.history[h];
+                            if(d.status === 'Pending') {
+                                pend++;
+                                let proof = d.proof ? `<div class="proof-badge" onclick="Swal.fire('${d.proof}')">📝 View Proof</div>` : '';
+                                reqHtml += `
+                                <div class="req-card filter-${d.type.includes('With')?'withdraw':'proof'}">
+                                    <div class="req-info">
+                                        <b>${usr.name}</b>
+                                        <small>${d.type} • ৳${d.amount} • ${d.method||''} ${d.trx||''}</small><br>
+                                        ${proof}
+                                    </div>
+                                    <div style="display:flex; gap:5px;">
+                                        <button class="btn btn-primary" style="padding:8px" onclick="act('${k}','${h}','Success','${d.type}')"><i class="fas fa-check"></i></button>
+                                        <button class="btn btn-danger" style="padding:8px" onclick="act('${k}','${h}','Rejected','${d.type}')"><i class="fas fa-times"></i></button>
+                                    </div>
+                                </div>`;
+                            }
+                        });
+                    }
+                });
+                document.getElementById('st-pend').innerText = pend;
+                document.getElementById('badg-req').innerText = pend;
+                document.getElementById('req-list').innerHTML = reqHtml || '<p style="text-align:center;color:var(--text-sub)">No Pending Requests</p>';
+                document.getElementById('user-table').innerHTML = uHtml;
             });
 
-            // VIP
-            const vl = document.getElementById('vip-list'); vl.innerHTML = '';
-            if(d.vipPlans) Object.keys(d.vipPlans).forEach(k => {
-                const p = d.vipPlans[k];
-                vl.innerHTML += `<div class="req-item"><div><b>${p.name}</b><br><small>৳${p.price}</small></div><i class="fas fa-trash" style="color:red;cursor:pointer" onclick="db.ref('settings/vipPlans/${k}').remove()"></i></div>`;
+            // SETTINGS
+            db.ref('settings').on('value', s => {
+                const d = s.val() || {}; const c = d.config || {};
+                document.getElementById('c-bkash').value = c.bkash||'';
+                document.getElementById('c-nagad').value = c.nagad||'';
+                document.getElementById('c-notice').value = d.notice||'';
+                document.getElementById('c-maint').checked = c.maint||false;
+
+                // Tasks List
+                const tl = document.getElementById('task-list-con'); tl.innerHTML = '';
+                if(d.tasks) Object.keys(d.tasks).forEach(k => {
+                    const t = d.tasks[k];
+                    tl.innerHTML += `<div style="background:var(--bg); padding:10px; border-radius:10px; margin-bottom:5px; display:flex; justify-content:space-between"><div><b>${t.title}</b><br><small>${t.target} | ৳${t.reward}</small></div><i class="fas fa-trash" style="color:red; cursor:pointer" onclick="db.ref('settings/tasks/${k}').remove()"></i></div>`;
+                });
+
+                // VIP List
+                const vl = document.getElementById('vip-list-con'); vl.innerHTML = '';
+                if(d.vipPlans) Object.keys(d.vipPlans).forEach(k => {
+                    const p = d.vipPlans[k];
+                    vl.innerHTML += `<div style="background:var(--bg); padding:10px; border-radius:10px; margin-bottom:5px; display:flex; justify-content:space-between"><div><b>${p.name}</b><br><small>৳${p.price}</small></div><i class="fas fa-trash" style="color:red; cursor:pointer" onclick="db.ref('settings/vipPlans/${k}').remove()"></i></div>`;
+                });
             });
-        });
+        }
 
         // ACTIONS
         function act(u, k, s, t) {
-            if(!confirm('Confirm Action?')) return;
             const up = {}; up[`users/${u}/history/${k}/status`] = s;
             if(s === 'Success') {
                 if(t.includes('Buy')) { up[`users/${u}/isVip`] = true; up[`users/${u}/currentPlan`] = t.replace('Buy ', ''); }
@@ -272,73 +380,73 @@
                     });
                 }
             }
-            db.ref().update(up);
+            db.ref().update(up); Swal.fire('Updated', '', 'success');
         }
 
         function addTask() {
             db.ref('settings/tasks').push({
+                target: document.getElementById('t-target').value,
                 title: document.getElementById('t-title').value,
                 reward: parseInt(document.getElementById('t-reward').value),
-                link: document.getElementById('t-link').value,
-                target: document.getElementById('t-target').value,
-                plat: document.getElementById('t-plat').value
-            });
-            Swal.fire('Added', '', 'success');
+                link: document.getElementById('t-link').value
+            }); Swal.fire('Added', '', 'success');
         }
 
         function addVip() {
             db.ref('settings/vipPlans').push({
                 name: document.getElementById('v-name').value,
                 price: parseInt(document.getElementById('v-price').value),
-                dailyIncome: parseInt(document.getElementById('v-daily').value),
-                validity: parseInt(document.getElementById('v-valid').value)
-            });
-            Swal.fire('Plan Added', '', 'success');
+                dailyIncome: parseInt(document.getElementById('v-inc').value),
+                validity: parseInt(document.getElementById('v-day').value)
+            }); Swal.fire('Added', '', 'success');
         }
 
         function saveConf() {
             db.ref('settings/config').update({
-                bkash: document.getElementById('c-b').value,
-                nagad: document.getElementById('c-n').value,
+                bkash: document.getElementById('c-bkash').value,
+                nagad: document.getElementById('c-nagad').value,
                 maint: document.getElementById('c-maint').checked
             });
-            db.ref('settings/notice').set(document.getElementById('c-no').value);
+            db.ref('settings/notice').set(document.getElementById('c-notice').value);
             Swal.fire('Saved', '', 'success');
         }
 
         function editBal(u) {
-            const n = prompt("New Balance:");
-            if(n) db.ref('users/'+u).update({balance: parseInt(n)});
-        }
-
-        function searchU(q) {
-            const rows = document.querySelectorAll('#user-list tr');
-            rows.forEach(r => {
-                r.style.display = r.innerText.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+            Swal.fire({ title: 'New Balance', input: 'number', showCancelButton: true }).then((r) => {
+                if(r.isConfirmed) db.ref('users/'+u).update({balance: parseInt(r.value)});
             });
         }
 
-        function filterReq(t) {
-            const items = document.querySelectorAll('.req-item');
-            items.forEach(i => {
-                if(t==='all') i.style.display='flex';
-                else if(t==='withdraw' && i.innerHTML.includes('Withdraw')) i.style.display='flex';
-                else if(t==='proof' && i.innerHTML.includes('Proof')) i.style.display='flex';
-                else i.style.display='none';
-            });
-        }
-
-        function nav(id, el) {
+        // UTILS
+        function nav(p, el) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+            document.getElementById(p).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
+            document.getElementById('page-head').innerText = p.toUpperCase();
+            if(window.innerWidth < 768) document.getElementById('sidebar').classList.remove('active');
         }
 
         function toggleTheme() {
             const b = document.body;
             b.setAttribute('data-theme', b.getAttribute('data-theme')==='dark'?'light':'dark');
+            document.getElementById('t-icon').className = b.getAttribute('data-theme')==='dark'?'fas fa-sun':'fas fa-moon';
+        }
+
+        function filterReq(t) {
+            const items = document.querySelectorAll('.req-card');
+            items.forEach(i => {
+                if(t==='all') i.style.display='flex';
+                else if(i.classList.contains('filter-'+t)) i.style.display='flex';
+                else i.style.display='none';
+            });
+        }
+
+        function searchUser(q) {
+            const rows = document.querySelectorAll('#user-table tr');
+            rows.forEach(r => { r.style.display = r.innerText.toLowerCase().includes(q.toLowerCase()) ? '' : 'none'; });
         }
     </script>
 </body>
 </html>
+
