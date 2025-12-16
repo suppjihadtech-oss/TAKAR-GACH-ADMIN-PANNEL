@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Takar Gach Admin V3.0</title>
+    <title>Takar Gach Admin V3.1 Platinum</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -13,73 +13,97 @@
 
     <style>
         :root {
-            --primary: #10b981; --dark: #111827; --dark-sec: #1F2937; --light: #f3f4f6; --white: #ffffff;
-            --sidebar-w: 270px;
+            --primary: #10b981; --dark: #0f172a; --dark-sec: #1e293b; --light: #f1f5f9; --white: #ffffff;
+            --sidebar-w: 260px;
         }
         * { box-sizing: border-box; outline: none; text-decoration: none; font-family: 'Inter', 'Hind Siliguri', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--light); height: 100vh; overflow: hidden; display: flex; color: var(--dark); }
 
         /* --- AUTH SCREEN --- */
         #auth-view { position: fixed; inset: 0; background: var(--dark); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .login-box { background: var(--dark-sec); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; color: white; border: 1px solid #374151; }
-        .inp { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #374151; border-radius: 10px; font-size: 15px; background: #111827; color: white; }
-        .btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .login-box { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(10px); padding: 40px 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; color: white; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+        .inp { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #334155; border-radius: 10px; font-size: 15px; background: #0f172a; color: white; transition: 0.3s; }
+        .inp:focus { border-color: var(--primary); }
+        .btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
         .btn:active { transform: scale(0.98); }
 
-        /* --- SIDEBAR (THEME FROM SCREENSHOT) --- */
+        /* --- SIDEBAR (SCREENSHOT STYLE) --- */
         .sidebar {
             position: fixed; top: 0; left: -280px; width: var(--sidebar-w); height: 100%; 
             background: var(--dark); color: white; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
             z-index: 1000; display: flex; flex-direction: column;
-            box-shadow: 5px 0 15px rgba(0,0,0,0.3);
+            box-shadow: 5px 0 15px rgba(0,0,0,0.2); padding-right: 15px;
         }
         .sidebar.active { left: 0; }
         .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 900; display: none; }
         .sidebar-overlay.active { display: block; }
 
-        .brand { padding: 25px; font-size: 20px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #1F2937; }
+        .brand { padding: 30px 25px; font-size: 22px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
         
-        .menu { padding: 20px 10px; flex: 1; overflow-y: auto; }
+        .menu { padding: 10px 0; flex: 1; overflow-y: auto; }
         .menu-item { 
-            padding: 12px 15px; margin-bottom: 5px; border-radius: 8px; cursor: pointer; 
-            display: flex; align-items: center; gap: 12px; color: #9ca3af; font-size: 15px; font-weight: 500; transition: 0.2s;
+            padding: 14px 25px; margin-bottom: 5px; cursor: pointer; 
+            display: flex; align-items: center; gap: 15px; color: #94a3b8; font-size: 15px; font-weight: 600; transition: 0.2s;
         }
-        .menu-item.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
-        .menu-item:hover:not(.active) { background: var(--dark-sec); color: white; }
+        /* ACTIVE STYLE LIKE SCREENSHOT */
+        .menu-item.active { 
+            background: var(--primary); color: white; 
+            border-radius: 0 50px 50px 0; /* Unique shape */
+            box-shadow: 5px 0 15px rgba(16, 185, 129, 0.4);
+        }
+        .menu-item:hover:not(.active) { color: white; }
 
-        /* --- HEADER --- */
+        /* --- MAIN CONTENT --- */
         .main-content { flex: 1; display: flex; flex-direction: column; height: 100%; transition: 0.3s; }
         .header {
-            height: 60px; background: var(--dark); display: flex; align-items: center; 
-            justify-content: space-between; padding: 0 15px; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            height: 70px; background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); 
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); z-index: 100;
         }
         
-        /* --- PAGE CONTENT --- */
-        .content-body { flex: 1; overflow-y: auto; padding: 15px; }
+        .content-body { flex: 1; overflow-y: auto; padding: 20px; }
         
         /* --- CARDS & LISTS --- */
-        .card { background: var(--white); border-radius: 16px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #e5e7eb; }
+        .card { 
+            background: white; border-radius: 20px; padding: 25px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03); margin-bottom: 20px; 
+            border: 1px solid white; position: relative; overflow: hidden;
+        }
         
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .stat-box { background: white; padding: 15px; border-radius: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 4px solid var(--primary); }
-        .stat-box h2 { margin: 0; font-size: 26px; color: var(--dark); }
-        .stat-box p { margin: 5px 0 0; font-size: 12px; color: #6b7280; font-weight: 600; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .stat-box { 
+            background: linear-gradient(135deg, #ffffff, #f8fafc); padding: 20px; 
+            border-radius: 18px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.05); 
+            border-bottom: 4px solid var(--primary); 
+        }
+        .stat-box h2 { margin: 0; font-size: 28px; color: var(--dark); font-weight: 800; }
+        .stat-box p { margin: 5px 0 0; font-size: 13px; color: #64748b; font-weight: 700; }
 
-        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: white; border-radius: 12px; margin-bottom: 10px; border: 1px solid #f3f4f6; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
-        .list-info h4 { margin: 0; font-size: 15px; color: var(--dark); }
-        .list-info p { margin: 3px 0 0; font-size: 12px; color: #6b7280; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: white; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; }
+        .list-info h4 { margin: 0; font-size: 16px; color: var(--dark); font-weight: 700; }
+        .list-info p { margin: 4px 0 0; font-size: 13px; color: #64748b; }
         
         /* --- BADGES & BUTTONS --- */
-        .badge { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-        .badge-vip { background: #FEF3C7; color: #D97706; }
-        .badge-ban { background: #fee2e2; color: #ef4444; }
+        .badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+        .badge-vip { background: #fffbeb; color: #d97706; }
+        .badge-ban { background: #fef2f2; color: #ef4444; }
         
-        .btn-sm { padding: 6px 10px; border-radius: 6px; font-size: 12px; border: none; color: white; font-weight: 600; cursor: pointer; margin-left: 5px; }
-        .btn-g { background: #10b981; } .btn-r { background: #ef4444; } .btn-b { background: #3b82f6; } .btn-y { background: #f59e0b; }
+        .btn-sm { padding: 8px 12px; border-radius: 8px; font-size: 12px; border: none; color: white; font-weight: 600; cursor: pointer; margin-left: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn-g { background: #10b981; } .btn-r { background: #ef4444; } .btn-b { background: #3b82f6; }
+
+        /* --- RADIO SELECTOR (SCREENSHOT STYLE) --- */
+        .radio-group { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        .radio-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 15px; background: #1e293b; border-radius: 10px;
+            color: white; cursor: pointer; transition: 0.2s;
+        }
+        .radio-item:hover { background: #334155; }
+        .radio-item input { accent-color: var(--primary); width: 18px; height: 18px; }
 
         /* --- MODAL --- */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; }
-        .modal-box { background: white; width: 100%; max-width: 400px; padding: 25px; border-radius: 20px; animation: popUp 0.3s; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .modal-box { background: white; width: 100%; max-width: 400px; padding: 30px; border-radius: 24px; animation: popUp 0.3s; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
         @keyframes popUp { from{transform:scale(0.9);opacity:0} to{transform:scale(1);opacity:1} }
     </style>
 </head>
@@ -87,11 +111,11 @@
 
     <div id="auth-view">
         <div class="login-box">
-            <i class="fas fa-user-secret" style="font-size: 50px; color: var(--primary); margin-bottom: 20px;"></i>
-            <h2 style="margin:0 0 20px;">Admin Login</h2>
+            <i class="fas fa-tree" style="font-size: 60px; color: var(--primary); margin-bottom: 20px;"></i>
+            <h2 style="margin:0 0 20px;">Admin Panel</h2>
             <input id="u" class="inp" placeholder="Username">
             <input id="p" type="password" class="inp" placeholder="Password">
-            <button class="btn" onclick="login()">Access Panel</button>
+            <button class="btn" onclick="login()">Login Dashboard</button>
         </div>
     </div>
 
@@ -99,9 +123,9 @@
         <div class="sidebar-overlay" onclick="toggleMenu()"></div>
         
         <div class="sidebar" id="sidebar">
-            <div class="brand"><i class="fas fa-tree"></i> টাকার গাছ</div>
+            <div class="brand"><i class="fas fa-leaf"></i> টাকার গাছ</div>
             <div class="menu">
-                <div class="menu-item active" onclick="nav('dash',this)"><i class="fas fa-home"></i> ড্যাশবোর্ড</div>
+                <div class="menu-item active" onclick="nav('dash',this)"><i class="fas fa-th-large"></i> ড্যাশবোর্ড</div>
                 <div class="menu-item" onclick="nav('users',this)"><i class="fas fa-users"></i> ইউজার লিস্ট</div>
                 <div class="menu-item" onclick="nav('job_reqs',this)"><i class="fas fa-briefcase"></i> জব রিকোয়েস্ট <span id="job-c" class="badge badge-vip" style="display:none; margin-left:auto">0</span></div>
                 <div class="menu-item" onclick="nav('deposits',this)"><i class="fas fa-arrow-circle-down"></i> ডিপোজিট <span id="dep-c" class="badge badge-vip" style="display:none; margin-left:auto">0</span></div>
@@ -114,35 +138,32 @@
 
         <div class="main-content">
             <div class="header">
-                <i class="fas fa-bars" style="font-size:20px; cursor:pointer" onclick="toggleMenu()"></i>
-                <h3 id="pg-title" style="margin:0; font-size:16px;">ড্যাশবোর্ড</h3>
-                <i class="fas fa-sync-alt" style="cursor:pointer" onclick="location.reload()"></i>
+                <i class="fas fa-bars" style="font-size:22px; color:var(--dark); cursor:pointer" onclick="toggleMenu()"></i>
+                <h3 id="pg-title" style="margin:0; font-size:18px; color:var(--dark)">ড্যাশবোর্ড</h3>
+                <div style="width:20px"></div>
             </div>
             <div class="content-body" id="main-body"></div>
         </div>
     </div>
 
     <div id="user-modal" class="modal"><div class="modal-box">
-        <h3 style="margin-top:0">এডিট ইউজার</h3>
+        <h3 style="margin-top:0">ইউজার এডিট</h3>
         <input type="hidden" id="edit-uid">
-        <label>ব্যালেন্স:</label>
-        <input id="edit-bal" type="number" class="inp" style="background:white; color:black; border:1px solid #ccc">
+        <p style="margin-bottom:5px; font-weight:600; color:#64748b">ব্যালেন্স</p>
+        <input id="edit-bal" type="number" class="inp" style="background:#f1f5f9; color:black; border:1px solid #cbd5e1">
         
-        <label>VIP স্ট্যাটাস:</label>
-        <select id="edit-vip" class="inp" style="background:white; color:black; border:1px solid #ccc">
+        <p style="margin-bottom:5px; font-weight:600; color:#64748b">VIP & Plan</p>
+        <select id="edit-vip" class="inp" style="background:#f1f5f9; color:black; border:1px solid #cbd5e1">
             <option value="false">Free User</option>
             <option value="true">VIP User</option>
         </select>
-        
-        <label>প্ল্যান নাম (যদি VIP হয়):</label>
-        <input id="edit-plan" class="inp" style="background:white; color:black; border:1px solid #ccc" placeholder="যেমন: Silver VIP">
+        <input id="edit-plan" class="inp" style="background:#f1f5f9; color:black; border:1px solid #cbd5e1; margin-top:-10px" placeholder="Plan Name (e.g. Platinum)">
 
-        <label>অ্যাকশন:</label>
-        <div style="display:flex; gap:10px; margin-top:5px">
+        <div style="display:flex; gap:10px; margin-top:15px">
             <button id="btn-ban" class="btn" style="background:#ef4444" onclick="toggleBan()">Ban User</button>
-            <button class="btn" onclick="saveUser()">Save Changes</button>
+            <button class="btn" onclick="saveUser()">Update</button>
         </div>
-        <button onclick="document.getElementById('user-modal').style.display='none'" style="background:none; border:none; color:#666; width:100%; margin-top:15px">Close</button>
+        <button onclick="document.getElementById('user-modal').style.display='none'" style="background:none; border:none; color:#94a3b8; width:100%; margin-top:15px; font-size:13px">Close</button>
     </div></div>
 
     <script>
@@ -156,7 +177,7 @@
         function login(){
             const u = document.getElementById('u').value, p = document.getElementById('p').value;
             if(u===CRED.u && p===CRED.p) { sessionStorage.setItem('adm_ok',true); showDash(); }
-            else Swal.fire('Error','ভুল তথ্য','error');
+            else Swal.fire('Error','Invalid Info','error');
         }
         function logout(){ sessionStorage.removeItem('adm_ok'); location.reload(); }
         function showDash(){ document.getElementById('auth-view').style.display='none'; document.getElementById('dashboard').style.display='block'; loadPage('dash'); count(); }
@@ -175,7 +196,7 @@
             const t = document.getElementById('pg-title');
 
             if(page === 'dash'){
-                t.innerText = "ড্যাশবোর্ড";
+                t.innerText = "ওভারভিউ";
                 db.ref('users').once('value', s=>{
                     const u = s.val()||{};
                     let bal = 0; Object.values(u).forEach(x=>bal+=(x.balance||0));
@@ -185,8 +206,8 @@
                         <div class="stat-box" style="border-color:#3b82f6"><h2>৳${bal}</h2><p>ইউজার ব্যালেন্স</p></div>
                     </div>
                     <div class="card">
-                        <h3>নতুন ইউজার</h3>
-                        ${Object.values(u).slice(-5).reverse().map(x=>`<div class="list-item"><div class="list-info"><h4>${x.name}</h4><p>${x.phone}</p></div><b>৳${x.balance}</b></div>`).join('')}
+                        <h3 style="margin-top:0; color:#334155">নতুন জয়েনিং</h3>
+                        ${Object.values(u).slice(-8).reverse().map(x=>`<div class="list-item"><div class="list-info"><h4>${x.name}</h4><p>${x.phone}</p></div><b style="color:var(--primary)">৳${x.balance}</b></div>`).join('')}
                     </div>`;
                 });
             }
@@ -194,14 +215,14 @@
                 t.innerText = "ইউজার লিস্ট";
                 db.ref('users').once('value',s=>{
                     const u = s.val()||{};
-                    c.innerHTML = `<input onkeyup="search(this)" class="inp" placeholder="নাম্বার দিয়ে খুঁজুন..." style="background:white; color:black; border:1px solid #ddd; margin-bottom:15px">
+                    c.innerHTML = `<input onkeyup="search(this)" class="inp" placeholder="ফোন নাম্বার দিয়ে খুঁজুন..." style="background:white; color:black; border:1px solid #cbd5e1; margin-bottom:15px">
                     <div id="u-list">${Object.keys(u).map(k=>`
                         <div class="list-item user-row" data-ph="${u[k].phone}">
                             <div class="list-info">
-                                <h4>${u[k].name} ${u[k].isVip?'<span class="badge badge-vip">VIP</span>':''} ${u[k].banned?'<span class="badge badge-ban">BANNED</span>':''}</h4>
+                                <h4>${u[k].name} ${u[k].isVip?'<span class="badge badge-vip">VIP</span>':''} ${u[k].banned?'<span class="badge badge-ban">BAN</span>':''}</h4>
                                 <p>${u[k].phone} • ৳${u[k].balance}</p>
                             </div>
-                            <button class="btn-sm btn-b" onclick="openUserModal('${k}')"><i class="fas fa-edit"></i></button>
+                            <button class="btn-sm btn-b" onclick="openUserModal('${k}')"><i class="fas fa-pen"></i></button>
                         </div>`).join('')}</div>`;
                 });
             }
@@ -228,8 +249,9 @@
                                         <div style="display:flex; justify-content:space-between; margin-bottom:10px">
                                             <b>${u[uid].name}</b> <b style="color:var(--primary)">৳${tr.amount}</b>
                                         </div>
-                                        <div style="font-size:13px; color:#666; margin-bottom:15px; background:#f9fafb; padding:10px; border-radius:8px">
+                                        <div style="font-size:13px; color:#64748b; margin-bottom:15px; background:#f8fafc; padding:10px; border-radius:10px; border:1px solid #e2e8f0">
                                             ${type==='Task Reward' ? `<b>Proof:</b> ${tr.proof}` : (type==='Buy' ? `Plan: ${tr.type}<br>TrxID: ${tr.trx}<br>Sender: ${tr.sender}` : `Method: ${tr.method}<br>To: ${tr.trx}`)}
+                                            <br><small style="color:#94a3b8; font-size:11px; margin-top:5px; display:block">${tr.date}</small>
                                         </div>
                                         <div style="display:flex; gap:10px">
                                             <button class="btn-sm btn-g" style="flex:1; padding:10px" onclick="act('${uid}','${hid}','Success','${tr.type}',${tr.amount})">Approve</button>
@@ -240,38 +262,50 @@
                             }
                         });
                     });
-                    c.innerHTML = has?htm:'<div style="text-align:center;padding:50px;color:#999">No Requests</div>';
+                    c.innerHTML = has?htm:'<div style="text-align:center;padding:50px;color:#94a3b8">কোনো পেন্ডিং রিকোয়েস্ট নেই</div>';
                 });
             }
             else if(page === 'tasks'){
-                t.innerText = "টাস্ক ম্যানেজ";
+                t.innerText = "টাস্ক সেটআপ";
                 c.innerHTML = `
-                <div class="card">
-                    <h3>নতুন টাস্ক</h3>
-                    <input id="t-ti" class="inp" style="background:white;color:black;border:1px solid #ddd" placeholder="Title">
-                    <div style="display:flex; gap:10px">
-                        <input id="t-rw" type="number" class="inp" style="background:white;color:black;border:1px solid #ddd" placeholder="Reward">
-                        <select id="t-ty" class="inp" style="background:white;color:black;border:1px solid #ddd"><option value="free">Free</option><option value="vip">All VIP</option><option value="gold">Gold</option><option value="silver">Silver</option></select>
+                <div class="card" style="background:#0f172a; color:white; border:none">
+                    <h3 style="margin-top:0; color:#fff">নতুন টাস্ক</h3>
+                    <input id="t-ti" class="inp" placeholder="Task Title">
+                    <div style="display:flex; gap:10px; margin-bottom:10px">
+                        <input id="t-rw" type="number" class="inp" placeholder="Reward (Tk)" style="margin:0">
+                        <input id="t-ln" class="inp" placeholder="Link" style="margin:0">
                     </div>
-                    <input id="t-ln" class="inp" style="background:white;color:black;border:1px solid #ddd" placeholder="Link">
-                    <button class="btn" onclick="addTask()">Add Task</button>
+                    
+                    <p style="font-size:13px; color:#94a3b8; margin-bottom:5px">Target Audience:</p>
+                    <div class="radio-group">
+                        <label class="radio-item"><input type="radio" name="target" value="free" checked> Free User</label>
+                        <label class="radio-item"><input type="radio" name="target" value="vip"> All VIP</label>
+                        <label class="radio-item"><input type="radio" name="target" value="silver"> Silver</label>
+                        <label class="radio-item"><input type="radio" name="target" value="gold"> Gold</label>
+                        <label class="radio-item"><input type="radio" name="target" value="platinum"> Platinum</label>
+                        <label class="radio-item"><input type="radio" name="target" value="diamond"> Diamond</label>
+                    </div>
+                    <button class="btn" style="margin-top:15px" onclick="addTask()">Publish Task</button>
                 </div>
                 <div id="tk-list"></div>`;
                 db.ref('settings/tasks').on('value',s=>{
                     const t=s.val()||{};
-                    document.getElementById('tk-list').innerHTML = Object.keys(t).map(k=>`<div class="list-item"><div><b>${t[k].title}</b> (${t[k].target})<br><small>৳${t[k].reward}</small></div><button class="btn-sm btn-r" onclick="delTask('${k}')">Del</button></div>`).join('');
+                    document.getElementById('tk-list').innerHTML = Object.keys(t).map(k=>`<div class="list-item"><div><b>${t[k].title}</b> <span class="badge" style="background:#e2e8f0; color:#475569">${t[k].target.toUpperCase()}</span><br><small style="color:#10b981; font-weight:700">+ ৳${t[k].reward}</small></div><button class="btn-sm btn-r" onclick="delTask('${k}')"><i class="fas fa-trash"></i></button></div>`).join('');
                 });
             }
             else if(page === 'settings'){
-                t.innerText = "সেটিংস";
+                t.innerText = "অ্যাপ সেটিংস";
                 db.ref('settings').once('value',s=>{
                     const v = s.val()||{};
                     c.innerHTML = `
                     <div class="card">
-                        <label>Bkash</label><input id="s-bk" class="inp" style="background:white;color:black;border:1px solid #ddd" value="${v.config?.bkash||''}">
-                        <label>Nagad</label><input id="s-ng" class="inp" style="background:white;color:black;border:1px solid #ddd" value="${v.config?.nagad||''}">
-                        <label>Notice</label><textarea id="s-nt" class="inp" style="background:white;color:black;border:1px solid #ddd" rows="3">${v.notice||''}</textarea>
-                        <button class="btn" onclick="saveSet()">Save</button>
+                        <p style="font-weight:600; color:#64748b; margin-bottom:5px">পেমেন্ট নাম্বার</p>
+                        <input id="s-bk" class="inp" style="background:white;color:black;border:1px solid #cbd5e1" value="${v.config?.bkash||''}" placeholder="Bkash">
+                        <input id="s-ng" class="inp" style="background:white;color:black;border:1px solid #cbd5e1" value="${v.config?.nagad||''}" placeholder="Nagad">
+                        
+                        <p style="font-weight:600; color:#64748b; margin-bottom:5px; margin-top:15px">নোটিশ বোর্ড</p>
+                        <textarea id="s-nt" class="inp" style="background:white;color:black;border:1px solid #cbd5e1" rows="4">${v.notice||''}</textarea>
+                        <button class="btn" onclick="saveSet()">Save Changes</button>
                     </div>`;
                 });
             }
@@ -279,9 +313,15 @@
 
         // --- ACTIONS ---
         function addTask(){
-            const d = { title: document.getElementById('t-ti').value, reward: parseInt(document.getElementById('t-rw').value), link: document.getElementById('t-ln').value, target: document.getElementById('t-ty').value };
-            if(!d.title) return Swal.fire('Error','Fill all');
-            db.ref('settings/tasks').push(d); Swal.fire('Added');
+            const ti = document.getElementById('t-ti').value;
+            const rw = document.getElementById('t-rw').value;
+            const ln = document.getElementById('t-ln').value;
+            const tg = document.querySelector('input[name="target"]:checked').value;
+            
+            if(!ti || !rw || !ln) return Swal.fire('Error','সব তথ্য দিন');
+            db.ref('settings/tasks').push({ title:ti, reward:parseInt(rw), link:ln, target:tg }); 
+            Swal.fire('Success','টাস্ক যুক্ত হয়েছে','success');
+            document.getElementById('t-ti').value='';
         }
         function delTask(k){ db.ref('settings/tasks/'+k).remove(); }
 
@@ -293,13 +333,13 @@
             } else if(st==='Rejected' && type==='Withdraw'){
                 db.ref(`users/${uid}/balance`).transaction(b=>(b||0)+parseInt(amt));
             }
-            Swal.fire('Done'); loadPage(type==='Task Reward'?'job_reqs':(type==='Withdraw'?'withdraws':'deposits')); count();
+            Swal.fire('Updated'); loadPage(type==='Task Reward'?'job_reqs':(type==='Withdraw'?'withdraws':'deposits')); count();
         }
 
         function saveSet(){
             db.ref('settings/config').update({ bkash: document.getElementById('s-bk').value, nagad: document.getElementById('s-ng').value });
             db.ref('settings').update({ notice: document.getElementById('s-nt').value });
-            Swal.fire('Saved');
+            Swal.fire('Saved!');
         }
 
         // --- USER MANAGE ---
@@ -362,3 +402,4 @@
     </script>
 </body>
 </html>
+
