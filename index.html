@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>টাকার গাছ এডমিন V4.4</title>
+    <title>টাকার গাছ এডমিন V5.0</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -70,6 +70,16 @@
         .btn-sm { padding: 6px 12px; border-radius: 8px; font-size: 12px; border: none; color: white; cursor: pointer; margin-left: 5px; font-weight: 600; }
         .btn-g { background: #10b981; } .btn-r { background: #ef4444; } .btn-b { background: #3b82f6; } .btn-y { background: #F59E0B; }
 
+        /* TOGGLE SWITCH */
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; -webkit-transition: .4s; transition: .4s; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; -webkit-transition: .4s; transition: .4s; }
+        input:checked + .slider { background-color: #ef4444; } /* Red for Maintenance */
+        input:checked + .slider:before { -webkit-transform: translateX(24px); -ms-transform: translateX(24px); transform: translateX(24px); }
+        .slider.round { border-radius: 34px; }
+        .slider.round:before { border-radius: 50%; }
+
         /* NAV */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255,255,255,0.95); border-top: 1px solid #E5E7EB; padding: 10px 15px; display: flex; justify-content: space-around; z-index: 1000; padding-bottom: 15px; backdrop-filter: blur(10px); border-radius: 20px 20px 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); }
         .nav-item { text-align: center; color: var(--text-muted); cursor: pointer; transition: 0.2s; position: relative; }
@@ -83,8 +93,6 @@
         .modal-box { background: white; width: 100%; max-width: 400px; padding: 25px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
         .receipt-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F3F4F6; font-size: 14px; }
         .receipt-row:last-child { border-bottom: none; }
-        .receipt-row b { color: var(--text-main); }
-        .receipt-row span { color: var(--text-muted); }
     </style>
 </head>
 <body>
@@ -92,7 +100,7 @@
     <div id="splash-screen">
         <i class="fas fa-tree animate-bounce" style="font-size: 80px; color: var(--primary); margin-bottom: 20px;"></i>
         <h1 style="color: var(--text-main); font-weight: 900; margin: 0;">টাকার গাছ</h1>
-        <small style="color: var(--text-muted); margin-top: 5px; font-weight: 600;">এডমিন প্যানেল</small>
+        <small style="color: var(--text-muted); margin-top: 5px; font-weight: 600;">এডমিন প্যানেল V5.0</small>
     </div>
 
     <div id="auth-view" style="display: none;">
@@ -126,13 +134,14 @@
 
             <div class="menu-grid">
                 <div class="menu-btn" onclick="nav('users')"><i class="fas fa-users"></i><span>ইউজার</span></div>
-                <div class="menu-btn" onclick="nav('plans')"><i class="fas fa-crown"></i><span>ভিআইপি প্ল্যান</span></div>
+                <div class="menu-btn" onclick="nav('plans')"><i class="fas fa-crown"></i><span>VIP প্ল্যান</span></div>
                 <div class="menu-btn" onclick="nav('deposits')"><i class="fas fa-arrow-down"></i><span>ডিপোজিট</span></div>
                 <div class="menu-btn" onclick="nav('withdraws')"><i class="fas fa-arrow-up"></i><span>উইথড্র</span></div>
                 
                 <div class="menu-btn" onclick="nav('tasks')"><i class="fas fa-tasks"></i><span>টাস্ক</span></div>
-                <div class="menu-btn" onclick="nav('job_reqs')"><i class="fas fa-briefcase"></i><span>জব রিকোয়েস্ট</span></div>
-                <div class="menu-btn" onclick="nav('history')"><i class="fas fa-history" style="color:#F59E0B"></i><span>হিস্টরি</span></div> <div class="menu-btn" onclick="nav('settings')"><i class="fas fa-cogs"></i><span>সেটিংস</span></div>
+                <div class="menu-btn" onclick="nav('job_reqs')"><i class="fas fa-briefcase"></i><span>জব এপ্রুভাল</span></div>
+                <div class="menu-btn" onclick="nav('history')"><i class="fas fa-history" style="color:#F59E0B"></i><span>হিস্টরি</span></div>
+                <div class="menu-btn" onclick="nav('settings')"><i class="fas fa-cogs"></i><span>সেটিংস</span></div>
             </div>
 
             <div class="card">
@@ -225,7 +234,7 @@
             });
         }
 
-        let allHistoryData = []; // Store for receipt view
+        let allHistoryData = [];
 
         function nav(page){
             document.getElementById('home-view').classList.remove('active');
@@ -243,28 +252,25 @@
                     <div id="u-list">${Object.keys(u).map(k=>`<div class="list-item user-row" data-ph="${u[k].phone}"><div><b>${u[k].name}</b> ${u[k].isVip?'<span class="badge badge-vip">VIP</span>':''}<br><small>${u[k].phone}</small></div><div><b style="color:var(--primary)">৳${u[k].balance}</b> <button class="btn-sm btn-b" onclick="editU('${k}')"><i class="fas fa-pen"></i></button></div></div>`).join('')}</div>`;
                 });
             }
-            else if(page === 'history'){ // --- NEW HISTORY SECTION ---
+            else if(page === 'history'){ 
                 title.innerText = "লেনদেন হিস্টরি";
                 db.ref('users').once('value',s=>{
                     const u = s.val()||{};
                     let histList = [];
-                    allHistoryData = []; // Reset global store
+                    allHistoryData = []; 
 
                     Object.keys(u).forEach(uid=>{
                         const h = u[uid].history || {};
                         Object.keys(h).forEach(hid=>{
                             const tr = h[hid];
-                            // Show ONLY Success or Rejected (Completed actions)
                             if(tr.status !== 'Pending'){
                                 const item = { ...tr, uid: uid, name: u[uid].name, phone: u[uid].phone };
                                 histList.push(item);
                             }
                         });
                     });
-
-                    // Sort by Date (descending) - rudimentary sort assumes standard date string
                     histList.reverse(); 
-                    allHistoryData = histList; // Save for modal
+                    allHistoryData = histList; 
 
                     if(histList.length === 0){
                         cont.innerHTML = '<div style="text-align:center;padding:30px;color:#999">কোনো হিস্টরি নেই</div>';
@@ -272,20 +278,7 @@
                         cont.innerHTML = histList.map((item, index) => {
                             let badgeClass = item.status === 'Success' ? 'badge-success' : 'badge-reject';
                             let icon = item.type.includes('Buy') ? 'fa-arrow-down' : (item.type==='Withdraw'?'fa-arrow-up':'fa-check-circle');
-                            return `
-                            <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:15px">
-                                <div>
-                                    <div style="font-weight:bold; font-size:14px; margin-bottom:4px"><i class="fas ${icon}" style="color:#666"></i> ${item.type}</div>
-                                    <div style="font-size:12px; color:#666">${item.name} (${item.phone})</div>
-                                    <div style="font-size:10px; color:#999; margin-top:2px">${item.date}</div>
-                                </div>
-                                <div style="text-align:right">
-                                    <div style="font-weight:bold; font-size:16px; color:var(--text-main)">৳${item.amount}</div>
-                                    <span class="badge ${badgeClass}" style="font-size:9px; display:inline-block; margin-top:4px">${item.status}</span>
-                                    <br>
-                                    <button class="btn-sm btn-b" style="margin-top:5px; font-size:10px; padding:4px 8px" onclick="showReceipt(${index})">বিস্তারিত দেখুন</button>
-                                </div>
-                            </div>`;
+                            return `<div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:15px"><div><div style="font-weight:bold; font-size:14px; margin-bottom:4px"><i class="fas ${icon}" style="color:#666"></i> ${item.type}</div><div style="font-size:12px; color:#666">${item.name} (${item.phone})</div><div style="font-size:10px; color:#999; margin-top:2px">${item.date}</div></div><div style="text-align:right"><div style="font-weight:bold; font-size:16px; color:var(--text-main)">৳${item.amount}</div><span class="badge ${badgeClass}" style="font-size:9px; display:inline-block; margin-top:4px">${item.status}</span><br><button class="btn-sm btn-b" style="margin-top:5px; font-size:10px; padding:4px 8px" onclick="showReceipt(${index})">বিস্তারিত দেখুন</button></div></div>`;
                         }).join('');
                     }
                 });
@@ -305,11 +298,7 @@
                                 if(type==='Deposit' && tr.type.includes('Buy')) show=true;
                                 if(type==='Withdraw' && tr.type==='Withdraw') show=true;
                                 if(show){
-                                    htm+=`<div class="card">
-                                        <div style="display:flex;justify-content:space-between;margin-bottom:10px"><b>${u[uid].name}</b> <b style="color:var(--primary)">৳${tr.amount}</b></div>
-                                        <div style="background:#F9FAFB;padding:10px;border-radius:8px;font-size:12px;color:#666;margin-bottom:10px">${type==='Job'?`Proof: ${tr.proof}`:`Details: ${tr.trx||tr.sender||tr.trx}`}</div>
-                                        <div style="display:flex;gap:10px"><button class="btn btn-g" style="flex:1;padding:8px" onclick="act('${uid}','${hid}','Success','${tr.type}',${tr.amount})">Approve</button><button class="btn btn-r" style="flex:1;padding:8px" onclick="act('${uid}','${hid}','Rejected','${tr.type}',${tr.amount})">Reject</button></div>
-                                    </div>`;
+                                    htm+=`<div class="card"><div style="display:flex;justify-content:space-between;margin-bottom:10px"><b>${u[uid].name}</b> <b style="color:var(--primary)">৳${tr.amount}</b></div><div style="background:#F9FAFB;padding:10px;border-radius:8px;font-size:12px;color:#666;margin-bottom:10px">${type==='Job'?`Proof: ${tr.proof}`:`Details: ${tr.trx||tr.sender||tr.trx}`}</div><div style="display:flex;gap:10px"><button class="btn btn-g" style="flex:1;padding:8px" onclick="act('${uid}','${hid}','Success','${tr.type}',${tr.amount})">Approve</button><button class="btn btn-r" style="flex:1;padding:8px" onclick="act('${uid}','${hid}','Rejected','${tr.type}',${tr.amount})">Reject</button></div></div>`;
                                 }
                             }
                         });
@@ -317,7 +306,6 @@
                     cont.innerHTML = htm || '<div style="text-align:center;padding:30px;color:#999">কোনো পেন্ডিং রিকোয়েস্ট নেই</div>';
                 });
             }
-            // ... (Tasks, Settings, Plans code remains exactly the same as V4.3) ...
             else if(page === 'plans'){
                 title.innerText = "ভিআইপি প্ল্যান";
                 cont.innerHTML = `<button class="btn" style="width:100%;margin-bottom:15px" onclick="document.getElementById('plan-modal').style.display='flex'">+ নতুন প্ল্যান</button><div id="p-list"></div>`;
@@ -327,111 +315,89 @@
             }
             else if(page === 'settings'){
                 title.innerText = "সেটিংস";
-                db.ref('settings').once('value',s=>{ const v=s.val()||{}; cont.innerHTML = `<div class="card"><label>বিকাশ</label><input id="s-bk" class="inp" value="${v.config?.bkash||''}"><label>নগদ</label><input id="s-ng" class="inp" value="${v.config?.nagad||''}"><label>নোটিশ</label><textarea id="s-nt" class="inp" rows="4">${v.notice||''}</textarea><button class="btn" onclick="saveSet()">সেভ করুন</button></div>`; });
+                db.ref('settings').once('value',s=>{ 
+                    const v=s.val()||{}; 
+                    const cfg=v.config||{};
+                    const maint = v.maintenance ? 'checked' : '';
+                    cont.innerHTML = `
+                    <div class="card" style="border: 2px solid #F59E0B;">
+                        <h3>⚠️ ইমার্জেন্সি কন্ট্রোল</h3>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>মেইনটেনেন্স মোড (Maintenance)</span>
+                            <label class="switch">
+                                <input type="checkbox" id="s-maint" ${maint}>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <small style="color:#ef4444">এটি চালু করলে ইউজাররা অ্যাপে ঢুকতে পারবে না।</small>
+                    </div>
+                    <div class="card">
+                        <h3>পেমেন্ট ও লিংক</h3>
+                        <label>বিকাশ নাম্বার</label><input id="s-bk" class="inp" value="${cfg.bkash||''}">
+                        <label>নগদ নাম্বার</label><input id="s-ng" class="inp" value="${cfg.nagad||''}">
+                        <label>হেল্প লিংক (Telegram)</label><input id="s-sup" class="inp" value="${cfg.supportLink||''}">
+                        <label>চ্যানেল লিংক</label><input id="s-ch" class="inp" value="${cfg.channelLink||''}">
+                    </div>
+                    <div class="card">
+                        <h3>লিমিট সেটিংস</h3>
+                        <label>মিনিমাম উইথড্র (টাকা)</label><input id="s-minW" type="number" class="inp" value="${cfg.minWithdraw||'20'}">
+                        <label>উইথড্র চার্জ (টাকা)</label><input id="s-wch" type="number" class="inp" value="${cfg.withdrawCharge||'5'}">
+                        <label>রেফার বোনাস (টাকা)</label><input id="s-ref" type="number" class="inp" value="${cfg.refBonus||'2'}">
+                    </div>
+                    <div class="card">
+                        <h3>নোটিশ</h3>
+                        <textarea id="s-nt" class="inp" rows="4">${v.notice||''}</textarea>
+                        <button class="btn" onclick="saveSet()">সেভ করুন</button>
+                    </div>`; 
+                });
             }
             else if(page === 'tasks'){
                 title.innerText = "টাস্ক";
-                cont.innerHTML = `<div class="card"><h3>নতুন টাস্ক</h3><input id="t-ti" class="inp" placeholder="শিরোনাম"><input id="t-rw" type="number" class="inp" placeholder="টাকা"><input id="t-ln" class="inp" placeholder="লিংক"><input id="t-hint" class="inp" placeholder="প্রুফ ইনস্ট্রাকশন (যেমন: ইউজারনেম দিন)" style="border-color:var(--primary)"><select id="t-tg" class="inp"><option value="free">ফ্রি</option><option value="vip">সকল VIP</option><option value="silver">Silver</option><option value="gold">Gold</option><option value="platinum">Platinum</option><option value="diamond">Diamond</option></select><button class="btn" onclick="addTask()">টাস্ক দিন</button></div><div id="t-list"></div>`;
+                cont.innerHTML = `<div class="card"><h3>নতুন টাস্ক</h3><input id="t-ti" class="inp" placeholder="শিরোনাম"><input id="t-rw" type="number" class="inp" placeholder="টাকা"><input id="t-ln" class="inp" placeholder="লিংক"><input id="t-hint" class="inp" placeholder="প্রুফ ইনস্ট্রাকশন (যেমন: ইউজারনেম দিন)" style="border-color:var(--primary)"><select id="t-tg" class="inp"><option value="free">ফ্রি</option><option value="vip">সকল VIP</option><option value="bronze">Bronze</option><option value="silver">Silver</option><option value="gold">Gold</option><option value="platinum">Platinum</option><option value="diamond">Diamond</option></select><button class="btn" onclick="addTask()">টাস্ক দিন</button></div><div id="t-list"></div>`;
                 db.ref('settings/tasks').on('value',s=>{ const t=s.val()||{}; cont.querySelector('#t-list').innerHTML = Object.keys(t).map(k=>`<div class="list-item"><div><b>${t[k].title}</b> (${t[k].target})</div><button class="btn-sm btn-r" onclick="delTask('${k}')">ডিলিট</button></div>`).join(''); });
             }
         }
 
-        // --- DETAILS / RECEIPT LOGIC ---
+        // --- DETAILS POPUP ---
         function showReceipt(index){
             const data = allHistoryData[index];
             const content = document.getElementById('rec-content');
-            
-            // Build Receipt HTML
-            content.innerHTML = `
-                <div class="receipt-row"><span>ইউজার</span> <b>${data.name}</b></div>
-                <div class="receipt-row"><span>ফোন</span> <b>${data.phone}</b></div>
-                <div class="receipt-row"><span>ধরণ</span> <b>${data.type}</b></div>
-                <div class="receipt-row"><span>পরিমাণ</span> <b style="color:var(--primary)">৳${data.amount}</b></div>
-                <div class="receipt-row"><span>স্ট্যাটাস</span> <b style="color:${data.status==='Success'?'green':'red'}">${data.status}</b></div>
-                <div class="receipt-row"><span>তারিখ</span> <b>${data.date}</b></div>
-                
-                <div style="background:#F9FAFB; padding:10px; border-radius:10px; margin-top:15px; font-size:12px; color:#666; word-break:break-all">
-                    <b>বিস্তারিত / প্রুফ:</b><br>
-                    ${data.proof || data.trx || data.sender || data.method || 'N/A'}
-                </div>
-            `;
+            content.innerHTML = `<div class="receipt-row"><span>ইউজার</span> <b>${data.name}</b></div><div class="receipt-row"><span>ফোন</span> <b>${data.phone}</b></div><div class="receipt-row"><span>ধরণ</span> <b>${data.type}</b></div><div class="receipt-row"><span>পরিমাণ</span> <b style="color:var(--primary)">৳${data.amount}</b></div><div class="receipt-row"><span>স্ট্যাটাস</span> <b style="color:${data.status==='Success'?'green':'red'}">${data.status}</b></div><div class="receipt-row"><span>তারিখ</span> <b>${data.date}</b></div><div style="background:#F9FAFB; padding:10px; border-radius:10px; margin-top:15px; font-size:12px; color:#666; word-break:break-all"><b>বিস্তারিত / প্রুফ:</b><br>${data.proof || data.trx || data.sender || data.method || 'N/A'}</div>`;
             document.getElementById('detail-modal').style.display = 'flex';
         }
+
         // --- ACTIONS ---
-        function savePlan(){ 
-            const n=document.getElementById('p-name').value, p=document.getElementById('p-price').value, i=document.getElementById('p-inc').value, v=document.getElementById('p-val').value; 
-            if(!n||!p) return Swal.fire('ভুল','সব তথ্য দিন','error'); 
-            db.ref('settings/vipPlans').push({name:n, price:parseInt(p), dailyIncome:parseInt(i), validity:parseInt(v)}); 
-            closeModal('plan-modal'); Swal.fire('সফল'); 
-        }
-
-        function delPlan(k){ 
-            if(confirm('মুছে ফেলবেন?')) db.ref('settings/vipPlans/'+k).remove(); 
-        }
-
+        function savePlan(){ const n=document.getElementById('p-name').value, p=document.getElementById('p-price').value, i=document.getElementById('p-inc').value, v=document.getElementById('p-val').value; if(!n||!p) return Swal.fire('ভুল','সব তথ্য দিন','error'); db.ref('settings/vipPlans').push({name:n, price:parseInt(p), dailyIncome:parseInt(i), validity:parseInt(v)}); closeModal('plan-modal'); Swal.fire('সফল'); }
+        function delPlan(k){ if(confirm('মুছে ফেলবেন?')) db.ref('settings/vipPlans/'+k).remove(); }
         let editUid='';
-        function editU(uid){ 
-            editUid=uid; 
-            db.ref('users/'+uid).once('value',s=>{ 
-                const u=s.val(); 
-                document.getElementById('e-bal').value=u.balance; 
-                document.getElementById('e-plan').value=u.currentPlan||''; 
-                document.getElementById('ban-btn').innerText = u.banned ? "আনব্যান করুন" : "ব্যান করুন"; 
-                document.getElementById('user-modal').style.display='flex'; 
-            }); 
-        }
-
-        function saveUser(){ 
-            db.ref('users/'+editUid).update({balance:parseInt(document.getElementById('e-bal').value), currentPlan:document.getElementById('e-plan').value, isVip:!!document.getElementById('e-plan').value}); 
-            closeModal('user-modal'); Swal.fire('আপডেট হয়েছে'); nav('users'); 
-        }
-
-        function doBan(){ 
-            db.ref('users/'+editUid).once('value',s=>{ 
-                db.ref('users/'+editUid).update({banned:!s.val().banned}); 
-                closeModal('user-modal'); Swal.fire('সম্পন্ন'); nav('users'); 
-            }); 
-        }
-
-        function act(uid, hid, st, type, amt){ 
-            db.ref(`users/${uid}/history/${hid}`).update({status:st}); 
-            if(st==='Success'){ 
-                if(type.includes('Buy')) db.ref(`users/${uid}`).update({isVip:true, currentPlan:type.replace('Buy ',''), vipExpire:Date.now()+(30*86400000)}); 
-                else if(type==='Task Reward') db.ref(`users/${uid}/balance`).transaction(b=>(b||0)+parseInt(amt)); 
-            } else if(st==='Rejected' && type==='Withdraw') db.ref(`users/${uid}/balance`).transaction(b=>(b||0)+parseInt(amt)); 
-            Swal.fire('সম্পন্ন'); nav(type==='Task Reward'?'job_reqs':(type==='Withdraw'?'withdraws':'deposits')); 
-        }
-
+        function editU(uid){ editUid=uid; db.ref('users/'+uid).once('value',s=>{ const u=s.val(); document.getElementById('e-bal').value=u.balance; document.getElementById('e-plan').value=u.currentPlan||''; document.getElementById('ban-btn').innerText = u.banned ? "আনব্যান করুন" : "ব্যান করুন"; document.getElementById('user-modal').style.display='flex'; }); }
+        function saveUser(){ db.ref('users/'+editUid).update({balance:parseInt(document.getElementById('e-bal').value), currentPlan:document.getElementById('e-plan').value, isVip:!!document.getElementById('e-plan').value}); closeModal('user-modal'); Swal.fire('আপডেট হয়েছে'); nav('users'); }
+        function doBan(){ db.ref('users/'+editUid).once('value',s=>{ db.ref('users/'+editUid).update({banned:!s.val().banned}); closeModal('user-modal'); Swal.fire('সম্পন্ন'); nav('users'); }); }
+        function act(uid, hid, st, type, amt){ db.ref(`users/${uid}/history/${hid}`).update({status:st}); if(st==='Success'){ if(type.includes('Buy')) db.ref(`users/${uid}`).update({isVip:true, currentPlan:type.replace('Buy ',''), vipExpire:Date.now()+(30*86400000)}); else if(type==='Task Reward') db.ref(`users/${uid}/balance`).transaction(b=>(b||0)+parseInt(amt)); } else if(st==='Rejected' && type==='Withdraw') db.ref(`users/${uid}/balance`).transaction(b=>(b||0)+parseInt(amt)); Swal.fire('সম্পন্ন'); nav(type==='Task Reward'?'job_reqs':(type==='Withdraw'?'withdraws':'deposits')); }
+        
         function saveSet(){ 
-            db.ref('settings/config').update({ bkash: document.getElementById('s-bk').value, nagad: document.getElementById('s-ng').value }); 
-            db.ref('settings').update({ notice: document.getElementById('s-nt').value }); 
+            const maint = document.getElementById('s-maint').checked;
+            db.ref('settings').update({ 
+                maintenance: maint,
+                notice: document.getElementById('s-nt').value 
+            });
+            db.ref('settings/config').update({ 
+                bkash: document.getElementById('s-bk').value, 
+                nagad: document.getElementById('s-ng').value,
+                supportLink: document.getElementById('s-sup').value,
+                channelLink: document.getElementById('s-ch').value,
+                minWithdraw: parseInt(document.getElementById('s-minW').value),
+                withdrawCharge: parseInt(document.getElementById('s-wch').value),
+                refBonus: parseInt(document.getElementById('s-ref').value)
+            }); 
             Swal.fire('সেভ হয়েছে'); 
         }
 
-        function addTask(){ 
-            const ti = document.getElementById('t-ti').value, rw = parseInt(document.getElementById('t-rw').value), ln = document.getElementById('t-ln').value, tg = document.getElementById('t-tg').value, hint = document.getElementById('t-hint').value || 'আপনার প্রুফ দিন'; 
-            if(!ti || !rw || !ln) return Swal.fire('সব তথ্য দিন'); 
-            db.ref('settings/tasks').push({ title: ti, reward: rw, link: ln, target: tg, proofHint: hint }); 
-            Swal.fire('টাস্ক দেওয়া হয়েছে'); 
-        }
-
+        function addTask(){ const ti = document.getElementById('t-ti').value, rw = parseInt(document.getElementById('t-rw').value), ln = document.getElementById('t-ln').value, tg = document.getElementById('t-tg').value, hint = document.getElementById('t-hint').value || 'আপনার প্রুফ দিন'; if(!ti || !rw || !ln) return Swal.fire('সব তথ্য দিন'); db.ref('settings/tasks').push({ title: ti, reward: rw, link: ln, target: tg, proofHint: hint }); Swal.fire('টাস্ক দেওয়া হয়েছে'); }
         function delTask(k){ db.ref('settings/tasks/'+k).remove(); }
-
         function closeModal(id){ document.getElementById(id).style.display='none'; }
-
-        function count(){ 
-            db.ref('users').once('value',s=>{ 
-                let c=0; const u=s.val()||{}; 
-                Object.values(u).forEach(x=>{ if(x.history) Object.values(x.history).forEach(h=>{ if(h.status==='Pending' && h.type!=='Task Reward') c++; }) }); 
-                const b=document.getElementById('nav-badge'); b.innerText=c; b.style.display=c>0?'block':'none'; 
-            }); 
-        }
-
-        function search(e){ 
-            const v=e.value.toLowerCase(); 
-            document.querySelectorAll('.user-row').forEach(r=>r.style.display=r.dataset.ph.includes(v)?'flex':'none'); 
-        }
+        function count(){ db.ref('users').once('value',s=>{ let c=0; const u=s.val()||{}; Object.values(u).forEach(x=>{ if(x.history) Object.values(x.history).forEach(h=>{ if(h.status==='Pending' && h.type!=='Task Reward') c++; }) }); const b=document.getElementById('nav-badge'); b.innerText=c; b.style.display=c>0?'block':'none'; }); }
+        function search(e){ const v=e.value.toLowerCase(); document.querySelectorAll('.user-row').forEach(r=>r.style.display=r.dataset.ph.includes(v)?'flex':'none'); }
     </script>
 </body>
 </html>
-
