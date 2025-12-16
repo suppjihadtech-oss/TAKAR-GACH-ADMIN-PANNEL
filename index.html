@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Admin V2.1 Mobile Pro</title>
+    <title>Admin V2.2 Task Master</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -55,23 +55,17 @@
         .stat-box h2 { margin: 0; font-size: 24px; color: var(--dark); }
         .stat-box p { margin: 5px 0 0; font-size: 12px; color: #6b7280; font-weight: 600; }
 
-        /* --- LIST ITEMS (MOBILE OPTIMIZED) --- */
+        /* --- LIST ITEMS --- */
         .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
-        .list-item:last-child { border-bottom: none; }
         .list-info h4 { margin: 0; font-size: 15px; color: var(--dark); }
         .list-info p { margin: 3px 0 0; font-size: 12px; color: #6b7280; }
         .list-actions { display: flex; gap: 8px; }
         
-        /* --- BUTTONS --- */
+        /* --- BUTTONS & BADGES --- */
         .btn-sm { padding: 6px 12px; border-radius: 8px; font-size: 12px; border: none; color: white; font-weight: 600; cursor: pointer; }
-        .btn-g { background: #10b981; }
-        .btn-r { background: #ef4444; }
-        .btn-b { background: #3b82f6; }
-
-        /* --- BADGES --- */
+        .btn-g { background: #10b981; } .btn-r { background: #ef4444; } .btn-b { background: #3b82f6; }
         .badge { padding: 3px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-        .badge-vip { background: #FEF3C7; color: #D97706; }
-        .badge-free { background: #D1FAE5; color: #059669; }
+        .badge-vip { background: #FEF3C7; color: #D97706; } .badge-free { background: #D1FAE5; color: #059669; }
 
         /* --- ANIMATION --- */
         @keyframes slideIn { from{transform:translateY(10px);opacity:0} to{transform:translateY(0);opacity:1} }
@@ -83,7 +77,7 @@
     <div id="auth-view">
         <div class="login-box">
             <i class="fas fa-tree" style="font-size: 60px; color: var(--primary); margin-bottom: 20px; animation: pulse 2s infinite"></i>
-            <h2 style="margin:0 0 20px;">Admin Panel</h2>
+            <h2 style="margin:0 0 20px;">টাকার গাছ এডমিন প্যানেল>
             <input id="u" class="inp" placeholder="Username">
             <input id="p" type="password" class="inp" placeholder="Password">
             <button class="btn" onclick="login()">Login</button>
@@ -96,8 +90,9 @@
             <div style="padding: 0 25px 25px; font-size: 20px; font-weight: 800; color: var(--primary);"><i class="fas fa-tree"></i> টাকার গাছ</div>
             <div class="menu-item active" onclick="nav('dash',this)"><i class="fas fa-home"></i> ড্যাশবোর্ড</div>
             <div class="menu-item" onclick="nav('users',this)"><i class="fas fa-users"></i> ইউজার লিস্ট</div>
-            <div class="menu-item" onclick="nav('deposits',this)"><i class="fas fa-arrow-down"></i> ডিপোজিট <span id="dep-c" class="badge badge-vip" style="display:none">0</span></div>
-            <div class="menu-item" onclick="nav('withdraws',this)"><i class="fas fa-arrow-up"></i> উইথড্র <span id="wd-c" class="badge badge-vip" style="display:none">0</span></div>
+            <div class="menu-item" onclick="nav('job_reqs',this)"><i class="fas fa-briefcase"></i> জব রিকোয়েস্ট <span id="job-c" class="badge badge-vip" style="display:none; margin-left:auto">0</span></div>
+            <div class="menu-item" onclick="nav('deposits',this)"><i class="fas fa-arrow-down"></i> ডিপোজিট <span id="dep-c" class="badge badge-vip" style="display:none; margin-left:auto">0</span></div>
+            <div class="menu-item" onclick="nav('withdraws',this)"><i class="fas fa-arrow-up"></i> উইথড্র <span id="wd-c" class="badge badge-vip" style="display:none; margin-left:auto">0</span></div>
             <div class="menu-item" onclick="nav('tasks',this)"><i class="fas fa-tasks"></i> টাস্ক ম্যানেজ</div>
             <div class="menu-item" onclick="nav('settings',this)"><i class="fas fa-cogs"></i> সেটিংস</div>
             <div class="menu-item" style="color:#ef4444; margin-top:50px" onclick="logout()"><i class="fas fa-sign-out-alt"></i> লগ আউট</div>
@@ -106,7 +101,8 @@
         <div class="header">
             <i class="fas fa-bars menu-btn" onclick="toggleMenu()"></i>
             <h3 id="pg-title" style="margin:0; font-size:16px;">ড্যাশবোর্ড</h3>
-            <div style="width:30px"></div> </div>
+            <div style="width:30px"></div>
+        </div>
 
         <div class="main-content" id="main-body"></div>
     </div>
@@ -167,7 +163,7 @@
                 <div class="page">
                     <div class="card">
                         <h3 style="margin-top:0">নতুন কাজ যুক্ত করুন</h3>
-                        <input id="t-ti" class="inp" placeholder="কাজের নাম (যেমন: Join Telegram)">
+                        <input id="t-ti" class="inp" placeholder="কাজের নাম">
                         <div style="display:flex; gap:10px">
                             <input id="t-rw" type="number" class="inp" placeholder="টাকা" style="flex:1">
                             <select id="t-ty" class="inp" style="flex:1">
@@ -177,7 +173,7 @@
                                 <option value="silver">Silver VIP</option>
                             </select>
                         </div>
-                        <input id="t-ln" class="inp" placeholder="লিংক (যেমন: https://t.me/...)">
+                        <input id="t-ln" class="inp" placeholder="লিংক">
                         <button class="btn" onclick="addTask()">Add Task</button>
                     </div>
                     <div class="card">
@@ -217,9 +213,13 @@
                     </div>`;
                 });
             }
-            else if(page === 'deposits' || page === 'withdraws'){
-                const type = page==='deposits'?'Buy':'Withdraw';
-                t.innerText = page==='deposits' ? 'ডিপোজিট রিকোয়েস্ট' : 'উইথড্র রিকোয়েস্ট';
+            else if(page === 'deposits' || page === 'withdraws' || page === 'job_reqs'){
+                let type = '';
+                if(page==='deposits') type='Buy';
+                else if(page==='withdraws') type='Withdraw';
+                else type='Task Reward';
+
+                t.innerText = page==='job_reqs' ? 'জব রিকোয়েস্ট' : (page==='deposits'?'ডিপোজিট':'উইথড্র');
                 
                 db.ref('users').once('value',s=>{
                     let htm = '';
@@ -230,17 +230,27 @@
                         const h = u[uid].history||{};
                         Object.keys(h).forEach(hid=>{
                             const tr = h[hid];
-                            if(tr.status==='Pending' && ((type==='Buy' && tr.type.includes('Buy')) || (type==='Withdraw' && tr.type==='Withdraw'))){
+                            // Logic to match types
+                            let match = false;
+                            if(tr.status==='Pending'){
+                                if(type==='Buy' && tr.type.includes('Buy')) match=true;
+                                if(type==='Withdraw' && tr.type==='Withdraw') match=true;
+                                if(type==='Task Reward' && tr.type==='Task Reward') match=true;
+                            }
+
+                            if(match){
                                 has = true;
                                 htm += `
-                                <div class="card" style="border-left:5px solid ${type==='Buy'?'#10b981':'#ef4444'}">
+                                <div class="card" style="border-left:5px solid ${type==='Withdraw'?'#ef4444':'#10b981'}">
                                     <div style="display:flex; justify-content:space-between; margin-bottom:10px">
                                         <b>${u[uid].name}</b>
-                                        <b style="color:${type==='Buy'?'#10b981':'#ef4444'}">৳${tr.amount}</b>
+                                        <b style="color:${type==='Withdraw'?'#ef4444':'#10b981'}">৳${tr.amount}</b>
                                     </div>
                                     <div style="font-size:13px; color:#666; margin-bottom:15px">
-                                        ${type==='Buy' ? `Plan: ${tr.type}<br>TrxID: ${tr.trx}<br>Sender: ${tr.sender}` : `Method: ${tr.method}<br>Number: ${tr.trx}`}
-                                        <br><small>${tr.date}</small>
+                                        ${type==='Task Reward' 
+                                            ? `Task Proof:<br><i style="color:#000">${tr.proof||'No Proof'}</i>` 
+                                            : (type==='Buy' ? `Plan: ${tr.type}<br>TrxID: ${tr.trx}<br>Sender: ${tr.sender}` : `Method: ${tr.method}<br>Number: ${tr.trx}`)}
+                                        <br><small style="color:#999">${tr.date}</small>
                                     </div>
                                     <div style="display:flex; gap:10px">
                                         <button class="btn btn-g" style="flex:1; padding:10px" onclick="act('${uid}','${hid}','Success','${tr.type}',${tr.amount})">Approve</button>
@@ -268,7 +278,7 @@
                         </div>
                         <div class="card">
                             <h3>নোটিশ বোর্ড</h3>
-                            <textarea id="s-nt" class="inp" rows="4" placeholder="হোমপেজের নোটিশ লিখুন...">${v.notice||''}</textarea>
+                            <textarea id="s-nt" class="inp" rows="4">${v.notice||''}</textarea>
                             <button class="btn" onclick="saveSet()">Save Changes</button>
                         </div>
                     </div>`;
@@ -292,14 +302,27 @@
 
         function act(uid, hid, st, type, amt){
             db.ref(`users/${uid}/history/${hid}`).update({status:st});
-            if(st==='Success' && type.includes('Buy')){
-                // Activate VIP Plan
-                db.ref(`users/${uid}`).update({isVip:true, currentPlan:type.replace('Buy ',''), vipExpire:Date.now()+(30*86400000)});
+            
+            if(st==='Success'){
+                if(type.includes('Buy')){
+                    // VIP Activation
+                    db.ref(`users/${uid}`).update({isVip:true, currentPlan:type.replace('Buy ',''), vipExpire:Date.now()+(30*86400000)});
+                } else if(type === 'Task Reward'){
+                    // Task Approve -> Add Balance
+                    db.ref(`users/${uid}/balance`).transaction(b=>(b||0)+parseInt(amt));
+                }
             } else if(st==='Rejected' && type==='Withdraw'){
-                // Refund Money
+                // Withdraw Reject -> Refund Balance
                 db.ref(`users/${uid}/balance`).transaction(b=>(b||0)+parseInt(amt));
             }
-            Swal.fire('Done!', 'স্ট্যাটাস আপডেট হয়েছে', 'success'); loadPage(type==='Withdraw'?'withdraws':'deposits'); count();
+            
+            Swal.fire('Done!', 'স্ট্যাটাস আপডেট হয়েছে', 'success'); 
+            // Reload Correct Page
+            let reloadPg = 'deposits';
+            if(type==='Withdraw') reloadPg='withdraws';
+            if(type==='Task Reward') reloadPg='job_reqs';
+            loadPage(reloadPg); 
+            count();
         }
 
         function saveSet(){
@@ -317,10 +340,22 @@
 
         function count(){
             db.ref('users').once('value',s=>{
-                let d=0, w=0; const u=s.val()||{};
-                Object.values(u).forEach(x=>{ if(x.history) Object.values(x.history).forEach(h=>{ if(h.status==='Pending'){ if(h.type==='Withdraw')w++; else d++; } }) });
-                document.getElementById('dep-c').innerText=d; document.getElementById('dep-c').style.display=d>0?'inline-block':'none';
-                document.getElementById('wd-c').innerText=w; document.getElementById('wd-c').style.display=w>0?'inline-block':'none';
+                let d=0, w=0, j=0; const u=s.val()||{};
+                Object.values(u).forEach(x=>{ 
+                    if(x.history) Object.values(x.history).forEach(h=>{ 
+                        if(h.status==='Pending'){ 
+                            if(h.type==='Withdraw') w++; 
+                            else if(h.type==='Task Reward') j++;
+                            else if(h.type.includes('Buy')) d++; 
+                        } 
+                    }) 
+                });
+                
+                const setBad = (id,v) => { 
+                    const el = document.getElementById(id);
+                    el.innerText=v; el.style.display=v>0?'inline-block':'none';
+                };
+                setBad('dep-c',d); setBad('wd-c',w); setBad('job-c',j);
             });
         }
         function search(e){
