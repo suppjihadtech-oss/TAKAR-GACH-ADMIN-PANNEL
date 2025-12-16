@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Admin V2.2 Task Master</title>
+    <title>Takar Gach Admin V3.0</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -13,101 +13,140 @@
 
     <style>
         :root {
-            --primary: #10b981; --dark: #111827; --light: #f3f4f6; --white: #ffffff;
-            --header-h: 60px;
+            --primary: #10b981; --dark: #111827; --dark-sec: #1F2937; --light: #f3f4f6; --white: #ffffff;
+            --sidebar-w: 270px;
         }
         * { box-sizing: border-box; outline: none; text-decoration: none; font-family: 'Inter', 'Hind Siliguri', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: var(--light); height: 100vh; overflow: hidden; display: flex; flex-direction: column; color: var(--dark); }
+        body { margin: 0; background: var(--light); height: 100vh; overflow: hidden; display: flex; color: var(--dark); }
 
         /* --- AUTH SCREEN --- */
         #auth-view { position: fixed; inset: 0; background: var(--dark); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .login-box { background: var(--white); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; }
-        .inp { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 15px; background: #f9fafb; }
-        .btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        .login-box { background: var(--dark-sec); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; color: white; border: 1px solid #374151; }
+        .inp { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #374151; border-radius: 10px; font-size: 15px; background: #111827; color: white; }
+        .btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; }
         .btn:active { transform: scale(0.98); }
 
-        /* --- HEADER & SIDEBAR --- */
-        .header {
-            height: var(--header-h); background: var(--white); display: flex; align-items: center; justify-content: space-between; padding: 0 15px; border-bottom: 1px solid #e5e7eb; z-index: 100;
-        }
-        .menu-btn { font-size: 24px; cursor: pointer; padding: 5px; }
-        
+        /* --- SIDEBAR (THEME FROM SCREENSHOT) --- */
         .sidebar {
-            position: fixed; top: 0; left: -280px; width: 260px; height: 100%; background: var(--dark); color: white;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; padding-top: 20px;
-            box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+            position: fixed; top: 0; left: -280px; width: var(--sidebar-w); height: 100%; 
+            background: var(--dark); color: white; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            z-index: 1000; display: flex; flex-direction: column;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.3);
         }
         .sidebar.active { left: 0; }
-        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 900; display: none; }
+        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 900; display: none; }
         .sidebar-overlay.active { display: block; }
 
-        .menu-item { padding: 15px 20px; border-radius: 0 25px 25px 0; margin-bottom: 5px; cursor: pointer; display: flex; align-items: center; gap: 15px; color: #9ca3af; font-size: 15px; font-weight: 500; transition: 0.2s; }
-        .menu-item.active, .menu-item:active { background: var(--primary); color: white; }
-        .menu-item i { width: 25px; text-align: center; font-size: 18px; }
+        .brand { padding: 25px; font-size: 20px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #1F2937; }
+        
+        .menu { padding: 20px 10px; flex: 1; overflow-y: auto; }
+        .menu-item { 
+            padding: 12px 15px; margin-bottom: 5px; border-radius: 8px; cursor: pointer; 
+            display: flex; align-items: center; gap: 12px; color: #9ca3af; font-size: 15px; font-weight: 500; transition: 0.2s;
+        }
+        .menu-item.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+        .menu-item:hover:not(.active) { background: var(--dark-sec); color: white; }
 
-        /* --- MAIN CONTENT --- */
-        .main-content { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 80px; }
-
-        /* --- CARDS --- */
-        .card { background: var(--white); border-radius: 16px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #f3f4f6; }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .stat-box { background: white; padding: 15px; border-radius: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 3px solid var(--primary); }
-        .stat-box h2 { margin: 0; font-size: 24px; color: var(--dark); }
+        /* --- HEADER --- */
+        .main-content { flex: 1; display: flex; flex-direction: column; height: 100%; transition: 0.3s; }
+        .header {
+            height: 60px; background: var(--dark); display: flex; align-items: center; 
+            justify-content: space-between; padding: 0 15px; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        /* --- PAGE CONTENT --- */
+        .content-body { flex: 1; overflow-y: auto; padding: 15px; }
+        
+        /* --- CARDS & LISTS --- */
+        .card { background: var(--white); border-radius: 16px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #e5e7eb; }
+        
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .stat-box { background: white; padding: 15px; border-radius: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-bottom: 4px solid var(--primary); }
+        .stat-box h2 { margin: 0; font-size: 26px; color: var(--dark); }
         .stat-box p { margin: 5px 0 0; font-size: 12px; color: #6b7280; font-weight: 600; }
 
-        /* --- LIST ITEMS --- */
-        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: white; border-radius: 12px; margin-bottom: 10px; border: 1px solid #f3f4f6; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
         .list-info h4 { margin: 0; font-size: 15px; color: var(--dark); }
         .list-info p { margin: 3px 0 0; font-size: 12px; color: #6b7280; }
-        .list-actions { display: flex; gap: 8px; }
         
-        /* --- BUTTONS & BADGES --- */
-        .btn-sm { padding: 6px 12px; border-radius: 8px; font-size: 12px; border: none; color: white; font-weight: 600; cursor: pointer; }
-        .btn-g { background: #10b981; } .btn-r { background: #ef4444; } .btn-b { background: #3b82f6; }
-        .badge { padding: 3px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-        .badge-vip { background: #FEF3C7; color: #D97706; } .badge-free { background: #D1FAE5; color: #059669; }
+        /* --- BADGES & BUTTONS --- */
+        .badge { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .badge-vip { background: #FEF3C7; color: #D97706; }
+        .badge-ban { background: #fee2e2; color: #ef4444; }
+        
+        .btn-sm { padding: 6px 10px; border-radius: 6px; font-size: 12px; border: none; color: white; font-weight: 600; cursor: pointer; margin-left: 5px; }
+        .btn-g { background: #10b981; } .btn-r { background: #ef4444; } .btn-b { background: #3b82f6; } .btn-y { background: #f59e0b; }
 
-        /* --- ANIMATION --- */
-        @keyframes slideIn { from{transform:translateY(10px);opacity:0} to{transform:translateY(0);opacity:1} }
-        .page { animation: slideIn 0.3s ease-out; }
+        /* --- MODAL --- */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .modal-box { background: white; width: 100%; max-width: 400px; padding: 25px; border-radius: 20px; animation: popUp 0.3s; }
+        @keyframes popUp { from{transform:scale(0.9);opacity:0} to{transform:scale(1);opacity:1} }
     </style>
 </head>
 <body>
 
     <div id="auth-view">
         <div class="login-box">
-            <i class="fas fa-tree" style="font-size: 60px; color: var(--primary); margin-bottom: 20px; animation: pulse 2s infinite"></i>
-            <h2 style="margin:0 0 20px;">টাকার গাছ এডমিন প্যানেল>
+            <i class="fas fa-user-secret" style="font-size: 50px; color: var(--primary); margin-bottom: 20px;"></i>
+            <h2 style="margin:0 0 20px;">Admin Login</h2>
             <input id="u" class="inp" placeholder="Username">
             <input id="p" type="password" class="inp" placeholder="Password">
-            <button class="btn" onclick="login()">Login</button>
+            <button class="btn" onclick="login()">Access Panel</button>
         </div>
     </div>
 
     <div id="dashboard" style="display:none; width:100%; height:100%">
         <div class="sidebar-overlay" onclick="toggleMenu()"></div>
+        
         <div class="sidebar" id="sidebar">
-            <div style="padding: 0 25px 25px; font-size: 20px; font-weight: 800; color: var(--primary);"><i class="fas fa-tree"></i> টাকার গাছ</div>
-            <div class="menu-item active" onclick="nav('dash',this)"><i class="fas fa-home"></i> ড্যাশবোর্ড</div>
-            <div class="menu-item" onclick="nav('users',this)"><i class="fas fa-users"></i> ইউজার লিস্ট</div>
-            <div class="menu-item" onclick="nav('job_reqs',this)"><i class="fas fa-briefcase"></i> জব রিকোয়েস্ট <span id="job-c" class="badge badge-vip" style="display:none; margin-left:auto">0</span></div>
-            <div class="menu-item" onclick="nav('deposits',this)"><i class="fas fa-arrow-down"></i> ডিপোজিট <span id="dep-c" class="badge badge-vip" style="display:none; margin-left:auto">0</span></div>
-            <div class="menu-item" onclick="nav('withdraws',this)"><i class="fas fa-arrow-up"></i> উইথড্র <span id="wd-c" class="badge badge-vip" style="display:none; margin-left:auto">0</span></div>
-            <div class="menu-item" onclick="nav('tasks',this)"><i class="fas fa-tasks"></i> টাস্ক ম্যানেজ</div>
-            <div class="menu-item" onclick="nav('settings',this)"><i class="fas fa-cogs"></i> সেটিংস</div>
-            <div class="menu-item" style="color:#ef4444; margin-top:50px" onclick="logout()"><i class="fas fa-sign-out-alt"></i> লগ আউট</div>
+            <div class="brand"><i class="fas fa-tree"></i> টাকার গাছ</div>
+            <div class="menu">
+                <div class="menu-item active" onclick="nav('dash',this)"><i class="fas fa-home"></i> ড্যাশবোর্ড</div>
+                <div class="menu-item" onclick="nav('users',this)"><i class="fas fa-users"></i> ইউজার লিস্ট</div>
+                <div class="menu-item" onclick="nav('job_reqs',this)"><i class="fas fa-briefcase"></i> জব রিকোয়েস্ট <span id="job-c" class="badge badge-vip" style="display:none; margin-left:auto">0</span></div>
+                <div class="menu-item" onclick="nav('deposits',this)"><i class="fas fa-arrow-circle-down"></i> ডিপোজিট <span id="dep-c" class="badge badge-vip" style="display:none; margin-left:auto">0</span></div>
+                <div class="menu-item" onclick="nav('withdraws',this)"><i class="fas fa-arrow-circle-up"></i> উইথড্র <span id="wd-c" class="badge badge-vip" style="display:none; margin-left:auto">0</span></div>
+                <div class="menu-item" onclick="nav('tasks',this)"><i class="fas fa-tasks"></i> টাস্ক ম্যানেজ</div>
+                <div class="menu-item" onclick="nav('settings',this)"><i class="fas fa-cogs"></i> সেটিংস</div>
+                <div class="menu-item" style="color:#ef4444; margin-top:30px" onclick="logout()"><i class="fas fa-sign-out-alt"></i> লগ আউট</div>
+            </div>
         </div>
 
-        <div class="header">
-            <i class="fas fa-bars menu-btn" onclick="toggleMenu()"></i>
-            <h3 id="pg-title" style="margin:0; font-size:16px;">ড্যাশবোর্ড</h3>
-            <div style="width:30px"></div>
+        <div class="main-content">
+            <div class="header">
+                <i class="fas fa-bars" style="font-size:20px; cursor:pointer" onclick="toggleMenu()"></i>
+                <h3 id="pg-title" style="margin:0; font-size:16px;">ড্যাশবোর্ড</h3>
+                <i class="fas fa-sync-alt" style="cursor:pointer" onclick="location.reload()"></i>
+            </div>
+            <div class="content-body" id="main-body"></div>
         </div>
-
-        <div class="main-content" id="main-body"></div>
     </div>
 
+    <div id="user-modal" class="modal"><div class="modal-box">
+        <h3 style="margin-top:0">এডিট ইউজার</h3>
+        <input type="hidden" id="edit-uid">
+        <label>ব্যালেন্স:</label>
+        <input id="edit-bal" type="number" class="inp" style="background:white; color:black; border:1px solid #ccc">
+        
+        <label>VIP স্ট্যাটাস:</label>
+        <select id="edit-vip" class="inp" style="background:white; color:black; border:1px solid #ccc">
+            <option value="false">Free User</option>
+            <option value="true">VIP User</option>
+        </select>
+        
+        <label>প্ল্যান নাম (যদি VIP হয়):</label>
+        <input id="edit-plan" class="inp" style="background:white; color:black; border:1px solid #ccc" placeholder="যেমন: Silver VIP">
+
+        <label>অ্যাকশন:</label>
+        <div style="display:flex; gap:10px; margin-top:5px">
+            <button id="btn-ban" class="btn" style="background:#ef4444" onclick="toggleBan()">Ban User</button>
+            <button class="btn" onclick="saveUser()">Save Changes</button>
+        </div>
+        <button onclick="document.getElementById('user-modal').style.display='none'" style="background:none; border:none; color:#666; width:100%; margin-top:15px">Close</button>
+    </div></div>
+
     <script>
+        // CONFIG
         const firebaseConfig = { apiKey: "AIzaSyDgI-d8iwWr40tmknbY6jhH0oRb2Tvg4d0", authDomain: "takar-gach-a1d84.firebaseapp.com", databaseURL: "https://takar-gach-a1d84-default-rtdb.firebaseio.com", projectId: "takar-gach-a1d84", storageBucket: "takar-gach-a1d84.firebasestorage.app", messagingSenderId: "637802367074", appId: "1:637802367074:web:2e7f6c0670ec47f3a1693b", measurementId: "G-0QL9LB7BSK" };
         firebase.initializeApp(firebaseConfig); const db = firebase.database();
         const CRED = { u: 'JIHAD', p: '198373' };
@@ -126,141 +165,101 @@
         function nav(p,e){
             document.querySelectorAll('.menu-item').forEach(i=>i.classList.remove('active'));
             if(e) e.classList.add('active');
-            toggleMenu();
-            loadPage(p);
+            toggleMenu(); loadPage(p);
         }
 
+        // --- PAGE LOADER ---
         function loadPage(page){
             const c = document.getElementById('main-body');
             c.innerHTML = '<div style="text-align:center;padding:50px"><i class="fas fa-circle-notch fa-spin fa-2x" style="color:var(--primary)"></i></div>';
             const t = document.getElementById('pg-title');
 
             if(page === 'dash'){
-                t.innerText = "ওভারভিউ";
+                t.innerText = "ড্যাশবোর্ড";
                 db.ref('users').once('value', s=>{
                     const u = s.val()||{};
                     let bal = 0; Object.values(u).forEach(x=>bal+=(x.balance||0));
                     c.innerHTML = `
-                    <div class="page">
-                        <div class="stat-grid">
-                            <div class="stat-box"><h2>${Object.keys(u).length}</h2><p>মোট ইউজার</p></div>
-                            <div class="stat-box" style="border-color:#3b82f6"><h2>৳${bal}</h2><p>মোট ব্যালেন্স</p></div>
-                        </div>
-                        <div class="card">
-                            <h3 style="margin:0 0 15px; font-size:16px">নতুন ইউজার</h3>
-                            ${Object.values(u).slice(-10).reverse().map(x=>`
-                            <div class="list-item">
-                                <div class="list-info"><h4>${x.name}</h4><p>${x.phone} • ৳${x.balance}</p></div>
-                                <span class="badge ${x.isVip?'badge-vip':'badge-free'}">${x.isVip?'VIP':'FREE'}</span>
-                            </div>`).join('')}
-                        </div>
+                    <div class="stat-grid">
+                        <div class="stat-box"><h2>${Object.keys(u).length}</h2><p>মোট ইউজার</p></div>
+                        <div class="stat-box" style="border-color:#3b82f6"><h2>৳${bal}</h2><p>ইউজার ব্যালেন্স</p></div>
+                    </div>
+                    <div class="card">
+                        <h3>নতুন ইউজার</h3>
+                        ${Object.values(u).slice(-5).reverse().map(x=>`<div class="list-item"><div class="list-info"><h4>${x.name}</h4><p>${x.phone}</p></div><b>৳${x.balance}</b></div>`).join('')}
                     </div>`;
-                });
-            }
-            else if(page === 'tasks'){
-                t.innerText = "টাস্ক সেটআপ";
-                c.innerHTML = `
-                <div class="page">
-                    <div class="card">
-                        <h3 style="margin-top:0">নতুন কাজ যুক্ত করুন</h3>
-                        <input id="t-ti" class="inp" placeholder="কাজের নাম">
-                        <div style="display:flex; gap:10px">
-                            <input id="t-rw" type="number" class="inp" placeholder="টাকা" style="flex:1">
-                            <select id="t-ty" class="inp" style="flex:1">
-                                <option value="free">Free User</option>
-                                <option value="vip">All VIP</option>
-                                <option value="gold">Gold VIP</option>
-                                <option value="silver">Silver VIP</option>
-                            </select>
-                        </div>
-                        <input id="t-ln" class="inp" placeholder="লিংক">
-                        <button class="btn" onclick="addTask()">Add Task</button>
-                    </div>
-                    <div class="card">
-                        <h3 style="margin-top:0">বর্তমান কাজ</h3>
-                        <div id="task-list-view"></div>
-                    </div>
-                </div>`;
-                db.ref('settings/tasks').on('value',s=>{
-                    const t = s.val()||{};
-                    document.getElementById('task-list-view').innerHTML = Object.keys(t).map(k=>`
-                    <div class="list-item">
-                        <div class="list-info">
-                            <h4>${t[k].title} <span class="badge ${t[k].target=='free'?'badge-free':'badge-vip'}">${t[k].target.toUpperCase()}</span></h4>
-                            <p>Reward: ৳${t[k].reward}</p>
-                        </div>
-                        <button class="btn-sm btn-r" onclick="delTask('${k}')"><i class="fas fa-trash"></i></button>
-                    </div>`).join('');
                 });
             }
             else if(page === 'users'){
-                t.innerText = "সকল ইউজার";
+                t.innerText = "ইউজার লিস্ট";
                 db.ref('users').once('value',s=>{
                     const u = s.val()||{};
-                    c.innerHTML = `
-                    <div class="page">
-                        <input onkeyup="search(this)" class="inp" placeholder="ফোন নাম্বার দিয়ে খুঁজুন..." style="margin-bottom:15px">
-                        <div class="card" id="u-list">
-                            ${Object.keys(u).map(k=>`
-                            <div class="list-item user-row" data-ph="${u[k].phone}">
-                                <div class="list-info"><h4>${u[k].name}</h4><p>${u[k].phone} • ৳${u[k].balance}</p></div>
-                                <div class="list-actions">
-                                    <button class="btn-sm btn-b" onclick="edit('${k}',${u[k].balance})">Edit</button>
-                                    <button class="btn-sm btn-r" onclick="del('${k}')">Del</button>
-                                </div>
-                            </div>`).join('')}
-                        </div>
-                    </div>`;
+                    c.innerHTML = `<input onkeyup="search(this)" class="inp" placeholder="নাম্বার দিয়ে খুঁজুন..." style="background:white; color:black; border:1px solid #ddd; margin-bottom:15px">
+                    <div id="u-list">${Object.keys(u).map(k=>`
+                        <div class="list-item user-row" data-ph="${u[k].phone}">
+                            <div class="list-info">
+                                <h4>${u[k].name} ${u[k].isVip?'<span class="badge badge-vip">VIP</span>':''} ${u[k].banned?'<span class="badge badge-ban">BANNED</span>':''}</h4>
+                                <p>${u[k].phone} • ৳${u[k].balance}</p>
+                            </div>
+                            <button class="btn-sm btn-b" onclick="openUserModal('${k}')"><i class="fas fa-edit"></i></button>
+                        </div>`).join('')}</div>`;
                 });
             }
-            else if(page === 'deposits' || page === 'withdraws' || page === 'job_reqs'){
-                let type = '';
-                if(page==='deposits') type='Buy';
-                else if(page==='withdraws') type='Withdraw';
-                else type='Task Reward';
-
-                t.innerText = page==='job_reqs' ? 'জব রিকোয়েস্ট' : (page==='deposits'?'ডিপোজিট':'উইথড্র');
+            else if(page === 'job_reqs' || page === 'deposits' || page === 'withdraws'){
+                let type = page==='job_reqs'?'Task Reward':(page==='deposits'?'Buy':'Withdraw');
+                t.innerText = page==='job_reqs'?'জব রিকোয়েস্ট':(page==='deposits'?'ডিপোজিট':'উইথড্র');
                 
                 db.ref('users').once('value',s=>{
-                    let htm = '';
-                    let has = false;
-                    const u = s.val()||{};
-                    
+                    let htm = ''; let has = false; const u = s.val()||{};
                     Object.keys(u).forEach(uid=>{
                         const h = u[uid].history||{};
                         Object.keys(h).forEach(hid=>{
                             const tr = h[hid];
-                            // Logic to match types
-                            let match = false;
                             if(tr.status==='Pending'){
+                                let match = false;
                                 if(type==='Buy' && tr.type.includes('Buy')) match=true;
                                 if(type==='Withdraw' && tr.type==='Withdraw') match=true;
                                 if(type==='Task Reward' && tr.type==='Task Reward') match=true;
-                            }
 
-                            if(match){
-                                has = true;
-                                htm += `
-                                <div class="card" style="border-left:5px solid ${type==='Withdraw'?'#ef4444':'#10b981'}">
-                                    <div style="display:flex; justify-content:space-between; margin-bottom:10px">
-                                        <b>${u[uid].name}</b>
-                                        <b style="color:${type==='Withdraw'?'#ef4444':'#10b981'}">৳${tr.amount}</b>
-                                    </div>
-                                    <div style="font-size:13px; color:#666; margin-bottom:15px">
-                                        ${type==='Task Reward' 
-                                            ? `Task Proof:<br><i style="color:#000">${tr.proof||'No Proof'}</i>` 
-                                            : (type==='Buy' ? `Plan: ${tr.type}<br>TrxID: ${tr.trx}<br>Sender: ${tr.sender}` : `Method: ${tr.method}<br>Number: ${tr.trx}`)}
-                                        <br><small style="color:#999">${tr.date}</small>
-                                    </div>
-                                    <div style="display:flex; gap:10px">
-                                        <button class="btn btn-g" style="flex:1; padding:10px" onclick="act('${uid}','${hid}','Success','${tr.type}',${tr.amount})">Approve</button>
-                                        <button class="btn btn-r" style="flex:1; padding:10px" onclick="act('${uid}','${hid}','Rejected','${tr.type}',${tr.amount})">Reject</button>
-                                    </div>
-                                </div>`;
+                                if(match){
+                                    has = true;
+                                    htm += `
+                                    <div class="card" style="border-left:5px solid ${type==='Withdraw'?'#ef4444':'#10b981'}">
+                                        <div style="display:flex; justify-content:space-between; margin-bottom:10px">
+                                            <b>${u[uid].name}</b> <b style="color:var(--primary)">৳${tr.amount}</b>
+                                        </div>
+                                        <div style="font-size:13px; color:#666; margin-bottom:15px; background:#f9fafb; padding:10px; border-radius:8px">
+                                            ${type==='Task Reward' ? `<b>Proof:</b> ${tr.proof}` : (type==='Buy' ? `Plan: ${tr.type}<br>TrxID: ${tr.trx}<br>Sender: ${tr.sender}` : `Method: ${tr.method}<br>To: ${tr.trx}`)}
+                                        </div>
+                                        <div style="display:flex; gap:10px">
+                                            <button class="btn-sm btn-g" style="flex:1; padding:10px" onclick="act('${uid}','${hid}','Success','${tr.type}',${tr.amount})">Approve</button>
+                                            <button class="btn-sm btn-r" style="flex:1; padding:10px" onclick="act('${uid}','${hid}','Rejected','${tr.type}',${tr.amount})">Reject</button>
+                                        </div>
+                                    </div>`;
+                                }
                             }
                         });
                     });
-                    c.innerHTML = `<div class="page">${has?htm:'<div style="text-align:center;padding:50px;color:#999">কোনো পেন্ডিং রিকোয়েস্ট নেই</div>'}</div>`;
+                    c.innerHTML = has?htm:'<div style="text-align:center;padding:50px;color:#999">No Requests</div>';
+                });
+            }
+            else if(page === 'tasks'){
+                t.innerText = "টাস্ক ম্যানেজ";
+                c.innerHTML = `
+                <div class="card">
+                    <h3>নতুন টাস্ক</h3>
+                    <input id="t-ti" class="inp" style="background:white;color:black;border:1px solid #ddd" placeholder="Title">
+                    <div style="display:flex; gap:10px">
+                        <input id="t-rw" type="number" class="inp" style="background:white;color:black;border:1px solid #ddd" placeholder="Reward">
+                        <select id="t-ty" class="inp" style="background:white;color:black;border:1px solid #ddd"><option value="free">Free</option><option value="vip">All VIP</option><option value="gold">Gold</option><option value="silver">Silver</option></select>
+                    </div>
+                    <input id="t-ln" class="inp" style="background:white;color:black;border:1px solid #ddd" placeholder="Link">
+                    <button class="btn" onclick="addTask()">Add Task</button>
+                </div>
+                <div id="tk-list"></div>`;
+                db.ref('settings/tasks').on('value',s=>{
+                    const t=s.val()||{};
+                    document.getElementById('tk-list').innerHTML = Object.keys(t).map(k=>`<div class="list-item"><div><b>${t[k].title}</b> (${t[k].target})<br><small>৳${t[k].reward}</small></div><button class="btn-sm btn-r" onclick="delTask('${k}')">Del</button></div>`).join('');
                 });
             }
             else if(page === 'settings'){
@@ -268,75 +267,77 @@
                 db.ref('settings').once('value',s=>{
                     const v = s.val()||{};
                     c.innerHTML = `
-                    <div class="page">
-                        <div class="card">
-                            <h3>পেমেন্ট নাম্বার</h3>
-                            <label style="font-size:12px">বিকাশ পার্সোনাল</label>
-                            <input id="s-bk" class="inp" value="${v.config?.bkash||''}">
-                            <label style="font-size:12px">নগদ পার্সোনাল</label>
-                            <input id="s-ng" class="inp" value="${v.config?.nagad||''}">
-                        </div>
-                        <div class="card">
-                            <h3>নোটিশ বোর্ড</h3>
-                            <textarea id="s-nt" class="inp" rows="4">${v.notice||''}</textarea>
-                            <button class="btn" onclick="saveSet()">Save Changes</button>
-                        </div>
+                    <div class="card">
+                        <label>Bkash</label><input id="s-bk" class="inp" style="background:white;color:black;border:1px solid #ddd" value="${v.config?.bkash||''}">
+                        <label>Nagad</label><input id="s-ng" class="inp" style="background:white;color:black;border:1px solid #ddd" value="${v.config?.nagad||''}">
+                        <label>Notice</label><textarea id="s-nt" class="inp" style="background:white;color:black;border:1px solid #ddd" rows="3">${v.notice||''}</textarea>
+                        <button class="btn" onclick="saveSet()">Save</button>
                     </div>`;
                 });
             }
         }
 
-        // ACTIONS
+        // --- ACTIONS ---
         function addTask(){
-            const d = {
-                title: document.getElementById('t-ti').value,
-                reward: parseInt(document.getElementById('t-rw').value),
-                link: document.getElementById('t-ln').value,
-                target: document.getElementById('t-ty').value
-            };
-            if(!d.title) return Swal.fire('Error','সব তথ্য পূরণ করুন');
-            db.ref('settings/tasks').push(d); Swal.fire('Success','টাস্ক যুক্ত হয়েছে','success');
-            document.getElementById('t-ti').value='';
+            const d = { title: document.getElementById('t-ti').value, reward: parseInt(document.getElementById('t-rw').value), link: document.getElementById('t-ln').value, target: document.getElementById('t-ty').value };
+            if(!d.title) return Swal.fire('Error','Fill all');
+            db.ref('settings/tasks').push(d); Swal.fire('Added');
         }
         function delTask(k){ db.ref('settings/tasks/'+k).remove(); }
 
         function act(uid, hid, st, type, amt){
             db.ref(`users/${uid}/history/${hid}`).update({status:st});
-            
             if(st==='Success'){
-                if(type.includes('Buy')){
-                    // VIP Activation
-                    db.ref(`users/${uid}`).update({isVip:true, currentPlan:type.replace('Buy ',''), vipExpire:Date.now()+(30*86400000)});
-                } else if(type === 'Task Reward'){
-                    // Task Approve -> Add Balance
-                    db.ref(`users/${uid}/balance`).transaction(b=>(b||0)+parseInt(amt));
-                }
+                if(type.includes('Buy')) db.ref(`users/${uid}`).update({isVip:true, currentPlan:type.replace('Buy ',''), vipExpire:Date.now()+(30*86400000)});
+                else if(type==='Task Reward') db.ref(`users/${uid}/balance`).transaction(b=>(b||0)+parseInt(amt));
             } else if(st==='Rejected' && type==='Withdraw'){
-                // Withdraw Reject -> Refund Balance
                 db.ref(`users/${uid}/balance`).transaction(b=>(b||0)+parseInt(amt));
             }
-            
-            Swal.fire('Done!', 'স্ট্যাটাস আপডেট হয়েছে', 'success'); 
-            // Reload Correct Page
-            let reloadPg = 'deposits';
-            if(type==='Withdraw') reloadPg='withdraws';
-            if(type==='Task Reward') reloadPg='job_reqs';
-            loadPage(reloadPg); 
-            count();
+            Swal.fire('Done'); loadPage(type==='Task Reward'?'job_reqs':(type==='Withdraw'?'withdraws':'deposits')); count();
         }
 
         function saveSet(){
             db.ref('settings/config').update({ bkash: document.getElementById('s-bk').value, nagad: document.getElementById('s-ng').value });
             db.ref('settings').update({ notice: document.getElementById('s-nt').value });
-            Swal.fire('Saved!', 'সেটিংস আপডেট হয়েছে', 'success');
+            Swal.fire('Saved');
         }
 
-        function edit(uid, old){
-            Swal.fire({title:'নতুন ব্যালেন্স লিখুন', input:'number', inputValue:old}).then(res=>{
-                if(res.value){ db.ref('users/'+uid).update({balance:parseInt(res.value)}); loadPage('users'); }
+        // --- USER MANAGE ---
+        let currentEditUser = '';
+        function openUserModal(uid){
+            currentEditUser = uid;
+            db.ref('users/'+uid).once('value',s=>{
+                const u = s.val();
+                document.getElementById('edit-uid').value = uid;
+                document.getElementById('edit-bal').value = u.balance;
+                document.getElementById('edit-vip').value = u.isVip ? 'true' : 'false';
+                document.getElementById('edit-plan').value = u.currentPlan || '';
+                
+                const banBtn = document.getElementById('btn-ban');
+                banBtn.innerText = u.banned ? "Unban User" : "Ban User";
+                banBtn.style.background = u.banned ? "#10b981" : "#ef4444";
+                
+                document.getElementById('user-modal').style.display = 'flex';
             });
         }
-        function del(uid){ if(confirm('Are you sure?')) db.ref('users/'+uid).remove().then(()=>loadPage('users')); }
+
+        function saveUser(){
+            const b = parseInt(document.getElementById('edit-bal').value);
+            const v = document.getElementById('edit-vip').value === 'true';
+            const p = document.getElementById('edit-plan').value;
+            db.ref('users/'+currentEditUser).update({balance:b, isVip:v, currentPlan:p});
+            document.getElementById('user-modal').style.display='none';
+            Swal.fire('Updated'); loadPage('users');
+        }
+
+        function toggleBan(){
+            db.ref('users/'+currentEditUser).once('value',s=>{
+                const st = s.val().banned ? false : true;
+                db.ref('users/'+currentEditUser).update({banned:st});
+                document.getElementById('user-modal').style.display='none';
+                Swal.fire(st ? 'Banned!' : 'Unbanned!'); loadPage('users');
+            });
+        }
 
         function count(){
             db.ref('users').once('value',s=>{
@@ -350,11 +351,7 @@
                         } 
                     }) 
                 });
-                
-                const setBad = (id,v) => { 
-                    const el = document.getElementById(id);
-                    el.innerText=v; el.style.display=v>0?'inline-block':'none';
-                };
+                const setBad = (id,v) => { document.getElementById(id).innerText=v; document.getElementById(id).style.display=v>0?'inline-block':'none'; };
                 setBad('dep-c',d); setBad('wd-c',w); setBad('job-c',j);
             });
         }
@@ -365,4 +362,3 @@
     </script>
 </body>
 </html>
-
