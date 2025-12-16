@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>টাকার গাছ এডমিন V4.3</title>
+    <title>টাকার গাছ এডমিন V4.4</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -13,7 +13,6 @@
 
     <style>
         :root {
-            /* GREEN GLASS THEME */
             --primary: #10b981; 
             --primary-dark: #047857;
             --bg-body: #F0F2F5;
@@ -26,12 +25,11 @@
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg-body); font-family: 'Inter', 'Hind Siliguri', sans-serif; color: var(--text-main); padding-bottom: 90px; user-select: none; }
 
-        /* --- SPLASH SCREEN --- */
+        /* SPLASH & AUTH */
         #splash-screen { position: fixed; inset: 0; background: var(--bg-body); z-index: 6000; display: flex; justify-content: center; align-items: center; flex-direction: column; }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-30px);} 60% {transform: translateY(-15px);} }
         .animate-bounce { animation: bounce 2s infinite; }
 
-        /* --- AUTH --- */
         #auth-view { position: fixed; inset: 0; background: var(--bg-body); z-index: 5000; display: flex; justify-content: center; align-items: center; padding: 20px; }
         .login-box { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); padding: 40px 30px; border-radius: 24px; width: 100%; max-width: 350px; text-align: center; border: 1px solid white; box-shadow: var(--shadow); }
         .inp { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid #E5E7EB; border-radius: 12px; background: #F9FAFB; font-size: 15px; transition: 0.3s; }
@@ -39,15 +37,11 @@
         .btn { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3); }
         .btn:active { transform: scale(0.98); }
 
-        /* --- HEADER --- */
-        .header {
-            position: sticky; top: 0; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px);
-            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(0,0,0,0.05); z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-        }
+        /* HEADER */
+        .header { position: sticky; top: 0; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
         .header h2 { margin: 0; font-size: 18px; display: flex; align-items: center; gap: 8px; color: var(--text-main); }
         
-        /* --- STATS CARD --- */
+        /* CONTENT */
         .content-area { padding: 15px; display: none; animation: fadeIn 0.3s; }
         .content-area.active { display: block; }
         @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
@@ -57,43 +51,40 @@
         .stat-box h1 { margin: 0; font-size: 28px; color: var(--text-main); }
         .stat-box p { margin: 5px 0 0; font-size: 13px; color: var(--text-muted); font-weight: 600; }
 
-        /* --- GRID MENU (GREEN STYLE) --- */
+        /* GRID MENU */
         .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
-        .menu-btn {
-            background: white; border: 1px solid #F3F4F6; border-radius: 16px;
-            padding: 15px 5px; text-align: center; cursor: pointer; transition: 0.2s;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 90px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-        }
+        .menu-btn { background: white; border: 1px solid #F3F4F6; border-radius: 16px; padding: 15px 5px; text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 90px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         .menu-btn:active { transform: scale(0.95); background: #ECFDF5; border-color: var(--primary); }
         .menu-btn i { font-size: 24px; color: var(--primary); margin-bottom: 8px; }
         .menu-btn span { font-size: 11px; color: var(--text-main); font-weight: 600; }
 
-        /* --- LISTS & CARDS --- */
+        /* LISTS & CARDS */
         .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: var(--shadow); border: 1px solid #F3F4F6; }
         .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #F9FAFB; border-radius: 12px; margin-bottom: 8px; border: 1px solid #E5E7EB; }
         
         .badge { padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
         .badge-vip { background: #FEF3C7; color: #D97706; }
+        .badge-success { background: #D1FAE5; color: #059669; }
+        .badge-reject { background: #FEE2E2; color: #DC2626; }
         
         .btn-sm { padding: 6px 12px; border-radius: 8px; font-size: 12px; border: none; color: white; cursor: pointer; margin-left: 5px; font-weight: 600; }
-        .btn-g { background: #10b981; } .btn-r { background: #ef4444; } .btn-b { background: #3b82f6; }
+        .btn-g { background: #10b981; } .btn-r { background: #ef4444; } .btn-b { background: #3b82f6; } .btn-y { background: #F59E0B; }
 
-        /* --- BOTTOM NAV --- */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255,255,255,0.95);
-            border-top: 1px solid #E5E7EB; padding: 10px 15px; display: flex; justify-content: space-around;
-            z-index: 1000; padding-bottom: 15px; backdrop-filter: blur(10px); border-radius: 20px 20px 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
-        }
+        /* NAV */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255,255,255,0.95); border-top: 1px solid #E5E7EB; padding: 10px 15px; display: flex; justify-content: space-around; z-index: 1000; padding-bottom: 15px; backdrop-filter: blur(10px); border-radius: 20px 20px 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); }
         .nav-item { text-align: center; color: var(--text-muted); cursor: pointer; transition: 0.2s; position: relative; }
         .nav-item i { font-size: 22px; margin-bottom: 4px; display: block; }
         .nav-item span { font-size: 10px; font-weight: 700; }
         .nav-item.active { color: var(--primary); transform: translateY(-5px); }
         .nav-badge { position: absolute; top: -5px; right: -5px; background: #EF4444; color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: bold; }
 
-        /* --- MODAL --- */
+        /* MODAL */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; }
         .modal-box { background: white; width: 100%; max-width: 400px; padding: 25px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+        .receipt-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F3F4F6; font-size: 14px; }
+        .receipt-row:last-child { border-bottom: none; }
+        .receipt-row b { color: var(--text-main); }
+        .receipt-row span { color: var(--text-muted); }
     </style>
 </head>
 <body>
@@ -107,10 +98,10 @@
     <div id="auth-view" style="display: none;">
         <div class="login-box">
             <i class="fas fa-user-shield" style="font-size: 50px; color: var(--primary); margin-bottom: 20px;"></i>
-            <h2 style="margin:0 0 20px; color:var(--text-main)">টাকার গাছ এডমিন প্যানেল</h2>
+            <h2 style="margin:0 0 20px; color:var(--text-main)">এডমিন লগইন</h2>
             <input id="u" class="inp" placeholder="ইউজারনেম">
             <input id="p" type="password" class="inp" placeholder="পাসওয়ার্ড">
-            <button class="btn" onclick="login()">লগইন করুন</button>
+            <button class="btn" onclick="login()">প্রবেশ করুন</button>
         </div>
     </div>
 
@@ -141,14 +132,15 @@
                 
                 <div class="menu-btn" onclick="nav('tasks')"><i class="fas fa-tasks"></i><span>টাস্ক</span></div>
                 <div class="menu-btn" onclick="nav('job_reqs')"><i class="fas fa-briefcase"></i><span>জব রিকোয়েস্ট</span></div>
-                <div class="menu-btn" onclick="nav('settings')"><i class="fas fa-cogs"></i><span>সেটিংস</span></div>
-                <div class="menu-btn" onclick="logout()" style="color:#ef4444"><i class="fas fa-sign-out-alt" style="color:#ef4444"></i><span>লগ আউট</span></div>
+                <div class="menu-btn" onclick="nav('history')"><i class="fas fa-history" style="color:#F59E0B"></i><span>হিস্টরি</span></div> <div class="menu-btn" onclick="nav('settings')"><i class="fas fa-cogs"></i><span>সেটিংস</span></div>
             </div>
 
             <div class="card">
                 <h3 style="margin-top:0; font-size:16px">নতুন জয়েনিং</h3>
                 <div id="recent-list"></div>
             </div>
+            
+            <button class="btn" style="background:#EF4444; margin-top:20px" onclick="logout()">লগ আউট</button>
         </div>
 
         <div id="dynamic-view" class="content-area">
@@ -166,32 +158,41 @@
                 <i class="fas fa-check-circle"></i><span>এপ্রুভাল</span>
                 <span id="nav-badge" class="nav-badge" style="display:none">0</span>
             </div>
-            <div class="nav-item" onclick="nav('settings')"><i class="fas fa-user-cog"></i><span>এডমিন</span></div>
+            <div class="nav-item" onclick="nav('history')"><i class="fas fa-history"></i><span>হিস্টরি</span></div>
         </div>
     </div>
 
     <div id="user-modal" class="modal"><div class="modal-box">
         <h3>ইউজার এডিট</h3>
         <input type="hidden" id="e-uid">
-        <label style="font-size:12px; font-weight:bold; color:#666">ব্যালেন্স</label>
-        <input id="e-bal" type="number" class="inp">
-        <label style="font-size:12px; font-weight:bold; color:#666">প্ল্যান নাম</label>
-        <input id="e-plan" class="inp" placeholder="যেমন: Gold VIP">
+        <label>ব্যালেন্স</label><input id="e-bal" type="number" class="inp">
+        <label>প্ল্যান</label><input id="e-plan" class="inp">
         <div style="display:flex; gap:10px; margin-top:10px">
-            <button class="btn" style="background:#EF4444" onclick="doBan()" id="ban-btn">ব্যান করুন</button>
-            <button class="btn" onclick="saveUser()">সেভ করুন</button>
+            <button class="btn" style="background:#EF4444" onclick="doBan()" id="ban-btn">ব্যান</button>
+            <button class="btn" onclick="saveUser()">সেভ</button>
         </div>
         <button onclick="closeModal('user-modal')" style="background:transparent; border:none; color:#999; width:100%; margin-top:15px">বন্ধ করুন</button>
     </div></div>
 
     <div id="plan-modal" class="modal"><div class="modal-box">
         <h3>নতুন প্ল্যান</h3>
-        <input id="p-name" class="inp" placeholder="নাম (যেমন: Platinum)">
-        <input id="p-price" type="number" class="inp" placeholder="দাম (টাকা)">
-        <input id="p-inc" type="number" class="inp" placeholder="দৈনিক ইনকাম (টাকা)">
-        <input id="p-val" type="number" class="inp" placeholder="মেয়াদ (দিন)">
+        <input id="p-name" class="inp" placeholder="নাম">
+        <input id="p-price" type="number" class="inp" placeholder="দাম">
+        <input id="p-inc" type="number" class="inp" placeholder="ইনকাম">
+        <input id="p-val" type="number" class="inp" placeholder="মেয়াদ">
         <button class="btn" onclick="savePlan()">তৈরি করুন</button>
         <button onclick="closeModal('plan-modal')" style="background:transparent; border:none; color:#999; width:100%; margin-top:15px">বন্ধ করুন</button>
+    </div></div>
+
+    <div id="detail-modal" class="modal"><div class="modal-box">
+        <div style="text-align:center; margin-bottom:20px">
+            <div style="width:60px; height:60px; background:#F3F4F6; border-radius:50%; display:flex; justify-content:center; align-items:center; margin:0 auto 10px">
+                <i class="fas fa-file-invoice" style="font-size:25px; color:var(--text-muted)"></i>
+            </div>
+            <h3 style="margin:0">লেনদেনের বিস্তারিত</h3>
+        </div>
+        <div id="rec-content"></div>
+        <button onclick="closeModal('detail-modal')" class="btn" style="margin-top:20px">ঠিক আছে</button>
     </div></div>
 
     <script>
@@ -200,20 +201,9 @@
         firebase.initializeApp(firebaseConfig); const db = firebase.database();
         const CRED = { u: 'JIHAD', p: '198373' };
 
-        // INIT
-        window.onload = () => { 
-            setTimeout(() => { 
-                document.getElementById('splash-screen').style.display='none'; 
-                if(sessionStorage.getItem('adm_ok')) showDash(); 
-                else document.getElementById('auth-view').style.display='flex';
-            }, 3000); 
-        };
+        window.onload = () => { setTimeout(() => { document.getElementById('splash-screen').style.display='none'; if(sessionStorage.getItem('adm_ok')) showDash(); else document.getElementById('auth-view').style.display='flex'; }, 3000); };
 
-        function login(){
-            const u = document.getElementById('u').value, p = document.getElementById('p').value;
-            if(u===CRED.u && p===CRED.p) { sessionStorage.setItem('adm_ok',true); showDash(); }
-            else Swal.fire('ভুল তথ্য','ইউজারনেম বা পাসওয়ার্ড সঠিক নয়','error');
-        }
+        function login(){ const u=document.getElementById('u').value, p=document.getElementById('p').value; if(u===CRED.u && p===CRED.p) { sessionStorage.setItem('adm_ok',true); showDash(); } else Swal.fire('ভুল','তথ্য সঠিক নয়','error'); }
         function logout(){ sessionStorage.removeItem('adm_ok'); location.reload(); }
         function showDash(){ document.getElementById('auth-view').style.display='none'; document.getElementById('dashboard').style.display='block'; loadHomeData(); count(); }
 
@@ -235,6 +225,8 @@
             });
         }
 
+        let allHistoryData = []; // Store for receipt view
+
         function nav(page){
             document.getElementById('home-view').classList.remove('active');
             const dv = document.getElementById('dynamic-view'); dv.classList.add('active');
@@ -247,29 +239,60 @@
                 title.innerText = "সকল ইউজার";
                 db.ref('users').once('value',s=>{
                     const u = s.val()||{};
-                    cont.innerHTML = `<input onkeyup="search(this)" class="inp" placeholder="নাম্বার দিয়ে খুঁজুন...">
+                    cont.innerHTML = `<input onkeyup="search(this)" class="inp" placeholder="খুঁজুন...">
                     <div id="u-list">${Object.keys(u).map(k=>`<div class="list-item user-row" data-ph="${u[k].phone}"><div><b>${u[k].name}</b> ${u[k].isVip?'<span class="badge badge-vip">VIP</span>':''}<br><small>${u[k].phone}</small></div><div><b style="color:var(--primary)">৳${u[k].balance}</b> <button class="btn-sm btn-b" onclick="editU('${k}')"><i class="fas fa-pen"></i></button></div></div>`).join('')}</div>`;
                 });
             }
-            else if(page === 'plans'){
-                title.innerText = "ভিআইপি প্ল্যান";
-                cont.innerHTML = `<button class="btn" style="width:100%;margin-bottom:15px" onclick="document.getElementById('plan-modal').style.display='flex'">+ নতুন প্ল্যান যোগ করুন</button><div id="p-list"></div>`;
-                db.ref('settings/vipPlans').on('value',s=>{
-                    cont.querySelector('#p-list').innerHTML = Object.keys(s.val()||{}).map(k=>{
-                        const p=s.val()[k];
-                        return `<div class="card" style="text-align:center;border:1px solid var(--primary)">
-                            <h3 style="margin:0">${p.name}</h3>
-                            <h1 style="color:var(--primary);margin:10px 0">৳${p.price}</h1>
-                            <p style="font-size:12px;color:#666">ইনকাম: ৳${p.dailyIncome}/দিন | মেয়াদ: ${p.validity} দিন</p>
-                            <button class="btn-sm btn-r" style="margin-top:10px" onclick="delPlan('${k}')"><i class="fas fa-trash"></i> ডিলিট</button>
-                        </div>`;
-                    }).join('');
+            else if(page === 'history'){ // --- NEW HISTORY SECTION ---
+                title.innerText = "লেনদেন হিস্টরি";
+                db.ref('users').once('value',s=>{
+                    const u = s.val()||{};
+                    let histList = [];
+                    allHistoryData = []; // Reset global store
+
+                    Object.keys(u).forEach(uid=>{
+                        const h = u[uid].history || {};
+                        Object.keys(h).forEach(hid=>{
+                            const tr = h[hid];
+                            // Show ONLY Success or Rejected (Completed actions)
+                            if(tr.status !== 'Pending'){
+                                const item = { ...tr, uid: uid, name: u[uid].name, phone: u[uid].phone };
+                                histList.push(item);
+                            }
+                        });
+                    });
+
+                    // Sort by Date (descending) - rudimentary sort assumes standard date string
+                    histList.reverse(); 
+                    allHistoryData = histList; // Save for modal
+
+                    if(histList.length === 0){
+                        cont.innerHTML = '<div style="text-align:center;padding:30px;color:#999">কোনো হিস্টরি নেই</div>';
+                    } else {
+                        cont.innerHTML = histList.map((item, index) => {
+                            let badgeClass = item.status === 'Success' ? 'badge-success' : 'badge-reject';
+                            let icon = item.type.includes('Buy') ? 'fa-arrow-down' : (item.type==='Withdraw'?'fa-arrow-up':'fa-check-circle');
+                            return `
+                            <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:15px">
+                                <div>
+                                    <div style="font-weight:bold; font-size:14px; margin-bottom:4px"><i class="fas ${icon}" style="color:#666"></i> ${item.type}</div>
+                                    <div style="font-size:12px; color:#666">${item.name} (${item.phone})</div>
+                                    <div style="font-size:10px; color:#999; margin-top:2px">${item.date}</div>
+                                </div>
+                                <div style="text-align:right">
+                                    <div style="font-weight:bold; font-size:16px; color:var(--text-main)">৳${item.amount}</div>
+                                    <span class="badge ${badgeClass}" style="font-size:9px; display:inline-block; margin-top:4px">${item.status}</span>
+                                    <br>
+                                    <button class="btn-sm btn-b" style="margin-top:5px; font-size:10px; padding:4px 8px" onclick="showReceipt(${index})">বিস্তারিত দেখুন</button>
+                                </div>
+                            </div>`;
+                        }).join('');
+                    }
                 });
             }
             else if(page === 'deposits' || page === 'withdraws' || page === 'job_reqs'){
                 const type = page==='job_reqs'?'Job':(page==='deposits'?'Deposit':'Withdraw');
                 title.innerText = type === 'Job' ? 'জব রিকোয়েস্ট' : (type==='Deposit'?'ডিপোজিট রিকোয়েস্ট':'উইথড্র রিকোয়েস্ট');
-                
                 db.ref('users').once('value',s=>{
                     let htm=''; const u=s.val()||{};
                     Object.keys(u).forEach(uid=>{
@@ -291,106 +314,123 @@
                             }
                         });
                     });
-                    cont.innerHTML = htm || '<div style="text-align:center;padding:30px;color:#999">কোনো রিকোয়েস্ট নেই</div>';
+                    cont.innerHTML = htm || '<div style="text-align:center;padding:30px;color:#999">কোনো পেন্ডিং রিকোয়েস্ট নেই</div>';
+                });
+            }
+            // ... (Tasks, Settings, Plans code remains exactly the same as V4.3) ...
+            else if(page === 'plans'){
+                title.innerText = "ভিআইপি প্ল্যান";
+                cont.innerHTML = `<button class="btn" style="width:100%;margin-bottom:15px" onclick="document.getElementById('plan-modal').style.display='flex'">+ নতুন প্ল্যান</button><div id="p-list"></div>`;
+                db.ref('settings/vipPlans').on('value',s=>{
+                    cont.querySelector('#p-list').innerHTML = Object.keys(s.val()||{}).map(k=>{ const p=s.val()[k]; return `<div class="card" style="text-align:center;border:1px solid var(--primary)"><h3 style="margin:0">${p.name}</h3><h1 style="color:var(--primary);margin:10px 0">৳${p.price}</h1><p style="font-size:12px;color:#666">ইনকাম: ৳${p.dailyIncome}/দিন | মেয়াদ: ${p.validity} দিন</p><button class="btn-sm btn-r" style="margin-top:10px" onclick="delPlan('${k}')">ডিলিট</button></div>`; }).join('');
                 });
             }
             else if(page === 'settings'){
                 title.innerText = "সেটিংস";
-                db.ref('settings').once('value',s=>{
-                    const v=s.val()||{};
-                    cont.innerHTML = `<div class="card"><label>বিকাশ নাম্বার</label><input id="s-bk" class="inp" value="${v.config?.bkash||''}"><label>নগদ নাম্বার</label><input id="s-ng" class="inp" value="${v.config?.nagad||''}"><label>নোটিশ</label><textarea id="s-nt" class="inp" rows="4">${v.notice||''}</textarea><button class="btn" onclick="saveSet()">সেভ করুন</button></div>`;
-                });
+                db.ref('settings').once('value',s=>{ const v=s.val()||{}; cont.innerHTML = `<div class="card"><label>বিকাশ</label><input id="s-bk" class="inp" value="${v.config?.bkash||''}"><label>নগদ</label><input id="s-ng" class="inp" value="${v.config?.nagad||''}"><label>নোটিশ</label><textarea id="s-nt" class="inp" rows="4">${v.notice||''}</textarea><button class="btn" onclick="saveSet()">সেভ করুন</button></div>`; });
             }
             else if(page === 'tasks'){
                 title.innerText = "টাস্ক";
-                // --- NEW PROOF INSTRUCTION FIELD ---
-                cont.innerHTML = `
-                <div class="card">
-                    <h3>নতুন টাস্ক</h3>
-                    <input id="t-ti" class="inp" placeholder="শিরোনাম">
-                    <input id="t-rw" type="number" class="inp" placeholder="টাকা">
-                    <input id="t-ln" class="inp" placeholder="লিংক">
-                    <input id="t-hint" class="inp" placeholder="প্রুফ ইনস্ট্রাকশন (যেমন: আপনার টেলিগ্রাম ইউজারনেম দিন)" style="border-color:var(--primary)">
-                    <select id="t-tg" class="inp">
-                        <option value="free">ফ্রি ইউজার</option>
-                        <option value="vip">সকল VIP</option>
-                        <option value="silver">Silver</option>
-                        <option value="gold">Gold</option>
-                        <option value="platinum">Platinum</option>
-                        <option value="diamond">Diamond</option>
-                    </select>
-                    <button class="btn" onclick="addTask()">টাস্ক দিন</button>
-                </div>
-                <div id="t-list"></div>`;
-                
-                db.ref('settings/tasks').on('value',s=>{
-                    const t=s.val()||{};
-                    cont.querySelector('#t-list').innerHTML = Object.keys(t).map(k=>`<div class="list-item"><div><b>${t[k].title}</b> (${t[k].target})</div><button class="btn-sm btn-r" onclick="delTask('${k}')">ডিলিট</button></div>`).join('');
-                });
+                cont.innerHTML = `<div class="card"><h3>নতুন টাস্ক</h3><input id="t-ti" class="inp" placeholder="শিরোনাম"><input id="t-rw" type="number" class="inp" placeholder="টাকা"><input id="t-ln" class="inp" placeholder="লিংক"><input id="t-hint" class="inp" placeholder="প্রুফ ইনস্ট্রাকশন (যেমন: ইউজারনেম দিন)" style="border-color:var(--primary)"><select id="t-tg" class="inp"><option value="free">ফ্রি</option><option value="vip">সকল VIP</option><option value="silver">Silver</option><option value="gold">Gold</option><option value="platinum">Platinum</option><option value="diamond">Diamond</option></select><button class="btn" onclick="addTask()">টাস্ক দিন</button></div><div id="t-list"></div>`;
+                db.ref('settings/tasks').on('value',s=>{ const t=s.val()||{}; cont.querySelector('#t-list').innerHTML = Object.keys(t).map(k=>`<div class="list-item"><div><b>${t[k].title}</b> (${t[k].target})</div><button class="btn-sm btn-r" onclick="delTask('${k}')">ডিলিট</button></div>`).join(''); });
             }
         }
 
-        // ACTIONS
-        function savePlan(){
-            const n=document.getElementById('p-name').value, p=document.getElementById('p-price').value, i=document.getElementById('p-inc').value, v=document.getElementById('p-val').value;
-            if(!n||!p) return Swal.fire('ভুল','সব তথ্য দিন','error');
-            db.ref('settings/vipPlans').push({name:n, price:parseInt(p), dailyIncome:parseInt(i), validity:parseInt(v)});
-            closeModal('plan-modal'); Swal.fire('সফল','প্ল্যান তৈরি হয়েছে','success');
+        // --- DETAILS / RECEIPT LOGIC ---
+        function showReceipt(index){
+            const data = allHistoryData[index];
+            const content = document.getElementById('rec-content');
+            
+            // Build Receipt HTML
+            content.innerHTML = `
+                <div class="receipt-row"><span>ইউজার</span> <b>${data.name}</b></div>
+                <div class="receipt-row"><span>ফোন</span> <b>${data.phone}</b></div>
+                <div class="receipt-row"><span>ধরণ</span> <b>${data.type}</b></div>
+                <div class="receipt-row"><span>পরিমাণ</span> <b style="color:var(--primary)">৳${data.amount}</b></div>
+                <div class="receipt-row"><span>স্ট্যাটাস</span> <b style="color:${data.status==='Success'?'green':'red'}">${data.status}</b></div>
+                <div class="receipt-row"><span>তারিখ</span> <b>${data.date}</b></div>
+                
+                <div style="background:#F9FAFB; padding:10px; border-radius:10px; margin-top:15px; font-size:12px; color:#666; word-break:break-all">
+                    <b>বিস্তারিত / প্রুফ:</b><br>
+                    ${data.proof || data.trx || data.sender || data.method || 'N/A'}
+                </div>
+            `;
+            document.getElementById('detail-modal').style.display = 'flex';
         }
-        function delPlan(k){ if(confirm('মুছে ফেলবেন?')) db.ref('settings/vipPlans/'+k).remove(); }
-        
+        // --- ACTIONS ---
+        function savePlan(){ 
+            const n=document.getElementById('p-name').value, p=document.getElementById('p-price').value, i=document.getElementById('p-inc').value, v=document.getElementById('p-val').value; 
+            if(!n||!p) return Swal.fire('ভুল','সব তথ্য দিন','error'); 
+            db.ref('settings/vipPlans').push({name:n, price:parseInt(p), dailyIncome:parseInt(i), validity:parseInt(v)}); 
+            closeModal('plan-modal'); Swal.fire('সফল'); 
+        }
+
+        function delPlan(k){ 
+            if(confirm('মুছে ফেলবেন?')) db.ref('settings/vipPlans/'+k).remove(); 
+        }
+
         let editUid='';
-        function editU(uid){
-            editUid=uid; db.ref('users/'+uid).once('value',s=>{
-                const u=s.val(); document.getElementById('e-bal').value=u.balance; document.getElementById('e-plan').value=u.currentPlan||'';
-                document.getElementById('ban-btn').innerText = u.banned ? "আনব্যান করুন" : "ব্যান করুন";
-                document.getElementById('user-modal').style.display='flex';
-            });
-        }
-        function saveUser(){ db.ref('users/'+editUid).update({balance:parseInt(document.getElementById('e-bal').value), currentPlan:document.getElementById('e-plan').value, isVip:!!document.getElementById('e-plan').value}); closeModal('user-modal'); Swal.fire('আপডেট হয়েছে'); nav('users'); }
-        function doBan(){ db.ref('users/'+editUid).once('value',s=>{ db.ref('users/'+editUid).update({banned:!s.val().banned}); closeModal('user-modal'); Swal.fire('সম্পন্ন'); nav('users'); }); }
-
-        function act(uid, hid, st, type, amt){
-            db.ref(`users/${uid}/history/${hid}`).update({status:st});
-            if(st==='Success'){
-                if(type.includes('Buy')) db.ref(`users/${uid}`).update({isVip:true, currentPlan:type.replace('Buy ',''), vipExpire:Date.now()+(30*86400000)});
-                else if(type==='Task Reward') db.ref(`users/${uid}/balance`).transaction(b=>(b||0)+parseInt(amt));
-            } else if(st==='Rejected' && type==='Withdraw') db.ref(`users/${uid}/balance`).transaction(b=>(b||0)+parseInt(amt));
-            Swal.fire('সম্পন্ন'); nav(type==='Task Reward'?'job_reqs':(type==='Withdraw'?'withdraws':'deposits'));
-        }
-        function saveSet(){ db.ref('settings/config').update({ bkash: document.getElementById('s-bk').value, nagad: document.getElementById('s-ng').value }); db.ref('settings').update({ notice: document.getElementById('s-nt').value }); Swal.fire('সেভ হয়েছে'); }
-        
-        // --- ADD TASK WITH HINT ---
-        function addTask(){ 
-            const ti = document.getElementById('t-ti').value;
-            const rw = parseInt(document.getElementById('t-rw').value);
-            const ln = document.getElementById('t-ln').value;
-            const tg = document.getElementById('t-tg').value;
-            const hint = document.getElementById('t-hint').value || 'আপনার প্রুফ দিন'; // Default if empty
-
-            if(!ti || !rw || !ln) return Swal.fire('সব তথ্য দিন');
-
-            db.ref('settings/tasks').push({ 
-                title: ti, 
-                reward: rw, 
-                link: ln, 
-                target: tg,
-                proofHint: hint // Saving the hint
+        function editU(uid){ 
+            editUid=uid; 
+            db.ref('users/'+uid).once('value',s=>{ 
+                const u=s.val(); 
+                document.getElementById('e-bal').value=u.balance; 
+                document.getElementById('e-plan').value=u.currentPlan||''; 
+                document.getElementById('ban-btn').innerText = u.banned ? "আনব্যান করুন" : "ব্যান করুন"; 
+                document.getElementById('user-modal').style.display='flex'; 
             }); 
+        }
+
+        function saveUser(){ 
+            db.ref('users/'+editUid).update({balance:parseInt(document.getElementById('e-bal').value), currentPlan:document.getElementById('e-plan').value, isVip:!!document.getElementById('e-plan').value}); 
+            closeModal('user-modal'); Swal.fire('আপডেট হয়েছে'); nav('users'); 
+        }
+
+        function doBan(){ 
+            db.ref('users/'+editUid).once('value',s=>{ 
+                db.ref('users/'+editUid).update({banned:!s.val().banned}); 
+                closeModal('user-modal'); Swal.fire('সম্পন্ন'); nav('users'); 
+            }); 
+        }
+
+        function act(uid, hid, st, type, amt){ 
+            db.ref(`users/${uid}/history/${hid}`).update({status:st}); 
+            if(st==='Success'){ 
+                if(type.includes('Buy')) db.ref(`users/${uid}`).update({isVip:true, currentPlan:type.replace('Buy ',''), vipExpire:Date.now()+(30*86400000)}); 
+                else if(type==='Task Reward') db.ref(`users/${uid}/balance`).transaction(b=>(b||0)+parseInt(amt)); 
+            } else if(st==='Rejected' && type==='Withdraw') db.ref(`users/${uid}/balance`).transaction(b=>(b||0)+parseInt(amt)); 
+            Swal.fire('সম্পন্ন'); nav(type==='Task Reward'?'job_reqs':(type==='Withdraw'?'withdraws':'deposits')); 
+        }
+
+        function saveSet(){ 
+            db.ref('settings/config').update({ bkash: document.getElementById('s-bk').value, nagad: document.getElementById('s-ng').value }); 
+            db.ref('settings').update({ notice: document.getElementById('s-nt').value }); 
+            Swal.fire('সেভ হয়েছে'); 
+        }
+
+        function addTask(){ 
+            const ti = document.getElementById('t-ti').value, rw = parseInt(document.getElementById('t-rw').value), ln = document.getElementById('t-ln').value, tg = document.getElementById('t-tg').value, hint = document.getElementById('t-hint').value || 'আপনার প্রুফ দিন'; 
+            if(!ti || !rw || !ln) return Swal.fire('সব তথ্য দিন'); 
+            db.ref('settings/tasks').push({ title: ti, reward: rw, link: ln, target: tg, proofHint: hint }); 
             Swal.fire('টাস্ক দেওয়া হয়েছে'); 
         }
 
         function delTask(k){ db.ref('settings/tasks/'+k).remove(); }
 
         function closeModal(id){ document.getElementById(id).style.display='none'; }
-        function count(){
-            db.ref('users').once('value',s=>{
-                let c=0; const u=s.val()||{};
-                Object.values(u).forEach(x=>{ if(x.history) Object.values(x.history).forEach(h=>{ if(h.status==='Pending' && h.type!=='Task Reward') c++; }) });
-                const b=document.getElementById('nav-badge'); b.innerText=c; b.style.display=c>0?'block':'none';
-            });
+
+        function count(){ 
+            db.ref('users').once('value',s=>{ 
+                let c=0; const u=s.val()||{}; 
+                Object.values(u).forEach(x=>{ if(x.history) Object.values(x.history).forEach(h=>{ if(h.status==='Pending' && h.type!=='Task Reward') c++; }) }); 
+                const b=document.getElementById('nav-badge'); b.innerText=c; b.style.display=c>0?'block':'none'; 
+            }); 
         }
-        function search(e){ const v=e.value.toLowerCase(); document.querySelectorAll('.user-row').forEach(r=>r.style.display=r.dataset.ph.includes(v)?'flex':'none'); }
+
+        function search(e){ 
+            const v=e.value.toLowerCase(); 
+            document.querySelectorAll('.user-row').forEach(r=>r.style.display=r.dataset.ph.includes(v)?'flex':'none'); 
+        }
     </script>
 </body>
 </html>
