@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>টাকার গাছ এডমিন V4.2</title>
+    <title>টাকার গাছ এডমিন V4.3</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -303,7 +303,26 @@
             }
             else if(page === 'tasks'){
                 title.innerText = "টাস্ক";
-                cont.innerHTML = `<div class="card"><h3>নতুন টাস্ক</h3><input id="t-ti" class="inp" placeholder="শিরোনাম"><input id="t-rw" type="number" class="inp" placeholder="টাকা"><input id="t-ln" class="inp" placeholder="লিংক"><select id="t-tg" class="inp"><option value="free">ফ্রি ইউজার</option><option value="vip">সকল VIP</option><option value="silver">Silver</option><option value="gold">Gold</option><option value="platinum">Platinum</option><option value="diamond">Diamond</option></select><button class="btn" onclick="addTask()">টাস্ক দিন</button></div><div id="t-list"></div>`;
+                // --- NEW PROOF INSTRUCTION FIELD ---
+                cont.innerHTML = `
+                <div class="card">
+                    <h3>নতুন টাস্ক</h3>
+                    <input id="t-ti" class="inp" placeholder="শিরোনাম">
+                    <input id="t-rw" type="number" class="inp" placeholder="টাকা">
+                    <input id="t-ln" class="inp" placeholder="লিংক">
+                    <input id="t-hint" class="inp" placeholder="প্রুফ ইনস্ট্রাকশন (যেমন: আপনার টেলিগ্রাম ইউজারনেম দিন)" style="border-color:var(--primary)">
+                    <select id="t-tg" class="inp">
+                        <option value="free">ফ্রি ইউজার</option>
+                        <option value="vip">সকল VIP</option>
+                        <option value="silver">Silver</option>
+                        <option value="gold">Gold</option>
+                        <option value="platinum">Platinum</option>
+                        <option value="diamond">Diamond</option>
+                    </select>
+                    <button class="btn" onclick="addTask()">টাস্ক দিন</button>
+                </div>
+                <div id="t-list"></div>`;
+                
                 db.ref('settings/tasks').on('value',s=>{
                     const t=s.val()||{};
                     cont.querySelector('#t-list').innerHTML = Object.keys(t).map(k=>`<div class="list-item"><div><b>${t[k].title}</b> (${t[k].target})</div><button class="btn-sm btn-r" onclick="delTask('${k}')">ডিলিট</button></div>`).join('');
@@ -340,7 +359,27 @@
             Swal.fire('সম্পন্ন'); nav(type==='Task Reward'?'job_reqs':(type==='Withdraw'?'withdraws':'deposits'));
         }
         function saveSet(){ db.ref('settings/config').update({ bkash: document.getElementById('s-bk').value, nagad: document.getElementById('s-ng').value }); db.ref('settings').update({ notice: document.getElementById('s-nt').value }); Swal.fire('সেভ হয়েছে'); }
-        function addTask(){ db.ref('settings/tasks').push({ title:document.getElementById('t-ti').value, reward:parseInt(document.getElementById('t-rw').value), link:document.getElementById('t-ln').value, target:document.getElementById('t-tg').value }); Swal.fire('টাস্ক দেওয়া হয়েছে'); }
+        
+        // --- ADD TASK WITH HINT ---
+        function addTask(){ 
+            const ti = document.getElementById('t-ti').value;
+            const rw = parseInt(document.getElementById('t-rw').value);
+            const ln = document.getElementById('t-ln').value;
+            const tg = document.getElementById('t-tg').value;
+            const hint = document.getElementById('t-hint').value || 'আপনার প্রুফ দিন'; // Default if empty
+
+            if(!ti || !rw || !ln) return Swal.fire('সব তথ্য দিন');
+
+            db.ref('settings/tasks').push({ 
+                title: ti, 
+                reward: rw, 
+                link: ln, 
+                target: tg,
+                proofHint: hint // Saving the hint
+            }); 
+            Swal.fire('টাস্ক দেওয়া হয়েছে'); 
+        }
+
         function delTask(k){ db.ref('settings/tasks/'+k).remove(); }
 
         function closeModal(id){ document.getElementById(id).style.display='none'; }
