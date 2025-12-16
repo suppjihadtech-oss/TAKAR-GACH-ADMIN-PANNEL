@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Takar Gach Admin V3.1 Platinum</title>
+    <title>Admin V4.0 Mobile Pro</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -13,157 +13,135 @@
 
     <style>
         :root {
-            --primary: #10b981; --dark: #0f172a; --dark-sec: #1e293b; --light: #f1f5f9; --white: #ffffff;
-            --sidebar-w: 260px;
+            --primary: #10b981; --dark: #0f172a; --dark-card: #1e293b; --text: #f8fafc; --text-muted: #94a3b8;
+            --glass: rgba(30, 41, 59, 0.7);
         }
-        * { box-sizing: border-box; outline: none; text-decoration: none; font-family: 'Inter', 'Hind Siliguri', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: var(--light); height: 100vh; overflow: hidden; display: flex; color: var(--dark); }
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: var(--dark); font-family: 'Inter', 'Hind Siliguri', sans-serif; color: var(--text); padding-bottom: 90px; }
 
-        /* --- AUTH SCREEN --- */
+        /* --- AUTH --- */
         #auth-view { position: fixed; inset: 0; background: var(--dark); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .login-box { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(10px); padding: 40px 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; color: white; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
-        .inp { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #334155; border-radius: 10px; font-size: 15px; background: #0f172a; color: white; transition: 0.3s; }
-        .inp:focus { border-color: var(--primary); }
-        .btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
-        .btn:active { transform: scale(0.98); }
+        .login-box { background: var(--dark-card); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; border: 1px solid #334155; }
+        .inp { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #334155; border-radius: 10px; background: #0f172a; color: white; font-size: 15px; }
+        .btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 16px; cursor: pointer; }
 
-        /* --- SIDEBAR (SCREENSHOT STYLE) --- */
-        .sidebar {
-            position: fixed; top: 0; left: -280px; width: var(--sidebar-w); height: 100%; 
-            background: var(--dark); color: white; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            z-index: 1000; display: flex; flex-direction: column;
-            box-shadow: 5px 0 15px rgba(0,0,0,0.2); padding-right: 15px;
-        }
-        .sidebar.active { left: 0; }
-        .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 900; display: none; }
-        .sidebar-overlay.active { display: block; }
-
-        .brand { padding: 30px 25px; font-size: 22px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-        
-        .menu { padding: 10px 0; flex: 1; overflow-y: auto; }
-        .menu-item { 
-            padding: 14px 25px; margin-bottom: 5px; cursor: pointer; 
-            display: flex; align-items: center; gap: 15px; color: #94a3b8; font-size: 15px; font-weight: 600; transition: 0.2s;
-        }
-        /* ACTIVE STYLE LIKE SCREENSHOT */
-        .menu-item.active { 
-            background: var(--primary); color: white; 
-            border-radius: 0 50px 50px 0; /* Unique shape */
-            box-shadow: 5px 0 15px rgba(16, 185, 129, 0.4);
-        }
-        .menu-item:hover:not(.active) { color: white; }
-
-        /* --- MAIN CONTENT --- */
-        .main-content { flex: 1; display: flex; flex-direction: column; height: 100%; transition: 0.3s; }
+        /* --- HEADER --- */
         .header {
-            height: 70px; background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); 
-            display: flex; align-items: center; justify-content: space-between; padding: 0 20px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03); z-index: 100;
+            position: sticky; top: 0; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px);
+            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #334155; z-index: 100;
         }
-        
-        .content-body { flex: 1; overflow-y: auto; padding: 20px; }
-        
-        /* --- CARDS & LISTS --- */
-        .card { 
-            background: white; border-radius: 20px; padding: 25px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03); margin-bottom: 20px; 
-            border: 1px solid white; position: relative; overflow: hidden;
-        }
-        
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
-        .stat-box { 
-            background: linear-gradient(135deg, #ffffff, #f8fafc); padding: 20px; 
-            border-radius: 18px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.05); 
-            border-bottom: 4px solid var(--primary); 
-        }
-        .stat-box h2 { margin: 0; font-size: 28px; color: var(--dark); font-weight: 800; }
-        .stat-box p { margin: 5px 0 0; font-size: 13px; color: #64748b; font-weight: 700; }
+        .header h2 { margin: 0; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+        .refresh-btn { width: 35px; height: 35px; background: var(--dark-card); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; color: var(--primary); border: 1px solid #334155; }
 
-        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: white; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; }
-        .list-info h4 { margin: 0; font-size: 16px; color: var(--dark); font-weight: 700; }
-        .list-info p { margin: 4px 0 0; font-size: 13px; color: #64748b; }
+        /* --- CONTENT --- */
+        .container { padding: 15px; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+        .card { background: var(--dark-card); border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid #334155; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .stat-box { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-box h1 { margin: 0; font-size: 24px; color: var(--primary); }
+        .stat-box p { margin: 5px 0 0; font-size: 12px; color: var(--text-muted); }
+
+        /* --- LISTS --- */
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 10px; margin-bottom: 8px; border: 1px solid #334155; }
+        .badge { padding: 3px 8px; border-radius: 5px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .badge-vip { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
         
-        /* --- BADGES & BUTTONS --- */
-        .badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
-        .badge-vip { background: #fffbeb; color: #d97706; }
-        .badge-ban { background: #fef2f2; color: #ef4444; }
-        
-        .btn-sm { padding: 8px 12px; border-radius: 8px; font-size: 12px; border: none; color: white; font-weight: 600; cursor: pointer; margin-left: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn-sm { padding: 6px 10px; border-radius: 6px; font-size: 12px; border: none; color: white; cursor: pointer; margin-left: 5px; }
         .btn-g { background: #10b981; } .btn-r { background: #ef4444; } .btn-b { background: #3b82f6; }
 
-        /* --- RADIO SELECTOR (SCREENSHOT STYLE) --- */
-        .radio-group { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-        .radio-item {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 12px 15px; background: #1e293b; border-radius: 10px;
-            color: white; cursor: pointer; transition: 0.2s;
+        /* --- VIP PLAN CARD --- */
+        .plan-card { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid var(--primary); padding: 15px; border-radius: 15px; margin-bottom: 10px; position: relative; }
+        .plan-tag { position: absolute; top: 10px; right: 10px; background: var(--primary); color: black; font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 800; }
+
+        /* --- BOTTOM NAV --- */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: var(--dark-card);
+            border-top: 1px solid #334155; padding: 10px 15px; display: flex; justify-content: space-around;
+            z-index: 1000; padding-bottom: 15px;
         }
-        .radio-item:hover { background: #334155; }
-        .radio-item input { accent-color: var(--primary); width: 18px; height: 18px; }
+        .nav-item { text-align: center; color: var(--text-muted); cursor: pointer; transition: 0.2s; position: relative; }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; display: block; }
+        .nav-item span { font-size: 10px; font-weight: 600; }
+        .nav-item.active { color: var(--primary); transform: translateY(-5px); }
+        .nav-badge { position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; font-size: 9px; padding: 2px 5px; border-radius: 10px; }
+
+        /* --- MENU OVERLAY --- */
+        .menu-overlay { 
+            position: fixed; bottom: 80px; right: 15px; background: var(--dark-card); 
+            border: 1px solid #334155; border-radius: 15px; padding: 15px; width: 200px;
+            display: none; grid-template-columns: 1fr; gap: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 900;
+        }
+        .menu-btn { padding: 12px; background: rgba(255,255,255,0.05); border-radius: 10px; display: flex; align-items: center; gap: 10px; color: var(--text); cursor: pointer; }
+        .menu-btn:hover { background: var(--primary); color: black; }
 
         /* --- MODAL --- */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; }
-        .modal-box { background: white; width: 100%; max-width: 400px; padding: 30px; border-radius: 24px; animation: popUp 0.3s; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
-        @keyframes popUp { from{transform:scale(0.9);opacity:0} to{transform:scale(1);opacity:1} }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .modal-box { background: var(--dark-card); width: 100%; max-width: 400px; padding: 25px; border-radius: 20px; border: 1px solid #334155; }
     </style>
 </head>
 <body>
 
     <div id="auth-view">
         <div class="login-box">
-            <i class="fas fa-tree" style="font-size: 60px; color: var(--primary); margin-bottom: 20px;"></i>
-            <h2 style="margin:0 0 20px;">Admin Panel</h2>
+            <i class="fas fa-user-shield" style="font-size: 50px; color: var(--primary); margin-bottom: 20px;"></i>
+            <h2 style="margin:0 0 20px;">টাকার গাছ এডমিন প্যানেলV4.0</h2>
             <input id="u" class="inp" placeholder="Username">
             <input id="p" type="password" class="inp" placeholder="Password">
-            <button class="btn" onclick="login()">Login Dashboard</button>
+            <button class="btn" onclick="login()">Enter Panel</button>
         </div>
     </div>
 
-    <div id="dashboard" style="display:none; width:100%; height:100%">
-        <div class="sidebar-overlay" onclick="toggleMenu()"></div>
+    <div id="dashboard" style="display:none">
         
-        <div class="sidebar" id="sidebar">
-            <div class="brand"><i class="fas fa-leaf"></i> টাকার গাছ</div>
-            <div class="menu">
-                <div class="menu-item active" onclick="nav('dash',this)"><i class="fas fa-th-large"></i> ড্যাশবোর্ড</div>
-                <div class="menu-item" onclick="nav('users',this)"><i class="fas fa-users"></i> ইউজার লিস্ট</div>
-                <div class="menu-item" onclick="nav('job_reqs',this)"><i class="fas fa-briefcase"></i> জব রিকোয়েস্ট <span id="job-c" class="badge badge-vip" style="display:none; margin-left:auto">0</span></div>
-                <div class="menu-item" onclick="nav('deposits',this)"><i class="fas fa-arrow-circle-down"></i> ডিপোজিট <span id="dep-c" class="badge badge-vip" style="display:none; margin-left:auto">0</span></div>
-                <div class="menu-item" onclick="nav('withdraws',this)"><i class="fas fa-arrow-circle-up"></i> উইথড্র <span id="wd-c" class="badge badge-vip" style="display:none; margin-left:auto">0</span></div>
-                <div class="menu-item" onclick="nav('tasks',this)"><i class="fas fa-tasks"></i> টাস্ক ম্যানেজ</div>
-                <div class="menu-item" onclick="nav('settings',this)"><i class="fas fa-cogs"></i> সেটিংস</div>
-                <div class="menu-item" style="color:#ef4444; margin-top:30px" onclick="logout()"><i class="fas fa-sign-out-alt"></i> লগ আউট</div>
-            </div>
+        <div class="header">
+            <h2><i class="fas fa-tree" style="color:var(--primary)"></i> টাকার গাছ</h2>
+            <div class="refresh-btn" onclick="refreshData()"><i class="fas fa-sync-alt"></i></div>
         </div>
 
-        <div class="main-content">
-            <div class="header">
-                <i class="fas fa-bars" style="font-size:22px; color:var(--dark); cursor:pointer" onclick="toggleMenu()"></i>
-                <h3 id="pg-title" style="margin:0; font-size:18px; color:var(--dark)">ড্যাশবোর্ড</h3>
-                <div style="width:20px"></div>
+        <div id="content-area" class="container"></div>
+
+        <div id="more-menu" class="menu-overlay">
+            <div class="menu-btn" onclick="nav('tasks')"><i class="fas fa-tasks"></i> Tasks</div>
+            <div class="menu-btn" onclick="nav('settings')"><i class="fas fa-cogs"></i> Settings</div>
+            <div class="menu-btn" onclick="nav('job_reqs')"><i class="fas fa-briefcase"></i> Job Reqs</div>
+            <div class="menu-btn" style="color:#ef4444" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="nav('dash',this)"><i class="fas fa-home"></i><span>Home</span></div>
+            <div class="nav-item" onclick="nav('users',this)"><i class="fas fa-users"></i><span>Users</span></div>
+            <div class="nav-item" onclick="nav('plans',this)"><i class="fas fa-crown" style="color:#fbbf24"></i><span>VIP Plans</span></div>
+            <div class="nav-item" onclick="nav('wallet',this)">
+                <i class="fas fa-wallet"></i><span>Wallet</span>
+                <span id="nav-badge" class="nav-badge" style="display:none">0</span>
             </div>
-            <div class="content-body" id="main-body"></div>
+            <div class="nav-item" onclick="toggleMenu()"><i class="fas fa-bars"></i><span>Menu</span></div>
         </div>
     </div>
 
     <div id="user-modal" class="modal"><div class="modal-box">
-        <h3 style="margin-top:0">ইউজার এডিট</h3>
-        <input type="hidden" id="edit-uid">
-        <p style="margin-bottom:5px; font-weight:600; color:#64748b">ব্যালেন্স</p>
-        <input id="edit-bal" type="number" class="inp" style="background:#f1f5f9; color:black; border:1px solid #cbd5e1">
-        
-        <p style="margin-bottom:5px; font-weight:600; color:#64748b">VIP & Plan</p>
-        <select id="edit-vip" class="inp" style="background:#f1f5f9; color:black; border:1px solid #cbd5e1">
-            <option value="false">Free User</option>
-            <option value="true">VIP User</option>
-        </select>
-        <input id="edit-plan" class="inp" style="background:#f1f5f9; color:black; border:1px solid #cbd5e1; margin-top:-10px" placeholder="Plan Name (e.g. Platinum)">
-
-        <div style="display:flex; gap:10px; margin-top:15px">
-            <button id="btn-ban" class="btn" style="background:#ef4444" onclick="toggleBan()">Ban User</button>
-            <button class="btn" onclick="saveUser()">Update</button>
+        <h3>Edit User</h3>
+        <input type="hidden" id="e-uid">
+        <label>Balance</label><input id="e-bal" type="number" class="inp">
+        <label>Plan Name</label><input id="e-plan" class="inp" placeholder="e.g. Gold VIP">
+        <div style="display:flex;gap:10px;margin-top:10px">
+            <button class="btn" style="background:#ef4444" onclick="doBan()" id="ban-btn">Ban</button>
+            <button class="btn" onclick="saveUser()">Save</button>
         </div>
-        <button onclick="document.getElementById('user-modal').style.display='none'" style="background:none; border:none; color:#94a3b8; width:100%; margin-top:15px; font-size:13px">Close</button>
+        <button onclick="closeModal('user-modal')" style="background:transparent;border:none;color:#666;width:100%;margin-top:10px">Close</button>
+    </div></div>
+
+    <div id="plan-modal" class="modal"><div class="modal-box">
+        <h3>VIP Plan Setup</h3>
+        <input id="p-name" class="inp" placeholder="Plan Name (e.g. Platinum)">
+        <input id="p-price" type="number" class="inp" placeholder="Price (Tk)">
+        <input id="p-income" type="number" class="inp" placeholder="Daily Income (Tk)">
+        <input id="p-valid" type="number" class="inp" placeholder="Validity (Days)">
+        <button class="btn" onclick="savePlan()">Create Plan</button>
+        <button onclick="closeModal('plan-modal')" style="background:transparent;border:none;color:#666;width:100%;margin-top:10px">Close</button>
     </div></div>
 
     <script>
@@ -177,228 +155,170 @@
         function login(){
             const u = document.getElementById('u').value, p = document.getElementById('p').value;
             if(u===CRED.u && p===CRED.p) { sessionStorage.setItem('adm_ok',true); showDash(); }
-            else Swal.fire('Error','Invalid Info','error');
+            else Swal.fire('Error','Wrong Info','error');
         }
         function logout(){ sessionStorage.removeItem('adm_ok'); location.reload(); }
-        function showDash(){ document.getElementById('auth-view').style.display='none'; document.getElementById('dashboard').style.display='block'; loadPage('dash'); count(); }
-        function toggleMenu(){ document.getElementById('sidebar').classList.toggle('active'); document.querySelector('.sidebar-overlay').classList.toggle('active'); }
-
-        function nav(p,e){
-            document.querySelectorAll('.menu-item').forEach(i=>i.classList.remove('active'));
-            if(e) e.classList.add('active');
-            toggleMenu(); loadPage(p);
+        
+        function showDash(){ 
+            document.getElementById('auth-view').style.display='none'; 
+            document.getElementById('dashboard').style.display='block'; 
+            nav('dash'); count(); 
+        }
+        
+        function refreshData(){ 
+            const active = document.querySelector('.nav-item.active');
+            // Re-trigger the click on active nav to reload
+            if(active) active.click();
+            count();
+            const icon = document.querySelector('.refresh-btn i');
+            icon.classList.add('fa-spin'); setTimeout(()=>icon.classList.remove('fa-spin'),1000);
         }
 
-        // --- PAGE LOADER ---
+        function toggleMenu(){ 
+            const m = document.getElementById('more-menu'); 
+            m.style.display = m.style.display==='grid'?'none':'grid'; 
+        }
+
+        function nav(p, e){
+            if(e){
+                document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+                e.classList.add('active');
+            }
+            document.getElementById('more-menu').style.display='none'; // Close menu
+            loadPage(p);
+        }
+
         function loadPage(page){
-            const c = document.getElementById('main-body');
+            const c = document.getElementById('content-area');
             c.innerHTML = '<div style="text-align:center;padding:50px"><i class="fas fa-circle-notch fa-spin fa-2x" style="color:var(--primary)"></i></div>';
-            const t = document.getElementById('pg-title');
 
             if(page === 'dash'){
-                t.innerText = "ওভারভিউ";
                 db.ref('users').once('value', s=>{
                     const u = s.val()||{};
                     let bal = 0; Object.values(u).forEach(x=>bal+=(x.balance||0));
                     c.innerHTML = `
                     <div class="stat-grid">
-                        <div class="stat-box"><h2>${Object.keys(u).length}</h2><p>মোট ইউজার</p></div>
-                        <div class="stat-box" style="border-color:#3b82f6"><h2>৳${bal}</h2><p>ইউজার ব্যালেন্স</p></div>
+                        <div class="stat-box"><h1>${Object.keys(u).length}</h1><p>TOTAL USER</p></div>
+                        <div class="stat-box" style="border-color:#3b82f6"><h1>৳${bal}</h1><p>USER BALANCE</p></div>
                     </div>
                     <div class="card">
-                        <h3 style="margin-top:0; color:#334155">নতুন জয়েনিং</h3>
-                        ${Object.values(u).slice(-8).reverse().map(x=>`<div class="list-item"><div class="list-info"><h4>${x.name}</h4><p>${x.phone}</p></div><b style="color:var(--primary)">৳${x.balance}</b></div>`).join('')}
+                        <h3><i class="fas fa-user-plus"></i> New Users</h3>
+                        ${Object.values(u).slice(-5).reverse().map(x=>`<div class="list-item"><div><b>${x.name}</b><br><small class="text-muted">${x.phone}</small></div><b style="color:var(--primary)">৳${x.balance}</b></div>`).join('')}
                     </div>`;
                 });
             }
+            else if(page === 'plans'){
+                c.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px"><h3>VIP Plans</h3><button class="btn btn-sm" onclick="document.getElementById('plan-modal').style.display='flex'">+ Add New</button></div><div id="plan-list"></div>`;
+                db.ref('settings/vipPlans').on('value',s=>{
+                    const p = s.val()||{};
+                    document.getElementById('plan-list').innerHTML = Object.keys(p).map(k=>`
+                    <div class="plan-card">
+                        <div class="plan-tag">${p[k].validity} Days</div>
+                        <h2 style="margin:0;color:white">${p[k].name}</h2>
+                        <div style="font-size:24px;font-weight:800;color:var(--primary);margin:10px 0">৳${p[k].price}</div>
+                        <div style="font-size:12px;color:#ccc">Daily Income: ৳${p[k].dailyIncome}</div>
+                        <button class="btn-sm btn-r" style="position:absolute;bottom:15px;right:15px" onclick="delPlan('${k}')"><i class="fas fa-trash"></i></button>
+                    </div>`).join('');
+                });
+            }
             else if(page === 'users'){
-                t.innerText = "ইউজার লিস্ট";
                 db.ref('users').once('value',s=>{
                     const u = s.val()||{};
-                    c.innerHTML = `<input onkeyup="search(this)" class="inp" placeholder="ফোন নাম্বার দিয়ে খুঁজুন..." style="background:white; color:black; border:1px solid #cbd5e1; margin-bottom:15px">
+                    c.innerHTML = `<input onkeyup="search(this)" class="inp" placeholder="Search Number...">
                     <div id="u-list">${Object.keys(u).map(k=>`
                         <div class="list-item user-row" data-ph="${u[k].phone}">
-                            <div class="list-info">
-                                <h4>${u[k].name} ${u[k].isVip?'<span class="badge badge-vip">VIP</span>':''} ${u[k].banned?'<span class="badge badge-ban">BAN</span>':''}</h4>
-                                <p>${u[k].phone} • ৳${u[k].balance}</p>
-                            </div>
-                            <button class="btn-sm btn-b" onclick="openUserModal('${k}')"><i class="fas fa-pen"></i></button>
+                            <div><b>${u[k].name}</b> ${u[k].isVip?'<span class="badge badge-vip">VIP</span>':''} ${u[k].banned?'<span class="badge" style="background:red">BAN</span>':''}<br><small class="text-muted">${u[k].phone}</small></div>
+                            <div><b>৳${u[k].balance}</b> <button class="btn-sm btn-b" onclick="editU('${k}')"><i class="fas fa-pen"></i></button></div>
                         </div>`).join('')}</div>`;
                 });
             }
-            else if(page === 'job_reqs' || page === 'deposits' || page === 'withdraws'){
-                let type = page==='job_reqs'?'Task Reward':(page==='deposits'?'Buy':'Withdraw');
-                t.innerText = page==='job_reqs'?'জব রিকোয়েস্ট':(page==='deposits'?'ডিপোজিট':'উইথড্র');
-                
+            else if(page === 'wallet' || page === 'job_reqs'){
+                const isJob = page==='job_reqs';
+                c.innerHTML = `<h3>${isJob?'Job Requests':'Wallet Requests'}</h3><div id="req-list"></div>`;
                 db.ref('users').once('value',s=>{
-                    let htm = ''; let has = false; const u = s.val()||{};
+                    let htm=''; const u=s.val()||{};
                     Object.keys(u).forEach(uid=>{
-                        const h = u[uid].history||{};
+                        const h=u[uid].history||{};
                         Object.keys(h).forEach(hid=>{
-                            const tr = h[hid];
+                            const tr=h[hid];
                             if(tr.status==='Pending'){
-                                let match = false;
-                                if(type==='Buy' && tr.type.includes('Buy')) match=true;
-                                if(type==='Withdraw' && tr.type==='Withdraw') match=true;
-                                if(type==='Task Reward' && tr.type==='Task Reward') match=true;
-
-                                if(match){
-                                    has = true;
-                                    htm += `
-                                    <div class="card" style="border-left:5px solid ${type==='Withdraw'?'#ef4444':'#10b981'}">
-                                        <div style="display:flex; justify-content:space-between; margin-bottom:10px">
-                                            <b>${u[uid].name}</b> <b style="color:var(--primary)">৳${tr.amount}</b>
+                                let show=false;
+                                if(isJob && tr.type==='Task Reward') show=true;
+                                if(!isJob && (tr.type.includes('Buy') || tr.type==='Withdraw')) show=true;
+                                
+                                if(show){
+                                    htm+=`
+                                    <div class="card" style="border-left:4px solid ${tr.type==='Withdraw'?'#ef4444':'#10b981'}">
+                                        <div style="display:flex;justify-content:space-between"><b>${u[uid].name}</b> <b>৳${tr.amount}</b></div>
+                                        <div style="background:rgba(0,0,0,0.2);padding:10px;margin:10px 0;border-radius:8px;font-size:12px;color:#ccc">
+                                            Type: ${tr.type}<br>${isJob?`Proof: ${tr.proof}`:`Details: ${tr.trx||tr.sender||'N/A'}`}
                                         </div>
-                                        <div style="font-size:13px; color:#64748b; margin-bottom:15px; background:#f8fafc; padding:10px; border-radius:10px; border:1px solid #e2e8f0">
-                                            ${type==='Task Reward' ? `<b>Proof:</b> ${tr.proof}` : (type==='Buy' ? `Plan: ${tr.type}<br>TrxID: ${tr.trx}<br>Sender: ${tr.sender}` : `Method: ${tr.method}<br>To: ${tr.trx}`)}
-                                            <br><small style="color:#94a3b8; font-size:11px; margin-top:5px; display:block">${tr.date}</small>
-                                        </div>
-                                        <div style="display:flex; gap:10px">
-                                            <button class="btn-sm btn-g" style="flex:1; padding:10px" onclick="act('${uid}','${hid}','Success','${tr.type}',${tr.amount})">Approve</button>
-                                            <button class="btn-sm btn-r" style="flex:1; padding:10px" onclick="act('${uid}','${hid}','Rejected','${tr.type}',${tr.amount})">Reject</button>
+                                        <div style="display:flex;gap:10px">
+                                            <button class="btn-sm btn-g" style="flex:1;padding:8px" onclick="act('${uid}','${hid}','Success','${tr.type}',${tr.amount})">Approve</button>
+                                            <button class="btn-sm btn-r" style="flex:1;padding:8px" onclick="act('${uid}','${hid}','Rejected','${tr.type}',${tr.amount})">Reject</button>
                                         </div>
                                     </div>`;
                                 }
                             }
                         });
                     });
-                    c.innerHTML = has?htm:'<div style="text-align:center;padding:50px;color:#94a3b8">কোনো পেন্ডিং রিকোয়েস্ট নেই</div>';
+                    document.getElementById('req-list').innerHTML = htm || '<p style="text-align:center;color:#666">No Requests</p>';
                 });
             }
-            else if(page === 'tasks'){
-                t.innerText = "টাস্ক সেটআপ";
-                c.innerHTML = `
-                <div class="card" style="background:#0f172a; color:white; border:none">
-                    <h3 style="margin-top:0; color:#fff">নতুন টাস্ক</h3>
-                    <input id="t-ti" class="inp" placeholder="Task Title">
-                    <div style="display:flex; gap:10px; margin-bottom:10px">
-                        <input id="t-rw" type="number" class="inp" placeholder="Reward (Tk)" style="margin:0">
-                        <input id="t-ln" class="inp" placeholder="Link" style="margin:0">
-                    </div>
-                    
-                    <p style="font-size:13px; color:#94a3b8; margin-bottom:5px">Target Audience:</p>
-                    <div class="radio-group">
-                        <label class="radio-item"><input type="radio" name="target" value="free" checked> Free User</label>
-                        <label class="radio-item"><input type="radio" name="target" value="vip"> All VIP</label>
-                        <label class="radio-item"><input type="radio" name="target" value="silver"> Silver</label>
-                        <label class="radio-item"><input type="radio" name="target" value="gold"> Gold</label>
-                        <label class="radio-item"><input type="radio" name="target" value="platinum"> Platinum</label>
-                        <label class="radio-item"><input type="radio" name="target" value="diamond"> Diamond</label>
-                    </div>
-                    <button class="btn" style="margin-top:15px" onclick="addTask()">Publish Task</button>
-                </div>
-                <div id="tk-list"></div>`;
-                db.ref('settings/tasks').on('value',s=>{
-                    const t=s.val()||{};
-                    document.getElementById('tk-list').innerHTML = Object.keys(t).map(k=>`<div class="list-item"><div><b>${t[k].title}</b> <span class="badge" style="background:#e2e8f0; color:#475569">${t[k].target.toUpperCase()}</span><br><small style="color:#10b981; font-weight:700">+ ৳${t[k].reward}</small></div><button class="btn-sm btn-r" onclick="delTask('${k}')"><i class="fas fa-trash"></i></button></div>`).join('');
-                });
-            }
-            else if(page === 'settings'){
-                t.innerText = "অ্যাপ সেটিংস";
+            // Add settings/tasks similarly if needed, keeping it minimal for "More" menu
+            else if(page === 'settings') {
                 db.ref('settings').once('value',s=>{
-                    const v = s.val()||{};
-                    c.innerHTML = `
-                    <div class="card">
-                        <p style="font-weight:600; color:#64748b; margin-bottom:5px">পেমেন্ট নাম্বার</p>
-                        <input id="s-bk" class="inp" style="background:white;color:black;border:1px solid #cbd5e1" value="${v.config?.bkash||''}" placeholder="Bkash">
-                        <input id="s-ng" class="inp" style="background:white;color:black;border:1px solid #cbd5e1" value="${v.config?.nagad||''}" placeholder="Nagad">
-                        
-                        <p style="font-weight:600; color:#64748b; margin-bottom:5px; margin-top:15px">নোটিশ বোর্ড</p>
-                        <textarea id="s-nt" class="inp" style="background:white;color:black;border:1px solid #cbd5e1" rows="4">${v.notice||''}</textarea>
-                        <button class="btn" onclick="saveSet()">Save Changes</button>
-                    </div>`;
+                    const v=s.val()||{};
+                    c.innerHTML = `<div class="card"><h3>Settings</h3><label>Bkash</label><input id="s-bk" class="inp" value="${v.config?.bkash||''}"><label>Nagad</label><input id="s-ng" class="inp" value="${v.config?.nagad||''}"><label>Notice</label><textarea id="s-nt" class="inp" rows="4">${v.notice||''}</textarea><button class="btn" onclick="saveSet()">Update</button></div>`;
                 });
+            }
+            else if(page === 'tasks') {
+                c.innerHTML = `<div class="card"><h3>Add Task</h3><input id="t-ti" class="inp" placeholder="Title"><input id="t-rw" type="number" class="inp" placeholder="Reward"><input id="t-ln" class="inp" placeholder="Link"><select id="t-tg" class="inp"><option value="free">Free</option><option value="vip">All VIP</option><option value="silver">Silver</option><option value="gold">Gold</option><option value="platinum">Platinum</option><option value="diamond">Diamond</option></select><button class="btn" onclick="addTask()">Add</button></div>`;
             }
         }
 
-        // --- ACTIONS ---
-        function addTask(){
-            const ti = document.getElementById('t-ti').value;
-            const rw = document.getElementById('t-rw').value;
-            const ln = document.getElementById('t-ln').value;
-            const tg = document.querySelector('input[name="target"]:checked').value;
-            
-            if(!ti || !rw || !ln) return Swal.fire('Error','সব তথ্য দিন');
-            db.ref('settings/tasks').push({ title:ti, reward:parseInt(rw), link:ln, target:tg }); 
-            Swal.fire('Success','টাস্ক যুক্ত হয়েছে','success');
-            document.getElementById('t-ti').value='';
+        // --- PLAN FUNCTIONS ---
+        function savePlan(){
+            const n=document.getElementById('p-name').value, p=document.getElementById('p-price').value, i=document.getElementById('p-income').value, v=document.getElementById('p-valid').value;
+            if(!n||!p||!i||!v) return Swal.fire('Error','Fill all');
+            db.ref('settings/vipPlans').push({name:n, price:parseInt(p), dailyIncome:parseInt(i), validity:parseInt(v)});
+            closeModal('plan-modal'); Swal.fire('Created'); loadPage('plans');
         }
-        function delTask(k){ db.ref('settings/tasks/'+k).remove(); }
+        function delPlan(k){ if(confirm('Delete?')) db.ref('settings/vipPlans/'+k).remove(); }
 
+        // --- USER FUNCTIONS ---
+        let editUid = '';
+        function editU(uid){
+            editUid=uid; db.ref('users/'+uid).once('value',s=>{
+                const u=s.val(); document.getElementById('e-bal').value=u.balance; document.getElementById('e-plan').value=u.currentPlan||'';
+                const b=document.getElementById('ban-btn'); b.innerText=u.banned?'Unban':'Ban'; b.style.background=u.banned?'#10b981':'#ef4444';
+                document.getElementById('user-modal').style.display='flex';
+            });
+        }
+        function saveUser(){ db.ref('users/'+editUid).update({balance:parseInt(document.getElementById('e-bal').value), currentPlan:document.getElementById('e-plan').value, isVip:!!document.getElementById('e-plan').value}); closeModal('user-modal'); Swal.fire('Saved'); loadPage('users'); }
+        function doBan(){ db.ref('users/'+editUid).once('value',s=>{ db.ref('users/'+editUid).update({banned:!s.val().banned}); closeModal('user-modal'); Swal.fire('Done'); loadPage('users'); }); }
+
+        // --- WALLET/TASK ACTIONS ---
         function act(uid, hid, st, type, amt){
             db.ref(`users/${uid}/history/${hid}`).update({status:st});
             if(st==='Success'){
                 if(type.includes('Buy')) db.ref(`users/${uid}`).update({isVip:true, currentPlan:type.replace('Buy ',''), vipExpire:Date.now()+(30*86400000)});
                 else if(type==='Task Reward') db.ref(`users/${uid}/balance`).transaction(b=>(b||0)+parseInt(amt));
-            } else if(st==='Rejected' && type==='Withdraw'){
-                db.ref(`users/${uid}/balance`).transaction(b=>(b||0)+parseInt(amt));
-            }
-            Swal.fire('Updated'); loadPage(type==='Task Reward'?'job_reqs':(type==='Withdraw'?'withdraws':'deposits')); count();
+            } else if(st==='Rejected' && type==='Withdraw') db.ref(`users/${uid}/balance`).transaction(b=>(b||0)+parseInt(amt));
+            Swal.fire('Done'); loadPage(type==='Task Reward'?'job_reqs':'wallet'); count();
         }
+        function saveSet(){ db.ref('settings/config').update({ bkash: document.getElementById('s-bk').value, nagad: document.getElementById('s-ng').value }); db.ref('settings').update({ notice: document.getElementById('s-nt').value }); Swal.fire('Saved'); }
+        function addTask(){ db.ref('settings/tasks').push({ title:document.getElementById('t-ti').value, reward:parseInt(document.getElementById('t-rw').value), link:document.getElementById('t-ln').value, target:document.getElementById('t-tg').value }); Swal.fire('Added'); }
 
-        function saveSet(){
-            db.ref('settings/config').update({ bkash: document.getElementById('s-bk').value, nagad: document.getElementById('s-ng').value });
-            db.ref('settings').update({ notice: document.getElementById('s-nt').value });
-            Swal.fire('Saved!');
-        }
-
-        // --- USER MANAGE ---
-        let currentEditUser = '';
-        function openUserModal(uid){
-            currentEditUser = uid;
-            db.ref('users/'+uid).once('value',s=>{
-                const u = s.val();
-                document.getElementById('edit-uid').value = uid;
-                document.getElementById('edit-bal').value = u.balance;
-                document.getElementById('edit-vip').value = u.isVip ? 'true' : 'false';
-                document.getElementById('edit-plan').value = u.currentPlan || '';
-                
-                const banBtn = document.getElementById('btn-ban');
-                banBtn.innerText = u.banned ? "Unban User" : "Ban User";
-                banBtn.style.background = u.banned ? "#10b981" : "#ef4444";
-                
-                document.getElementById('user-modal').style.display = 'flex';
-            });
-        }
-
-        function saveUser(){
-            const b = parseInt(document.getElementById('edit-bal').value);
-            const v = document.getElementById('edit-vip').value === 'true';
-            const p = document.getElementById('edit-plan').value;
-            db.ref('users/'+currentEditUser).update({balance:b, isVip:v, currentPlan:p});
-            document.getElementById('user-modal').style.display='none';
-            Swal.fire('Updated'); loadPage('users');
-        }
-
-        function toggleBan(){
-            db.ref('users/'+currentEditUser).once('value',s=>{
-                const st = s.val().banned ? false : true;
-                db.ref('users/'+currentEditUser).update({banned:st});
-                document.getElementById('user-modal').style.display='none';
-                Swal.fire(st ? 'Banned!' : 'Unbanned!'); loadPage('users');
-            });
-        }
-
+        function closeModal(id){ document.getElementById(id).style.display='none'; }
         function count(){
             db.ref('users').once('value',s=>{
-                let d=0, w=0, j=0; const u=s.val()||{};
-                Object.values(u).forEach(x=>{ 
-                    if(x.history) Object.values(x.history).forEach(h=>{ 
-                        if(h.status==='Pending'){ 
-                            if(h.type==='Withdraw') w++; 
-                            else if(h.type==='Task Reward') j++;
-                            else if(h.type.includes('Buy')) d++; 
-                        } 
-                    }) 
-                });
-                const setBad = (id,v) => { document.getElementById(id).innerText=v; document.getElementById(id).style.display=v>0?'inline-block':'none'; };
-                setBad('dep-c',d); setBad('wd-c',w); setBad('job-c',j);
+                let c=0; const u=s.val()||{};
+                Object.values(u).forEach(x=>{ if(x.history) Object.values(x.history).forEach(h=>{ if(h.status==='Pending' && h.type!=='Task Reward') c++; }) });
+                const b=document.getElementById('nav-badge'); b.innerText=c; b.style.display=c>0?'block':'none';
             });
         }
-        function search(e){
-            const v = e.value.toLowerCase();
-            document.querySelectorAll('.user-row').forEach(r => r.style.display = r.dataset.ph.includes(v)?'flex':'none');
-        }
+        function search(e){ const v=e.value.toLowerCase(); document.querySelectorAll('.user-row').forEach(r=>r.style.display=r.dataset.ph.includes(v)?'flex':'none'); }
     </script>
 </body>
 </html>
