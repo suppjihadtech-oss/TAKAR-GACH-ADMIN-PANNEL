@@ -48,8 +48,8 @@
 
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .stat-box { background: white; padding: 20px; border-radius: 16px; text-align: center; box-shadow: var(--shadow); border-bottom: 4px solid var(--primary); }
-        .stat-box h1 { margin: 0; font-size: 28px; color: var(--text-main); }
-        .stat-box p { margin: 5px 0 0; font-size: 13px; color: var(--text-muted); font-weight: 600; }
+        .stat-box h1 { margin: 0; font-size: 24px; color: var(--text-main); }
+        .stat-box p { margin: 5px 0 0; font-size: 12px; color: var(--text-muted); font-weight: 600; }
 
         /* GRID MENU */
         .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
@@ -71,14 +71,14 @@
         .btn-g { background: #10b981; } .btn-r { background: #ef4444; } .btn-b { background: #3b82f6; } .btn-y { background: #F59E0B; }
 
         /* TOGGLE SWITCH */
-        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch { position: relative; display: inline-block; width: 45px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; -webkit-transition: .4s; transition: .4s; }
-        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; -webkit-transition: .4s; transition: .4s; }
-        input:checked + .slider { background-color: #ef4444; } /* Red for Maintenance */
-        input:checked + .slider:before { -webkit-transform: translateX(24px); -ms-transform: translateX(24px); transform: translateX(24px); }
-        .slider.round { border-radius: 34px; }
-        .slider.round:before { border-radius: 50%; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(21px); }
+        /* Red toggle for maintenance */
+        .red-toggle input:checked + .slider { background-color: #ef4444; }
 
         /* NAV */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255,255,255,0.95); border-top: 1px solid #E5E7EB; padding: 10px 15px; display: flex; justify-content: space-around; z-index: 1000; padding-bottom: 15px; backdrop-filter: blur(10px); border-radius: 20px 20px 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); }
@@ -130,6 +130,19 @@
                     <h1 id="total-b">৳0</h1>
                     <p>মোট ব্যালেন্স</p>
                 </div>
+                <div class="stat-box" style="border-color:#10b981">
+                    <h1 id="total-dep" style="color:#10b981">৳0</h1>
+                    <p>মোট ডিপোজিট (In)</p>
+                </div>
+                <div class="stat-box" style="border-color:#ef4444">
+                    <h1 id="total-wd" style="color:#ef4444">৳0</h1>
+                    <p>মোট উইথড্র (Out)</p>
+                </div>
+            </div>
+
+            <div style="background:linear-gradient(135deg, #1F2937, #111827); padding:15px; border-radius:16px; text-align:center; color:white; margin-bottom:20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1)">
+                <small>নিট প্রফিট (Net Profit)</small>
+                <h1 id="net-profit" style="margin:5px 0; font-size:30px">৳0</h1>
             </div>
 
             <div class="menu-grid">
@@ -174,21 +187,26 @@
     <div id="user-modal" class="modal"><div class="modal-box">
         <h3>ইউজার এডিট</h3>
         <input type="hidden" id="e-uid">
-        <label>ব্যালেন্স</label><input id="e-bal" type="number" class="inp">
-        <label>প্ল্যান</label><input id="e-plan" class="inp">
+        <label style="font-size:12px;color:#666">ব্যালেন্স</label>
+        <input id="e-bal" type="number" class="inp">
+        <label style="font-size:12px;color:#666">প্ল্যান নাম</label>
+        <input id="e-plan" class="inp">
+        <label style="font-size:12px;color:#666">নতুন পাসওয়ার্ড (ঐচ্ছিক)</label>
+        <input id="e-pass" class="inp" placeholder="পাসওয়ার্ড সেট করুন">
+        
         <div style="display:flex; gap:10px; margin-top:10px">
             <button class="btn" style="background:#EF4444" onclick="doBan()" id="ban-btn">ব্যান</button>
-            <button class="btn" onclick="saveUser()">সেভ</button>
+            <button class="btn" onclick="saveUser()">সেভ করুন</button>
         </div>
         <button onclick="closeModal('user-modal')" style="background:transparent; border:none; color:#999; width:100%; margin-top:15px">বন্ধ করুন</button>
     </div></div>
 
     <div id="plan-modal" class="modal"><div class="modal-box">
         <h3>নতুন প্ল্যান</h3>
-        <input id="p-name" class="inp" placeholder="নাম">
+        <input id="p-name" class="inp" placeholder="নাম (যেমন: Gold)">
         <input id="p-price" type="number" class="inp" placeholder="দাম">
-        <input id="p-inc" type="number" class="inp" placeholder="ইনকাম">
-        <input id="p-val" type="number" class="inp" placeholder="মেয়াদ">
+        <input id="p-inc" type="number" class="inp" placeholder="দৈনিক ইনকাম">
+        <input id="p-val" type="number" class="inp" placeholder="মেয়াদ (দিন)">
         <button class="btn" onclick="savePlan()">তৈরি করুন</button>
         <button onclick="closeModal('plan-modal')" style="background:transparent; border:none; color:#999; width:100%; margin-top:15px">বন্ধ করুন</button>
     </div></div>
@@ -224,12 +242,33 @@
             loadHomeData();
         }
 
+        // --- NEW DATA LOGIC (PROFIT CALCULATION) ---
         function loadHomeData(){
             db.ref('users').once('value', s=>{
                 const u = s.val()||{};
-                let bal = 0; Object.values(u).forEach(x=>bal+=(x.balance||0));
+                let bal = 0, deposit = 0, withdraw = 0;
+                
+                Object.values(u).forEach(x=>{
+                    bal += (x.balance||0);
+                    // Calc Profit from History
+                    if(x.history){
+                        Object.values(x.history).forEach(h => {
+                            if(h.status === 'Success'){
+                                if(h.type.includes('Buy')) deposit += parseInt(h.amount);
+                                else if(h.type === 'Withdraw') withdraw += parseInt(h.amount);
+                            }
+                        });
+                    }
+                });
+
                 document.getElementById('total-u').innerText = Object.keys(u).length;
                 document.getElementById('total-b').innerText = '৳'+bal;
+                
+                // Profit Stats
+                document.getElementById('total-dep').innerText = '৳'+deposit;
+                document.getElementById('total-wd').innerText = '৳'+withdraw;
+                document.getElementById('net-profit').innerText = '৳'+(deposit - withdraw);
+
                 document.getElementById('recent-list').innerHTML = Object.values(u).slice(-5).reverse().map(x=>`<div class="list-item"><div><b>${x.name}</b><br><small style="color:#666">${x.phone}</small></div><b style="color:var(--primary)">৳${x.balance}</b></div>`).join('');
             });
         }
@@ -313,40 +352,39 @@
                     cont.querySelector('#p-list').innerHTML = Object.keys(s.val()||{}).map(k=>{ const p=s.val()[k]; return `<div class="card" style="text-align:center;border:1px solid var(--primary)"><h3 style="margin:0">${p.name}</h3><h1 style="color:var(--primary);margin:10px 0">৳${p.price}</h1><p style="font-size:12px;color:#666">ইনকাম: ৳${p.dailyIncome}/দিন | মেয়াদ: ${p.validity} দিন</p><button class="btn-sm btn-r" style="margin-top:10px" onclick="delPlan('${k}')">ডিলিট</button></div>`; }).join('');
                 });
             }
+            // --- SETTINGS (UPDATED WITH TOGGLES) ---
             else if(page === 'settings'){
                 title.innerText = "সেটিংস";
                 db.ref('settings').once('value',s=>{ 
                     const v=s.val()||{}; 
                     const cfg=v.config||{};
                     const maint = v.maintenance ? 'checked' : '';
+                    // Payment Toggles logic can be expanded if User Panel supports it
+                    // For now, let's keep Maintenance toggle
                     cont.innerHTML = `
-                    <div class="card" style="border: 2px solid #F59E0B;">
-                        <h3>⚠️ ইমার্জেন্সি কন্ট্রোল</h3>
+                    <div class="card" style="border: 2px solid #EF4444;">
+                        <h3>⚠️ ইমার্জেন্সি</h3>
                         <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span>মেইনটেনেন্স মোড (Maintenance)</span>
-                            <label class="switch">
-                                <input type="checkbox" id="s-maint" ${maint}>
-                                <span class="slider round"></span>
-                            </label>
+                            <span>মেইনটেনেন্স মোড</span>
+                            <label class="switch red-toggle"><input type="checkbox" id="s-maint" ${maint}><span class="slider round"></span></label>
                         </div>
-                        <small style="color:#ef4444">এটি চালু করলে ইউজাররা অ্যাপে ঢুকতে পারবে না।</small>
                     </div>
                     <div class="card">
-                        <h3>পেমেন্ট ও লিংক</h3>
+                        <h3>পেমেন্ট নাম্বার</h3>
                         <label>বিকাশ নাম্বার</label><input id="s-bk" class="inp" value="${cfg.bkash||''}">
                         <label>নগদ নাম্বার</label><input id="s-ng" class="inp" value="${cfg.nagad||''}">
-                        <label>হেল্প লিংক (Telegram)</label><input id="s-sup" class="inp" value="${cfg.supportLink||''}">
-                        <label>চ্যানেল লিংক</label><input id="s-ch" class="inp" value="${cfg.channelLink||''}">
                     </div>
                     <div class="card">
-                        <h3>লিমিট সেটিংস</h3>
+                        <h3>লিমিট ও বোনাস</h3>
                         <label>মিনিমাম উইথড্র (টাকা)</label><input id="s-minW" type="number" class="inp" value="${cfg.minWithdraw||'20'}">
                         <label>উইথড্র চার্জ (টাকা)</label><input id="s-wch" type="number" class="inp" value="${cfg.withdrawCharge||'5'}">
                         <label>রেফার বোনাস (টাকা)</label><input id="s-ref" type="number" class="inp" value="${cfg.refBonus||'2'}">
                     </div>
                     <div class="card">
-                        <h3>নোটিশ</h3>
-                        <textarea id="s-nt" class="inp" rows="4">${v.notice||''}</textarea>
+                        <h3>লিংক ও নোটিশ</h3>
+                        <label>চ্যানেল লিংক</label><input id="s-ch" class="inp" value="${cfg.channelLink||''}">
+                        <label>সাপোর্ট লিংক</label><input id="s-sup" class="inp" value="${cfg.supportLink||''}">
+                        <label>নোটিশ</label><textarea id="s-nt" class="inp" rows="4">${v.notice||''}</textarea>
                         <button class="btn" onclick="saveSet()">সেভ করুন</button>
                     </div>`; 
                 });
@@ -370,17 +408,24 @@
         function savePlan(){ const n=document.getElementById('p-name').value, p=document.getElementById('p-price').value, i=document.getElementById('p-inc').value, v=document.getElementById('p-val').value; if(!n||!p) return Swal.fire('ভুল','সব তথ্য দিন','error'); db.ref('settings/vipPlans').push({name:n, price:parseInt(p), dailyIncome:parseInt(i), validity:parseInt(v)}); closeModal('plan-modal'); Swal.fire('সফল'); }
         function delPlan(k){ if(confirm('মুছে ফেলবেন?')) db.ref('settings/vipPlans/'+k).remove(); }
         let editUid='';
-        function editU(uid){ editUid=uid; db.ref('users/'+uid).once('value',s=>{ const u=s.val(); document.getElementById('e-bal').value=u.balance; document.getElementById('e-plan').value=u.currentPlan||''; document.getElementById('ban-btn').innerText = u.banned ? "আনব্যান করুন" : "ব্যান করুন"; document.getElementById('user-modal').style.display='flex'; }); }
-        function saveUser(){ db.ref('users/'+editUid).update({balance:parseInt(document.getElementById('e-bal').value), currentPlan:document.getElementById('e-plan').value, isVip:!!document.getElementById('e-plan').value}); closeModal('user-modal'); Swal.fire('আপডেট হয়েছে'); nav('users'); }
+        function editU(uid){ editUid=uid; db.ref('users/'+uid).once('value',s=>{ const u=s.val(); document.getElementById('e-bal').value=u.balance; document.getElementById('e-plan').value=u.currentPlan||''; document.getElementById('e-pass').value=''; document.getElementById('ban-btn').innerText = u.banned ? "আনব্যান করুন" : "ব্যান করুন"; document.getElementById('user-modal').style.display='flex'; }); }
+        
+        // SAVE USER WITH PASSWORD RESET
+        function saveUser(){ 
+            let upd = {balance:parseInt(document.getElementById('e-bal').value), currentPlan:document.getElementById('e-plan').value, isVip:!!document.getElementById('e-plan').value};
+            const pass = document.getElementById('e-pass').value;
+            if(pass && pass.length >= 6) upd.pass = pass;
+            
+            db.ref('users/'+editUid).update(upd); 
+            closeModal('user-modal'); Swal.fire('আপডেট হয়েছে'); nav('users'); 
+        }
+
         function doBan(){ db.ref('users/'+editUid).once('value',s=>{ db.ref('users/'+editUid).update({banned:!s.val().banned}); closeModal('user-modal'); Swal.fire('সম্পন্ন'); nav('users'); }); }
         function act(uid, hid, st, type, amt){ db.ref(`users/${uid}/history/${hid}`).update({status:st}); if(st==='Success'){ if(type.includes('Buy')) db.ref(`users/${uid}`).update({isVip:true, currentPlan:type.replace('Buy ',''), vipExpire:Date.now()+(30*86400000)}); else if(type==='Task Reward') db.ref(`users/${uid}/balance`).transaction(b=>(b||0)+parseInt(amt)); } else if(st==='Rejected' && type==='Withdraw') db.ref(`users/${uid}/balance`).transaction(b=>(b||0)+parseInt(amt)); Swal.fire('সম্পন্ন'); nav(type==='Task Reward'?'job_reqs':(type==='Withdraw'?'withdraws':'deposits')); }
         
         function saveSet(){ 
             const maint = document.getElementById('s-maint').checked;
-            db.ref('settings').update({ 
-                maintenance: maint,
-                notice: document.getElementById('s-nt').value 
-            });
+            db.ref('settings').update({ maintenance: maint, notice: document.getElementById('s-nt').value });
             db.ref('settings/config').update({ 
                 bkash: document.getElementById('s-bk').value, 
                 nagad: document.getElementById('s-ng').value,
