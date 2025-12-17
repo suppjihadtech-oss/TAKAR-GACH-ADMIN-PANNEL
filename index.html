@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>টাকার গাছ এডমিন V5.1 Ultimate</title>
+    <title>টাকার গাছ ADMIN V5.2</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         /* =========================================
-           1. CORE DESIGN CONFIGURATION
+           1. PREMIUM ADMIN THEME
            ========================================= */
         :root {
             --primary: #10b981; 
@@ -21,72 +21,65 @@
             --accent: #F59E0B;
             --danger: #EF4444;
             --bg-body: #F3F4F6;
-            --text-main: #111827;
-            --text-muted: #6B7280;
-            --card-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            --radius-xl: 30px;
+            --text-main: #1F2937;
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.08);
         }
 
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: var(--bg-body); font-family: 'Poppins', 'Hind Siliguri', sans-serif; color: var(--text-main); padding-bottom: 110px; user-select: none; }
+        body { margin: 0; background: var(--bg-body); font-family: 'Poppins', 'Hind Siliguri', sans-serif; color: var(--text-main); padding-bottom: 100px; user-select: none; }
 
-        /* --- SPLASH SCREEN --- */
+        /* SPLASH SCREEN */
         #splash-screen { position: fixed; inset: 0; background: var(--bg-body); z-index: 6000; display: flex; justify-content: center; align-items: center; flex-direction: column; }
-        .growing-tree { font-size: 0px; color: var(--primary); margin-bottom: 25px; animation: growTree 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; transform-origin: bottom center; }
-        @keyframes growTree { 0% { font-size: 0px; opacity: 0; transform: translateY(60px); } 100% { font-size: 110px; opacity: 1; transform: translateY(0); } }
+        .growing-tree { font-size: 0px; color: var(--primary); margin-bottom: 25px; animation: growTree 2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes growTree { 0% { font-size: 0px; opacity: 0; transform: translateY(60px); } 100% { font-size: 100px; opacity: 1; transform: translateY(0); } }
 
-        /* --- AUTH LOGIN --- */
-        #auth-view { position: fixed; inset: 0; background: linear-gradient(135deg, #1f2937, #111827); z-index: 5000; display: none; justify-content: center; align-items: center; padding: 25px; }
-        .login-box { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); padding: 40px 30px; border-radius: 35px; width: 100%; max-width: 380px; text-align: center; border: 1px solid rgba(255,255,255,0.15); color: white; }
-        .login-box input { width: 100%; padding: 16px; margin-bottom: 15px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: white; font-size: 16px; text-align: center; }
-        .login-box button { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 16px; font-weight: 800; cursor: pointer; font-size: 16px; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3); }
+        /* AUTH LOGIN */
+        #auth-view { position: fixed; inset: 0; background: #111827; z-index: 5000; display: none; justify-content: center; align-items: center; padding: 25px; }
+        .login-box { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); padding: 40px 30px; border-radius: 30px; width: 100%; max-width: 380px; text-align: center; border: 1px solid rgba(255,255,255,0.1); color: white; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        .login-box input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); color: white; text-align: center; font-size: 16px; }
+        .login-box button { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 15px; font-weight: 700; font-size: 16px; cursor: pointer; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3); }
 
-        /* --- DASHBOARD HEADER --- */
-        .header { position: sticky; top: 0; background: rgba(255,255,255,0.8); backdrop-filter: blur(15px); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); z-index: 500; }
-        .header h2 { margin: 0; font-weight: 800; font-size: 22px; color: var(--primary); }
+        /* DASHBOARD */
+        .header { position: sticky; top: 0; background: rgba(255,255,255,0.9); backdrop-filter: blur(15px); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb; z-index: 500; }
+        .header h2 { margin: 0; font-size: 24px; color: var(--primary); font-weight: 800; }
 
-        /* --- STATISTICS GRID --- */
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
-        .stat-card { background: white; padding: 25px 15px; border-radius: 28px; text-align: center; box-shadow: var(--card-shadow); border-bottom: 5px solid var(--primary); transition: 0.3s; }
-        .stat-card h1 { margin: 5px 0; font-size: 28px; font-weight: 800; color: var(--text-main); }
-        .stat-card p { margin: 0; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .stat-card { background: white; padding: 25px 15px; border-radius: 25px; text-align: center; box-shadow: var(--card-shadow); border-bottom: 4px solid var(--primary); }
+        .stat-card h1 { margin: 5px 0; font-size: 26px; font-weight: 800; }
+        .stat-card p { margin: 0; font-size: 11px; font-weight: 700; color: #6B7280; text-transform: uppercase; }
 
-        .profit-card { background: linear-gradient(135deg, #1F2937, #111827); color: white; padding: 30px; border-radius: 35px; margin: 0 20px 25px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.15); }
-        .profit-card h1 { font-size: 38px; margin: 10px 0; font-weight: 800; }
+        .profit-card { background: linear-gradient(135deg, #1F2937, #111827); color: white; padding: 25px; border-radius: 30px; margin: 0 20px 25px; text-align: center; box-shadow: 0 15px 40px rgba(0,0,0,0.2); }
+        .profit-card h1 { font-size: 36px; margin: 5px 0; font-weight: 800; }
 
-        /* --- DASHBOARD MENU --- */
-        .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 0 20px; margin-bottom: 30px; }
-        .menu-item { background: white; padding: 18px 5px; border-radius: 22px; text-align: center; cursor: pointer; border: 1px solid #f1f1f1; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
-        .menu-item:active { transform: scale(0.9); background: #ECFDF5; }
-        .menu-item i { font-size: 26px; margin-bottom: 10px; display: block; }
-        .menu-item span { font-size: 10px; font-weight: 700; color: var(--text-muted); }
+        .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 0 20px; margin-bottom: 30px; }
+        .menu-item { background: white; padding: 15px 5px; border-radius: 20px; text-align: center; cursor: pointer; border: 1px solid #f3f4f6; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+        .menu-item:active { transform: scale(0.95); background: #ecfdf5; }
+        .menu-item i { font-size: 24px; margin-bottom: 8px; display: block; }
+        .menu-item span { font-size: 10px; font-weight: 700; color: #4b5563; }
 
-        /* --- USER & REQUEST LISTS --- */
+        /* LISTS & CARDS */
         .list-area { padding: 0 20px 30px; }
-        .card { background: white; border-radius: 28px; padding: 25px; border: 1px solid var(--border); box-shadow: var(--card-shadow); margin-bottom: 20px; }
-        .user-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-radius: 18px; background: #f9fafb; margin-bottom: 10px; border: 1px solid #eee; }
+        .card { background: white; border-radius: 25px; padding: 20px; border: 1px solid #e5e7eb; box-shadow: var(--card-shadow); margin-bottom: 15px; }
         
-        .badge { padding: 5px 12px; border-radius: 12px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        .user-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 15px; background: #f9fafb; margin-bottom: 10px; border: 1px solid #eee; }
+        .badge { padding: 4px 10px; border-radius: 10px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
         .badge-pending { background: #FEF3C7; color: #D97706; }
         .badge-success { background: #D1FAE5; color: #059669; }
         .badge-danger { background: #FEE2E2; color: #EF4444; }
 
-        /* --- BOTTOM NAV --- */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255,255,255,0.9); backdrop-filter: blur(15px); padding: 12px 20px; display: flex; justify-content: space-around; border-top: 1px solid var(--border); border-radius: 35px 35px 0 0; z-index: 1000; box-shadow: 0 -10px 30px rgba(0,0,0,0.05); }
-        .nav-btn { text-align: center; color: var(--text-muted); font-size: 10px; font-weight: 700; cursor: pointer; transition: 0.3s; }
-        .nav-btn.active { color: var(--primary); }
-        .nav-btn.active i { transform: translateY(-8px); filter: drop-shadow(0 5px 10px rgba(16,185,129,0.3)); }
-        .nav-btn i { font-size: 24px; margin-bottom: 5px; display: block; }
-
         /* MODALS */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 25px; }
-        .modal-box { background: white; width: 100%; max-width: 420px; padding: 35px; border-radius: 35px; box-shadow: 0 30px 60px rgba(0,0,0,0.3); max-height: 85vh; overflow-y: auto; }
-        .inp { width: 100%; padding: 15px; border: 1.5px solid var(--border); border-radius: 16px; margin-bottom: 15px; font-size: 15px; background: #f9fafb; }
-        .btn-full { width: 100%; padding: 16px; border: none; border-radius: 16px; font-weight: 800; font-size: 15px; cursor: pointer; margin-bottom: 10px; }
-        
-        /* FORM BUTTONS */
-        .btn-approve { background: var(--primary); color: white; box-shadow: 0 8px 15px rgba(16, 185, 129, 0.2); }
-        .btn-reject { background: var(--danger); color: white; box-shadow: 0 8px 15px rgba(239, 68, 68, 0.2); }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .modal-box { background: white; width: 100%; max-width: 400px; padding: 30px; border-radius: 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.3); max-height: 85vh; overflow-y: auto; }
+        .inp { width: 100%; padding: 15px; border: 1.5px solid #e5e7eb; border-radius: 15px; margin-bottom: 15px; font-size: 15px; background: #f9fafb; }
+        .btn-full { width: 100%; padding: 15px; border: none; border-radius: 15px; font-weight: 700; cursor: pointer; margin-bottom: 10px; font-size: 15px; }
+        .btn-approve { background: var(--primary); color: white; }
+        .btn-reject { background: var(--danger); color: white; }
+
+        /* NAVIGATION */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255,255,255,0.95); padding: 12px 20px; display: flex; justify-content: space-around; border-top: 1px solid #e5e7eb; z-index: 1000; backdrop-filter: blur(10px); border-radius: 30px 30px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,0.05); }
+        .nav-btn { text-align: center; color: #6b7280; font-size: 10px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .nav-btn.active { color: var(--primary); transform: translateY(-5px); }
+        .nav-btn i { font-size: 24px; margin-bottom: 5px; display: block; }
     </style>
 </head>
 <body>
@@ -94,29 +87,25 @@
     <div id="splash-screen">
         <i class="fas fa-tree growing-tree"></i>
         <h1 style="color:var(--text-main);font-weight:900;margin:0;font-size:35px">টাকার গাছ</h1>
-        <small style="color:var(--text-muted);font-weight:700">ADMIN SUPREME V5.1</small>
+        <small style="color:var(--text-muted);font-weight:700">ADMIN PANEL V5.2</small>
     </div>
 
     <div id="auth-view">
         <div class="login-box">
-            <div style="width:90px;height:90px;background:rgba(255,255,255,0.1);border-radius:50%;margin:0 auto 25px;display:flex;justify-content:center;align-items:center;font-size:40px;color:var(--primary);border:1px solid rgba(255,255,255,0.2)">
-                <i class="fas fa-user-lock"></i>
-            </div>
-            <h2 style="margin-bottom:10px">Admin Login</h2>
-            <p style="opacity:0.6;margin-bottom:30px;font-size:14px">আপনার সিকিউরিটি কি দিন</p>
-            <input id="u_name" type="text" placeholder="Username (JIHAD)">
-            <input id="u_pass" type="password" placeholder="Password (198373)">
-            <button onclick="checkAuth()">প্রবেশ করুন</button>
+            <i class="fas fa-shield-alt" style="font-size:50px;color:var(--primary);margin-bottom:20px"></i>
+            <h2 style="margin-bottom:10px">Admin Access</h2>
+            <p style="opacity:0.6;margin-bottom:30px">নিরাপত্তা কোড দিয়ে প্রবেশ করুন</p>
+            <input id="u_name" type="text" placeholder="Username">
+            <input id="u_pass" type="password" placeholder="Password">
+            <button onclick="adminLogin()">লগইন করুন</button>
         </div>
     </div>
 
     <div id="admin-dashboard" style="display:none">
         
         <div class="header">
-            <h2>টাকার গাছ <small style="font-size:10px;color:var(--text-muted)">ADMIN</small></h2>
-            <div onclick="location.reload()" style="width:40px;height:40px;background:#f3f4f6;border-radius:50%;display:flex;justify-content:center;align-items:center;cursor:pointer">
-                <i class="fas fa-sync-alt" style="color:var(--primary)"></i>
-            </div>
+            <h2>টাকার গাছ <span style="font-size:12px;color:#999">ADMIN</span></h2>
+            <div onclick="location.reload()" style="width:40px;height:40px;background:#f3f4f6;border-radius:50%;display:flex;justify-content:center;align-items:center;cursor:pointer"><i class="fas fa-sync-alt" style="color:var(--primary)"></i></div>
         </div>
 
         <div id="home-view" class="view-panel">
@@ -136,8 +125,7 @@
                 <div class="menu-item" onclick="showSection('users')"><i class="fas fa-users" style="color:#3b82f6"></i><span>ইউজার</span></div>
                 <div class="menu-item" onclick="showSection('deposits')"><i class="fas fa-wallet" style="color:#10b981"></i><span>ডিপোজিট</span></div>
                 <div class="menu-item" onclick="showSection('withdraws')"><i class="fas fa-money-check-alt" style="color:#ef4444"></i><span>উইথড্র</span></div>
-                <div class="menu-item" onclick="showSection('tasks')"><i class="fas fa-tasks" style="color:#8b5cf6"></i><span>জব চেক</span></div>
-                <div class="menu-item" onclick="showSection('plans')"><i class="fas fa-crown" style="color:#f59e0b"></i><span>প্ল্যান</span></div>
+                <div class="menu-item" onclick="showSection('tasks')"><i class="fas fa-check-double" style="color:#8b5cf6"></i><span>জব চেক</span></div>
                 <div class="menu-item" onclick="showSection('history')"><i class="fas fa-history" style="color:#6b7280"></i><span>হিস্টরি</span></div>
                 <div class="menu-item" onclick="showSection('settings')"><i class="fas fa-cog" style="color:#1f2937"></i><span>সেটিংস</span></div>
                 <div class="menu-item" onclick="adminLogout()"><i class="fas fa-power-off" style="color:red"></i><span>লগ আউট</span></div>
@@ -162,7 +150,7 @@
         <div class="bottom-nav">
             <div class="nav-btn active" onclick="backHome()"><i class="fas fa-home"></i>হোম</div>
             <div class="nav-btn" onclick="showSection('users')"><i class="fas fa-users"></i>ইউজার</div>
-            <div class="nav-btn" onclick="showSection('tasks')"><i class="fas fa-check-double"></i>জব</div>
+            <div class="nav-btn" onclick="showSection('tasks')"><i class="fas fa-check-circle"></i>জব</div>
             <div class="nav-btn" onclick="showSection('settings')"><i class="fas fa-cog"></i>সেটিংস</div>
         </div>
     </div>
@@ -170,8 +158,8 @@
     <div id="user-modal" class="modal">
         <div class="modal-box">
             <h3 id="m-user-name">ইউজার এডিট</h3>
-            <p id="m-user-phone" style="font-size:12px;color:var(--text-muted);margin-bottom:20px">...</p>
-            <input id="e-bal" class="inp" type="number" placeholder="ব্যালেন্স">
+            <p id="m-user-phone" style="font-size:12px;color:#666;margin-bottom:20px">...</p>
+            <input id="e-bal" class="inp" type="number" placeholder="নতুন ব্যালেন্স">
             <input id="e-pass" class="inp" type="text" placeholder="পাসওয়ার্ড">
             <div style="display:flex;gap:10px">
                 <button class="btn-full" id="ban-btn" onclick="toggleBan()" style="background:#374151;color:white">ব্যান করুন</button>
@@ -180,95 +168,114 @@
             <button onclick="closeModal('user-modal')" style="width:100%;background:transparent;border:none;color:#999;cursor:pointer;margin-top:10px">বন্ধ করুন</button>
         </div>
     </div>
-
     <script>
-        // FIREBASE INIT
-        const firebaseConfig = { apiKey: "AIzaSyDgI-d8iwWr40tmknbY6jhH0oRb2Tvg4d0", authDomain: "takar-gach-a1d84.firebaseapp.com", databaseURL: "https://takar-gach-a1d84-default-rtdb.firebaseio.com", projectId: "takar-gach-a1d84", storageBucket: "takar-gach-a1d84.firebasestorage.app", messagingSenderId: "637802367074", appId: "1:637802367074:web:2e7f6c0670ec47f3a1693b" };
+        // 1. FIREBASE CONFIGURATION
+        const firebaseConfig = { 
+            apiKey: "AIzaSyDgI-d8iwWr40tmknbY6jhH0oRb2Tvg4d0", 
+            authDomain: "takar-gach-a1d84.firebaseapp.com", 
+            databaseURL: "https://takar-gach-a1d84-default-rtdb.firebaseio.com", 
+            projectId: "takar-gach-a1d84", 
+            storageBucket: "takar-gach-a1d84.firebasestorage.app", 
+            messagingSenderId: "637802367074", 
+            appId: "1:637802367074:web:2e7f6c0670ec47f3a1693b" 
+        };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
         let USERS = {}, GLOBAL_HISTORY = [];
 
-        // --- AUTH CHECK (JIHAD / 198373) ---
-        function checkAuth() {
+        // 2. AUTHENTICATION (JIHAD / 198373)
+        function adminLogin() {
             const u = document.getElementById('u_name').value;
             const p = document.getElementById('u_pass').value;
+            
             if(u === "JIHAD" && p === "198373") {
-                sessionStorage.setItem('isAdmin', 'true');
+                sessionStorage.setItem('admin_token', 'SECURE_ACCESS_V5');
                 location.reload();
             } else {
-                Swal.fire('Error', 'ইউজারনেম বা পাসওয়ার্ড ভুল!', 'error');
+                Swal.fire('Error', 'Username or Password Incorrect!', 'error');
             }
         }
 
         window.onload = () => {
             setTimeout(() => {
                 document.getElementById('splash-screen').style.display = 'none';
-                if(sessionStorage.getItem('isAdmin')) {
+                if(sessionStorage.getItem('admin_token') === 'SECURE_ACCESS_V5') {
                     document.getElementById('admin-dashboard').style.display = 'block';
-                    loadData();
+                    initData();
                 } else {
                     document.getElementById('auth-view').style.display = 'flex';
                 }
             }, 2000);
         };
 
-        // --- DATA LOADING & STATS ---
-        function loadData() {
+        // 3. DATA LOADING & PROCESSING
+        function initData() {
             db.ref('users').on('value', snap => {
                 USERS = snap.val() || {};
-                renderStats();
-                processHistory();
-                if(document.getElementById('home-view').style.display !== 'none') renderRecentHistory();
+                processData();
             });
         }
 
-        function renderStats() {
+        function processData() {
             let totalUsers = 0, totalBal = 0, totalDep = 0, totalWd = 0;
-            Object.values(USERS).forEach(u => {
+            GLOBAL_HISTORY = [];
+
+            Object.keys(USERS).forEach(uid => {
+                const u = USERS[uid];
                 totalUsers++;
                 totalBal += (u.balance || 0);
+
                 if(u.history) {
-                    Object.values(u.history).forEach(h => {
+                    Object.keys(u.history).forEach(hid => {
+                        const h = u.history[hid];
+                        // Add to Global History Array
+                        GLOBAL_HISTORY.push({
+                            ...h,
+                            uid: uid,
+                            hid: hid,
+                            userName: u.name,
+                            userPhone: u.phone
+                        });
+
+                        // Calculate Stats
                         if(h.status === 'Success') {
-                            if(h.type.includes('Buy')) totalDep += (h.amount || 0);
-                            if(h.type === 'Withdraw') totalWd += (h.amount || 0);
+                            if(h.type.includes('Buy')) totalDep += parseInt(h.amount);
+                            if(h.type === 'Withdraw') totalWd += parseInt(h.amount);
                         }
                     });
                 }
             });
+
+            // Sort History by Date (Newest First)
+            GLOBAL_HISTORY.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            // Update UI Stats
             document.getElementById('stat-users').innerText = totalUsers;
             document.getElementById('stat-bal').innerText = '৳' + totalBal;
             document.getElementById('stat-dep').innerText = '৳' + totalDep;
             document.getElementById('stat-wd').innerText = '৳' + totalWd;
             document.getElementById('stat-profit').innerText = '৳' + (totalDep - totalWd);
-        }
 
-        // --- HISTORY ENGINE (FIXED LOAD PROBLEM) ---
-        function processHistory() {
-            GLOBAL_HISTORY = [];
-            Object.keys(USERS).forEach(uId => {
-                if(USERS[uId].history) {
-                    Object.keys(USERS[uId].history).forEach(hId => {
-                        GLOBAL_HISTORY.push({
-                            ...USERS[uId].history[hId],
-                            uid: uId,
-                            hid: hId,
-                            userName: USERS[uId].name
-                        });
-                    });
-                }
-            });
-            GLOBAL_HISTORY.sort((a,b) => new Date(b.date) - new Date(a.date));
+            // Render Recent History on Home
+            renderRecentHistory();
+            
+            // Refresh current view if active
+            const currentSection = document.getElementById('page-title').innerText;
+            if(document.getElementById('dynamic-view').style.display === 'block') {
+                if(currentSection.includes('ডিপোজিট')) renderReqs('Buy');
+                else if(currentSection.includes('উইথড্র')) renderReqs('Withdraw');
+                else if(currentSection.includes('জব')) renderReqs('Task');
+                else if(currentSection.includes('হিস্টরি')) renderFullHistory();
+                else if(currentSection.includes('ইউজার')) renderUsers();
+            }
         }
 
         function renderRecentHistory() {
-            const container = document.getElementById('recent-hist-list');
-            if(GLOBAL_HISTORY.length === 0) {
-                container.innerHTML = '<p style="text-align:center;padding:20px;color:#999">কোনো হিস্টরি নেই</p>';
-                return;
-            }
-            container.innerHTML = GLOBAL_HISTORY.slice(0, 10).map(h => `
+            const c = document.getElementById('recent-hist-list');
+            if(GLOBAL_HISTORY.length === 0) return c.innerHTML = '<p style="text-align:center;color:#999">কোনো লেনদেন নেই</p>';
+            
+            c.innerHTML = GLOBAL_HISTORY.slice(0, 10).map(h => `
                 <div class="user-row">
                     <div><b>${h.userName}</b><br><small>${h.type} • ${h.date.split(',')[0]}</small></div>
                     <div style="text-align:right">
@@ -279,395 +286,174 @@
             `).join('');
         }
 
-        // --- SECTION NAVIGATION ---
+        // 4. NAVIGATION & SECTIONS
         function showSection(sec) {
             document.getElementById('home-view').style.display = 'none';
             document.getElementById('dynamic-view').style.display = 'block';
-            const content = document.getElementById('page-content');
             const title = document.getElementById('page-title');
-            content.innerHTML = '<p style="text-align:center">লোড হচ্ছে...</p>';
-
-            if(sec === 'users') {
-                title.innerText = "ইউজার ম্যানেজমেন্ট";
-                renderUsers();
-            } else if(sec === 'deposits') {
-                title.innerText = "ডিপোজিট রিকোয়েস্ট";
-                renderReqs('Buy');
-            } else if(sec === 'withdraws') {
-                title.innerText = "উইথড্র রিকোয়েস্ট";
-                renderReqs('Withdraw');
-            } else if(sec === 'tasks') {
-                title.innerText = "জব ভেরিফিকেশন";
-                renderReqs('Task Reward');
-            } else if(sec === 'history') {
-                title.innerText = "সম্পূর্ণ হিস্টরি";
-                renderFullHistory();
-            } else if(sec === 'settings') {
-                title.innerText = "অ্যাপ সেটিংস";
-                renderSettings();
-            }
+            
+            if(sec === 'users') { title.innerText = 'ইউজার ম্যানেজমেন্ট'; renderUsers(); }
+            else if(sec === 'deposits') { title.innerText = 'ডিপোজিট রিকোয়েস্ট'; renderReqs('Buy'); }
+            else if(sec === 'withdraws') { title.innerText = 'উইথড্র রিকোয়েস্ট'; renderReqs('Withdraw'); }
+            else if(sec === 'tasks') { title.innerText = 'জব ভেরিফিকেশন'; renderReqs('Task'); }
+            else if(sec === 'history') { title.innerText = 'সম্পূর্ণ হিস্টরি'; renderFullHistory(); }
+            else if(sec === 'settings') { title.innerText = 'সেটিংস'; renderSettings(); }
         }
 
         function backHome() {
             document.getElementById('dynamic-view').style.display = 'none';
             document.getElementById('home-view').style.display = 'block';
-            renderRecentHistory();
         }
 
-        // --- USER MGMT ---
+        // 5. USER MANAGEMENT
         function renderUsers() {
-            let html = '<input type="text" class="inp" placeholder="নাম বা নাম্বার দিয়ে খুঁজুন..." onkeyup="searchUser(this.value)">';
-            html += '<div id="user-list-container">';
+            const c = document.getElementById('page-content');
+            c.innerHTML = `<input type="text" class="inp" placeholder="খুঁজুন..." onkeyup="filterUser(this.value)"><div id="u-list"></div>`;
+            const list = document.getElementById('u-list');
+            
             Object.values(USERS).reverse().forEach(u => {
-                html += `
-                <div class="user-row u-item" data-search="${u.name} ${u.phone}">
-                    <div><b>${u.name} ${u.banned?'🛑':''}</b><br><small>${u.phone}</small></div>
-                    <div style="text-align:right"><b>৳${u.balance}</b><br><button class="btn-sm" style="background:var(--primary);color:white;border:none;border-radius:5px;padding:4px 10px;cursor:pointer" onclick="openUserEdit('${u.phone}')">এডিট</button></div>
+                list.innerHTML += `
+                <div class="user-row u-item" data-s="${u.name} ${u.phone}">
+                    <div><b>${u.name}</b> ${u.banned ? '🔴' : '🟢'}<br><small>${u.phone}</small></div>
+                    <div style="text-align:right"><b>৳${u.balance}</b><br><button class="btn-full" style="padding:5px 15px;font-size:12px;width:auto;margin:0" onclick="editUser('${u.phone}')">Manage</button></div>
                 </div>`;
             });
-            html += '</div>';
-            document.getElementById('page-content').innerHTML = html;
         }
 
-        function openUserEdit(phone) {
+        function editUser(phone) {
             const u = USERS[phone];
             document.getElementById('m-user-name').innerText = u.name;
             document.getElementById('m-user-phone').innerText = phone;
             document.getElementById('e-bal').value = u.balance;
             document.getElementById('e-pass').value = u.pass;
             document.getElementById('ban-btn').innerText = u.banned ? "আনব্যান করুন" : "ব্যান করুন";
+            document.getElementById('ban-btn').style.background = u.banned ? "#10B981" : "#EF4444";
             openModal('user-modal');
         }
 
         function saveUserUpdate() {
             const phone = document.getElementById('m-user-phone').innerText;
-            const bal = parseFloat(document.getElementById('e-bal').value);
-            const pass = document.getElementById('e-pass').value;
-            db.ref('users/'+phone).update({ balance: bal, pass: pass });
-            closeModal('user-modal');
-            Swal.fire('সফল', 'তথ্য আপডেট হয়েছে!', 'success');
+            db.ref('users/'+phone).update({
+                balance: parseInt(document.getElementById('e-bal').value),
+                pass: document.getElementById('e-pass').value
+            });
+            closeModal('user-modal'); Swal.fire('Saved!', '', 'success');
         }
 
         function toggleBan() {
             const phone = document.getElementById('m-user-phone').innerText;
-            const currentStatus = USERS[phone].banned || false;
-            db.ref('users/'+phone).update({ banned: !currentStatus });
-            closeModal('user-modal');
-            Swal.fire('সফল', 'ব্যান স্ট্যাটাস পরিবর্তন হয়েছে!', 'success');
+            const status = USERS[phone].banned || false;
+            db.ref('users/'+phone).update({ banned: !status });
+            closeModal('user-modal'); Swal.fire('Done!', '', 'success');
         }
 
-        // --- REQUEST ACTIONS ---
+        // 6. REQUEST HANDLING (VIP, WITHDRAW, TASK)
         function renderReqs(type) {
-            const reqs = GLOBAL_HISTORY.filter(h => h.type.includes(type) && h.status === 'Pending');
-            if(reqs.length === 0) {
-                document.getElementById('page-content').innerHTML = '<p style="text-align:center;padding:50px;color:#999">কোনো পেন্ডিং রিকোয়েস্ট নেই</p>';
-                return;
-            }
-            document.getElementById('page-content').innerHTML = reqs.map(r => `
+            const list = GLOBAL_HISTORY.filter(h => h.type.includes(type) && h.status === 'Pending');
+            const c = document.getElementById('page-content');
+            
+            if(list.length === 0) return c.innerHTML = '<p style="text-align:center;padding:50px;color:#999">কোনো পেন্ডিং রিকোয়েস্ট নেই</p>';
+            
+            c.innerHTML = list.map(h => `
                 <div class="card">
-                    <div style="display:flex;justify-content:space-between"><b>${r.userName}</b> <span class="badge badge-pending">${r.type}</span></div>
+                    <div style="display:flex;justify-content:space-between"><b>${h.userName}</b> <span class="badge badge-pending">${h.type}</span></div>
                     <div style="margin:15px 0;font-size:14px;color:#555">
-                        পরিমাণ: <b>৳${r.amount}</b><br>
-                        TrxID/Num: <b style="color:var(--primary)">${r.trx || r.sender || 'N/A'}</b><br>
-                        ${r.proof ? `প্রুফ: <a href="${r.proof}" target="_blank">লিঙ্ক দেখুন</a>` : ''}
+                        পরিমাণ: <b>৳${h.amount}</b><br>
+                        তথ্য: ${h.trx || h.sender || 'N/A'}<br>
+                        ${h.proof ? `প্রুফ: <a href="${h.proof}" target="_blank" style="color:blue">লিংক দেখুন</a>` : ''}
                     </div>
                     <div style="display:flex;gap:10px">
-                        <button class="btn-full btn-approve" onclick="approveReq('${r.uid}', '${r.hid}', ${r.amount}, '${r.type}', ${r.validity||0})">এপ্রুভ</button>
-                        <button class="btn-full btn-reject" onclick="rejectReq('${r.uid}', '${r.hid}')">রিজেক্ট</button>
+                        <button class="btn-full btn-approve" onclick="approveReq('${h.uid}', '${h.hid}', '${h.type}', ${h.amount}, ${h.validity||0})">Approve</button>
+                        <button class="btn-full btn-reject" onclick="rejectReq('${h.uid}', '${h.hid}')">Reject</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        function approveReq(uId, hId, amount, type, validity) {
-            const update = {};
-            update[`users/${uId}/history/${hId}/status`] = "Success";
-            if(type.includes('Buy')) {
-                update[`users/${uId}/isVip`] = true;
-                update[`users/${uId}/currentPlan`] = type.replace('Buy ', '');
-                update[`users/${uId}/vipExpire`] = Date.now() + (validity * 86400000);
-            } else if(type === 'Task Reward') {
-                update[`users/${uId}/balance`] = (USERS[uId].balance || 0) + amount;
-            }
-            db.ref().update(update);
-            Swal.fire('সফল', 'রিকোয়েস্টটি এপ্রুভ করা হয়েছে!', 'success');
-            backHome();
-        }
+        function approveReq(uid, hid, type, amount, validity) {
+            Swal.fire({title:'এপ্রুভ করবেন?', showCancelButton:true, confirmButtonText:'হ্যাঁ'}).then(res => {
+                if(res.isConfirmed) {
+                    const updates = {};
+                    updates[`users/${uid}/history/${hid}/status`] = "Success";
+                    
+                    if(type.includes('Buy')) { // VIP Approval
+                        updates[`users/${uid}/isVip`] = true;
+                        updates[`users/${uid}/currentPlan`] = type.replace('Buy ', '');
+                        updates[`users/${uid}/vipExpire`] = Date.now() + (validity * 86400000); // Days to Ms
+                    } else if(type.includes('Task')) { // Task Approval
+                        const curBal = USERS[uid].balance || 0;
+                        updates[`users/${uid}/balance`] = curBal + parseInt(amount);
+                    }
+                    // Withdraw balance is deducted beforehand, so no balance update needed here.
 
-        function rejectReq(uId, hId) {
-            Swal.fire({
-                title: 'রিজেক্টের কারণ লিখুন',
-                input: 'text',
-                inputPlaceholder: 'ভুল TrxID / স্প্যাম...',
-                showCancelButton: true,
-                confirmButtonText: 'রিজেক্ট করুন'
-            }).then((res) => {
-                if(res.value) {
-                    db.ref(`users/${uId}/history/${hId}`).update({ status: "Rejected", reason: res.value });
-                    Swal.fire('রিজেক্টেড', 'ইউজার কারণটি দেখতে পাবে', 'error');
-                    backHome();
+                    db.ref().update(updates);
+                    Swal.fire('Success', 'রিকোয়েস্ট এপ্রুভ হয়েছে!', 'success');
                 }
             });
         }
 
-        // --- FULL HISTORY ---
+        function rejectReq(uid, hid) {
+            Swal.fire({title:'রিজেক্টের কারণ', input:'text', showCancelButton:true, confirmButtonText:'রিজেক্ট'}).then(res => {
+                if(res.value) {
+                    db.ref(`users/${uid}/history/${hid}`).update({
+                        status: "Rejected",
+                        reason: res.value
+                    });
+                    
+                    // Optional: Refund if Withdraw is rejected
+                    const h = USERS[uid].history[hid];
+                    if(h.type === 'Withdraw') {
+                        db.ref(`users/${uid}/balance`).set((USERS[uid].balance || 0) + parseInt(h.amount) + 5); // Refund + Charge
+                    }
+
+                    Swal.fire('Rejected', 'ইউজার কারণটি দেখতে পাবে।', 'error');
+                }
+            });
+        }
+
+        // 7. FULL HISTORY
         function renderFullHistory() {
-            document.getElementById('page-content').innerHTML = `
-                <div class="card" style="padding:10px;max-height:600px;overflow-y:auto">
-                    ${GLOBAL_HISTORY.map(h => `
-                        <div class="user-row">
-                            <div><b>${h.userName}</b><br><small>${h.type} • ${h.date}</small></div>
-                            <div style="text-align:right"><b>৳${h.amount}</b><br><small style="color:${h.status==='Success'?'green':'red'}">${h.status}</small></div>
-                        </div>
-                    `).join('')}
+            const c = document.getElementById('page-content');
+            c.innerHTML = '<div class="card" style="padding:10px">' + GLOBAL_HISTORY.map(h => `
+                <div class="user-row" style="border-bottom:1px solid #eee">
+                    <div><b>${h.userName}</b><br><small>${h.type}</small></div>
+                    <div style="text-align:right"><b>৳${h.amount}</b><br><span style="font-size:10px;color:${h.status=='Success'?'green':'red'}">${h.status}</span></div>
                 </div>
-            `;
+            `).join('') + '</div>';
         }
 
-       // --- SETTINGS SECTION (REVISED & PROFESSIONAL) ---
-function renderSettings() {
-    db.ref('settings').once('value', snapshot => {
-        const settings = snapshot.val() || {};
-        document.getElementById('page-content').innerHTML = `
-        <div class="card" style="animation: slideIn 0.5s ease-out;">
-            <h3 style="margin-bottom:20px; color:var(--primary); display:flex; align-items:center; gap:10px;">
-                <i class="fas fa-sliders-h"></i> জেনারেল সেটিংস
-            </h3>
-            
-            <div style="margin-bottom:20px;">
-                <label style="font-weight:700; font-size:13px; color:var(--text-muted); display:block; margin-bottom:8px;">অ্যাপ নোটিশ (Marquee Text)</label>
-                <textarea id="s-notice" class="inp" style="height:100px; resize:none; border-radius:15px;" placeholder="ইউজারদের জন্য গুরুত্বপূর্ণ নোটিশ লিখুন...">${settings.notice || ''}</textarea>
-            </div>
-
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
-                <div>
-                    <label style="font-weight:700; font-size:13px; color:var(--text-muted); display:block; margin-bottom:8px;">বিকাশ নাম্বার</label>
-                    <input id="s-bkash" class="inp" value="${settings.bkash || ''}" placeholder="017xxxxxxxx">
-                </div>
-                <div>
-                    <label style="font-weight:700; font-size:13px; color:var(--text-muted); display:block; margin-bottom:8px;">নগদ নাম্বার</label>
-                    <input id="s-nagad" class="inp" value="${settings.nagad || ''}" placeholder="018xxxxxxxx">
-                </div>
-            </div>
-
-            <div class="user-row" style="background:var(--primary-light); border:none; margin-bottom:25px;">
-                <div>
-                    <b style="color:var(--primary-dark);">অফিস টাইম / মেইনটেনেন্স</b><br>
-                    <small style="color:var(--primary-dark); opacity:0.8;">চালু করলে ইউজাররা কাজ করতে পারবে না</small>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" id="s-maint" ${settings.maintenance ? 'checked' : ''}>
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <button class="btn-full btn-approve" onclick="saveAdminSettings()" style="height:60px; font-size:16px;">
-                <i class="fas fa-save" style="margin-right:10px;"></i> সেটিংস সেভ করুন
-            </button>
-        </div>
-
-        <div class="card" style="margin-top:25px; border-left:5px solid var(--accent);">
-            <h3 style="margin-bottom:20px; color:var(--accent);">💰 রিওয়ার্ড সেটিংস</h3>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
-                <div>
-                    <label style="font-weight:700; font-size:12px;">রেফার বোনাস (৳)</label>
-                    <input id="s-ref" type="number" class="inp" value="${settings.config?.refBonus || 2}">
-                </div>
-                <div>
-                    <label style="font-weight:700; font-size:12px;">মিনিমাম উইথড্র (৳)</label>
-                    <input id="s-min" type="number" class="inp" value="${settings.config?.minWithdraw || 20}">
-                </div>
-            </div>
-            <button class="btn-full" onclick="saveRewardSettings()" style="background:var(--accent); color:white; margin-top:10px;">আপডেট রিওয়ার্ড</button>
-        </div>
-        `;
-    });
-}
-
-// --- SAVE SETTINGS LOGIC ---
-function saveAdminSettings() {
-    const data = {
-        notice: document.getElementById('s-notice').value,
-        bkash: document.getElementById('s-bkash').value,
-        nagad: document.getElementById('s-nagad').value,
-        maintenance: document.getElementById('s-maint').checked
-    };
-    
-    db.ref('settings').update(data).then(() => {
-        Swal.fire({
-            title: 'সফল!',
-            text: 'জেনারেল সেটিংস আপডেট করা হয়েছে।',
-            icon: 'success',
-            confirmButtonColor: '#10b981'
-        });
-    });
-}
-
-function saveRewardSettings() {
-    const config = {
-        refBonus: parseInt(document.getElementById('s-ref').value),
-        minWithdraw: parseInt(document.getElementById('s-min').value)
-    };
-    
-    db.ref('settings/config').update(config).then(() => {
-        Swal.fire('সফল!', 'রিওয়ার্ড সেটিংস আপডেট হয়েছে।', 'success');
-    });
-}
-
-// --- 💎 VIP PLAN MANAGEMENT ---
-function renderPlanSettings() {
-    const content = document.getElementById('page-content');
-    db.ref('settings/vipPlans').on('value', snapshot => {
-        const plans = snapshot.val() || {};
-        let html = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h3 style="margin:0;">VIP প্ল্যান লিস্ট</h3>
-                <button class="btn-sm" style="background:var(--primary); padding:10px 20px;" onclick="openPlanModal()">+ নতুন প্ল্যান</button>
-            </div>
-            <div style="display:grid; grid-template-columns: 1fr; gap:15px;">
-        `;
-        
-        Object.keys(plans).forEach(key => {
-            const p = plans[key];
-            html += `
-                <div class="user-row" style="background:white; padding:20px;">
-                    <div>
-                        <b style="font-size:18px;">${p.name}</b><br>
-                        <small style="color:var(--primary); font-weight:700;">৳${p.price} | Daily: ৳${p.dailyIncome}</small><br>
-                        <small style="color:var(--text-muted);">মেয়াদ: ${p.validity} দিন</small>
-                    </div>
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn-sm" style="background:#EF4444;" onclick="deletePlan('${key}')"><i class="fas fa-trash"></i></button>
-                    </div>
-                </div>
-            `;
-        });
-        
-        html += `</div>`;
-        content.innerHTML = html;
-    });
-}
-
-function openPlanModal() {
-    Swal.fire({
-        title: 'নতুন VIP প্ল্যান',
-        html: `
-            <input id="p-name" class="swal2-input" placeholder="প্ল্যান নাম (যেমন: GOLD)">
-            <input id="p-price" type="number" class="swal2-input" placeholder="প্ল্যান দাম (৳)">
-            <input id="p-income" type="number" class="swal2-input" placeholder="দৈনিক আয় (৳)">
-            <input id="p-val" type="number" class="swal2-input" placeholder="মেয়াদ (দিন)">
-        `,
-        confirmButtonText: 'তৈরি করুন',
-        showCancelButton: true,
-        preConfirm: () => {
-            return {
-                name: document.getElementById('p-name').value,
-                price: parseInt(document.getElementById('p-price').value),
-                dailyIncome: parseInt(document.getElementById('p-income').value),
-                validity: parseInt(document.getElementById('p-val').value)
-            }
+        // 8. SETTINGS
+        function renderSettings() {
+            db.ref('settings').once('value', s => {
+                const v = s.val() || {};
+                document.getElementById('page-content').innerHTML = `
+                <div class="card">
+                    <label>নোটিশ</label><textarea id="s-not" class="inp" style="height:80px">${v.notice||''}</textarea>
+                    <label>বিকাশ</label><input id="s-bk" class="inp" value="${v.bkash||''}">
+                    <label>নগদ</label><input id="s-ng" class="inp" value="${v.nagad||''}">
+                    <button class="btn-full btn-approve" onclick="saveSet()">সেভ করুন</button>
+                </div>`;
+            });
         }
-    }).then(result => {
-        if(result.isConfirmed) {
-            db.ref('settings/vipPlans').push(result.value);
-            Swal.fire('সফল!', 'নতুন VIP প্ল্যান তৈরি হয়েছে।', 'success');
+        function saveSet(){
+            db.ref('settings').update({
+                notice: document.getElementById('s-not').value,
+                bkash: document.getElementById('s-bk').value,
+                nagad: document.getElementById('s-ng').value
+            });
+            Swal.fire('Saved!', '', 'success');
         }
-    });
-}
 
-// --- 📋 HISTORY LOADER FIX (FAST & RELIABLE) ---
-function renderFullHistory() {
-    const container = document.getElementById('page-content');
-    if (GLOBAL_HISTORY.length === 0) {
-        container.innerHTML = `
-            <div style="text-align:center; padding:100px 20px; color:var(--text-muted);">
-                <i class="fas fa-history" style="font-size:50px; opacity:0.2; margin-bottom:20px;"></i>
-                <p>কোনো লেনদেনের ইতিহাস পাওয়া যায়নি।</p>
-            </div>
-        `;
-        return;
-    }
-
-    let html = `
-        <div class="card" style="padding:10px; border-radius:25px;">
-            <table style="width:100%; border-collapse:collapse; font-size:13px;">
-                <thead>
-                    <tr style="text-align:left; border-bottom:2px solid #eee;">
-                        <th style="padding:15px;">ইউজার</th>
-                        <th style="padding:15px;">ধরণ</th>
-                        <th style="padding:15px;">পরিমাণ</th>
-                        <th style="padding:15px;">স্ট্যাটাস</th>
-                    </tr>
-                </thead>
-                <tbody>
-    `;
-
-    GLOBAL_HISTORY.forEach(h => {
-        let statusColor = h.status === 'Success' ? '#10B981' : (h.status === 'Pending' ? '#F59E0B' : '#EF4444');
-        html += `
-            <tr style="border-bottom:1px solid #f1f1f1;">
-                <td style="padding:15px;"><b>${h.userName}</b><br><small>${h.uid}</small></td>
-                <td style="padding:15px;">${h.type}</td>
-                <td style="padding:15px;"><b>৳${h.amount}</b></td>
-                <td style="padding:15px;"><span style="color:${statusColor}; font-weight:800;">${h.status}</span></td>
-            </tr>
-        `;
-    });
-
-    html += `</tbody></table></div>`;
-    container.innerHTML = html;
-}
-
-// --- 🛠️ HELPER FUNCTIONS ---
-function openModal(id) {
-    document.getElementById(id).style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-}
-
-function closeModal(id) {
-    document.getElementById(id).style.display = 'none';
-    document.body.style.overflow = 'auto';
-}
-
-function adminLogout() {
-    Swal.fire({
-        title: 'লগ আউট?',
-        text: "আপনি কি অ্যাডমিন প্যানেল থেকে বের হতে চান?",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#EF4444',
-        confirmButtonText: 'হ্যাঁ, বের হবো'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            sessionStorage.clear();
-            location.reload();
+        // UTILS
+        function openModal(id) { document.getElementById(id).style.display='flex'; }
+        function closeModal(id) { document.getElementById(id).style.display='none'; }
+        function adminLogout() { sessionStorage.clear(); location.reload(); }
+        function filterUser(v) {
+            const t = v.toLowerCase();
+            document.querySelectorAll('.u-item').forEach(e => {
+                e.style.display = e.getAttribute('data-s').toLowerCase().includes(t) ? 'flex' : 'none';
+            });
         }
-    });
-}
-
-function searchUser(query) {
-    const filter = query.toLowerCase();
-    const rows = document.querySelectorAll('.u-item');
-    rows.forEach(row => {
-        const text = row.getAttribute('data-search').toLowerCase();
-        row.style.display = text.includes(filter) ? 'flex' : 'none';
-    });
-}
-
-// --- 📈 ANIMATION ON LOAD ---
-document.addEventListener('DOMContentLoaded', () => {
-    // Add smooth hover effects to menu items
-    const menuItems = document.querySelectorAll('.menu-item');
-    menuItems.forEach(item => {
-        item.addEventListener('mouseenter', () => playTickSound());
-    });
-});
-
-function playTickSound() {
-    // Optional: Add a subtle audio feedback for a pro feel
-}
-
-</script>
+    </script>
 </body>
 </html>
- 
