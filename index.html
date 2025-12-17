@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>টাকার গাছ এডমিন V6.0</title>
+    <title>টাকার গাছ এডমিন V7.0</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -12,36 +12,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        :root {
-            --primary: #10b981; 
-            --primary-dark: #047857;
-            --bg-body: #F0F2F5;
-            --card-bg: #FFFFFF;
-            --text-main: #111827;
-            --text-muted: #6B7280;
-            --shadow: 0 4px 20px rgba(0,0,0,0.05);
-        }
-
+        :root { --primary: #10b981; --primary-dark: #047857; --bg-body: #F0F2F5; --text-main: #111827; --text-muted: #6B7280; --shadow: 0 4px 20px rgba(0,0,0,0.05); }
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg-body); font-family: 'Inter', 'Hind Siliguri', sans-serif; color: var(--text-main); padding-bottom: 90px; user-select: none; }
 
-        /* --- 1. NEW GROWING TREE SPLASH --- */
+        /* GROWING TREE SPLASH */
         #splash-screen { position: fixed; inset: 0; background: var(--bg-body); z-index: 6000; display: flex; justify-content: center; align-items: center; flex-direction: column; }
-        
-        .growing-tree {
-            font-size: 0px; /* Starts hidden */
-            color: var(--primary);
-            margin-bottom: 20px;
-            animation: growTree 2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            transform-origin: bottom center;
-        }
-
-        @keyframes growTree {
-            0% { font-size: 0px; opacity: 0; transform: translateY(50px); }
-            30% { font-size: 40px; opacity: 0.5; }
-            60% { font-size: 70px; opacity: 0.8; }
-            100% { font-size: 90px; opacity: 1; transform: translateY(0); }
-        }
+        .growing-tree { font-size: 0px; color: var(--primary); margin-bottom: 20px; animation: growTree 2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; transform-origin: bottom center; }
+        @keyframes growTree { 0% { font-size: 0px; opacity: 0; transform: translateY(50px); } 30% { font-size: 40px; opacity: 0.5; } 60% { font-size: 70px; opacity: 0.8; } 100% { font-size: 90px; opacity: 1; transform: translateY(0); } }
 
         #auth-view { position: fixed; inset: 0; background: var(--bg-body); z-index: 5000; display: flex; justify-content: center; align-items: center; padding: 20px; }
         .login-box { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); padding: 40px 30px; border-radius: 24px; width: 100%; max-width: 350px; text-align: center; border: 1px solid white; box-shadow: var(--shadow); }
@@ -50,112 +28,58 @@
         .btn { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3); }
         .btn:active { transform: scale(0.98); }
 
-        /* HEADER */
         .header { position: sticky; top: 0; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
-        .header h2 { margin: 0; font-size: 18px; display: flex; align-items: center; gap: 8px; color: var(--text-main); }
-        
-        /* CONTENT */
         .content-area { padding: 15px; display: none; animation: fadeIn 0.3s; }
         .content-area.active { display: block; }
         @keyframes fadeIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .stat-box { background: white; padding: 20px; border-radius: 16px; text-align: center; box-shadow: var(--shadow); border-bottom: 4px solid var(--primary); }
-        .stat-box h1 { margin: 0; font-size: 24px; color: var(--text-main); }
-        .stat-box p { margin: 5px 0 0; font-size: 12px; color: var(--text-muted); font-weight: 600; }
-
-        /* GRID MENU */
         .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
         .menu-btn { background: white; border: 1px solid #F3F4F6; border-radius: 16px; padding: 15px 5px; text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 90px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         .menu-btn:active { transform: scale(0.95); background: #ECFDF5; border-color: var(--primary); }
-        .menu-btn i { font-size: 24px; color: var(--primary); margin-bottom: 8px; }
-        .menu-btn span { font-size: 11px; color: var(--text-main); font-weight: 600; }
-
-        /* LISTS & CARDS */
         .card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: var(--shadow); border: 1px solid #F3F4F6; }
-        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #F9FAFB; border-radius: 12px; margin-bottom: 8px; border: 1px solid #E5E7EB; }
         
-        .badge { padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-        .badge-vip { background: #FEF3C7; color: #D97706; }
-        .badge-success { background: #D1FAE5; color: #059669; }
-        .badge-reject { background: #FEE2E2; color: #DC2626; }
-        
-        .btn-sm { padding: 6px 12px; border-radius: 8px; font-size: 12px; border: none; color: white; cursor: pointer; margin-left: 5px; font-weight: 600; }
-        .btn-g { background: #10b981; } .btn-r { background: #ef4444; } .btn-b { background: #3b82f6; } .btn-y { background: #F59E0B; }
-
-        /* TOGGLE SWITCH (FIXED FOR MAINTENANCE) */
+        /* SWITCH TOGGLE */
         .switch { position: relative; display: inline-block; width: 45px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
         .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: #EF4444; } /* Red for Maintenance */
+        input:checked + .slider { background-color: var(--primary); }
         input:checked + .slider:before { transform: translateX(21px); }
+        /* Red switch for maintenance */
+        .switch-red input:checked + .slider { background-color: #EF4444; }
 
-        /* NAV */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255,255,255,0.95); border-top: 1px solid #E5E7EB; padding: 10px 15px; display: flex; justify-content: space-around; z-index: 1000; padding-bottom: 15px; backdrop-filter: blur(10px); border-radius: 20px 20px 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); }
         .nav-item { text-align: center; color: var(--text-muted); cursor: pointer; transition: 0.2s; position: relative; }
-        .nav-item i { font-size: 22px; margin-bottom: 4px; display: block; }
-        .nav-item span { font-size: 10px; font-weight: 700; }
         .nav-item.active { color: var(--primary); transform: translateY(-5px); }
         .nav-badge { position: absolute; top: -5px; right: -5px; background: #EF4444; color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: bold; }
-
-        /* MODAL */
+        
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; }
         .modal-box { background: white; width: 100%; max-width: 400px; padding: 25px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
-        .receipt-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F3F4F6; font-size: 14px; }
-        .receipt-row:last-child { border-bottom: none; }
+        .btn-sm { padding: 6px 12px; border-radius: 8px; font-size: 12px; border: none; color: white; cursor: pointer; margin-left: 5px; font-weight: 600; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #F9FAFB; border-radius: 12px; margin-bottom: 8px; border: 1px solid #E5E7EB; }
+        .badge { padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .badge-vip { background: #FEF3C7; color: #D97706; } .badge-success { background: #D1FAE5; color: #059669; } .badge-reject { background: #FEE2E2; color: #DC2626; }
     </style>
 </head>
 <body>
 
-    <div id="splash-screen">
-        <i class="fas fa-tree growing-tree"></i>
-        <h1 style="color: var(--text-main); font-weight: 900; margin: 0;">টাকার গাছ</h1>
-        <small style="color: var(--text-muted); margin-top: 5px; font-weight: 600;">এডমিন প্যানেল V6.0</small>
-    </div>
+    <div id="splash-screen"><i class="fas fa-tree growing-tree"></i><h1 style="color:var(--text-main);margin:0">টাকার গাছ</h1><small style="color:var(--text-muted)">এডমিন প্যানেল V7.0</small></div>
 
-    <div id="auth-view" style="display: none;">
-        <div class="login-box">
-            <i class="fas fa-user-shield" style="font-size: 50px; color: var(--primary); margin-bottom: 20px;"></i>
-            <h2 style="margin:0 0 20px; color:var(--text-main)">এডমিন লগইন</h2>
-            <input id="u" class="inp" placeholder="ইউজারনেম">
-            <input id="p" type="password" class="inp" placeholder="পাসওয়ার্ড">
-            <button class="btn" onclick="login()">প্রবেশ করুন</button>
-        </div>
-    </div>
+    <div id="auth-view" style="display:none"><div class="login-box"><i class="fas fa-user-shield" style="font-size:50px;color:var(--primary);margin-bottom:20px"></i><h2 style="margin:0 0 20px">এডমিন লগইন</h2><input id="u" class="inp" placeholder="ইউজারনেম"><input id="p" type="password" class="inp" placeholder="পাসওয়ার্ড"><button class="btn" onclick="login()">প্রবেশ করুন</button></div></div>
 
     <div id="dashboard" style="display:none">
-        
-        <div class="header">
-            <h2><i class="fas fa-tree" style="color:var(--primary)"></i> টাকার গাছ</h2>
-            <div onclick="location.reload()" style="background:#F3F4F6; padding:8px; border-radius:50%; cursor:pointer"><i class="fas fa-sync-alt" style="color:var(--primary)"></i></div>
-        </div>
+        <div class="header"><h2><i class="fas fa-tree" style="color:var(--primary)"></i> টাকার গাছ</h2><div onclick="location.reload()" style="background:#F3F4F6;padding:8px;border-radius:50%;cursor:pointer"><i class="fas fa-sync-alt" style="color:var(--primary)"></i></div></div>
 
         <div id="home-view" class="content-area active">
             <div class="stat-grid">
-                <div class="stat-box">
-                    <h1 id="total-u">0</h1>
-                    <p>মোট ইউজার</p>
-                </div>
-                <div class="stat-box" style="border-color:#3b82f6">
-                    <h1 id="total-b">৳0</h1>
-                    <p>মোট ব্যালেন্স</p>
-                </div>
-                <div class="stat-box" style="border-color:#10b981">
-                    <h1 id="total-dep" style="color:#10b981">৳0</h1>
-                    <p>ডিপোজিট (In)</p>
-                </div>
-                <div class="stat-box" style="border-color:#ef4444">
-                    <h1 id="total-wd" style="color:#ef4444">৳0</h1>
-                    <p>উইথড্র (Out)</p>
-                </div>
+                <div class="stat-box"><h1 id="total-u">0</h1><p>মোট ইউজার</p></div>
+                <div class="stat-box" style="border-color:#3b82f6"><h1 id="total-b">৳0</h1><p>মোট ব্যালেন্স</p></div>
+                <div class="stat-box" style="border-color:#10b981"><h1 id="total-dep" style="color:#10b981">৳0</h1><p>ডিপোজিট</p></div>
+                <div class="stat-box" style="border-color:#ef4444"><h1 id="total-wd" style="color:#ef4444">৳0</h1><p>উইথড্র</p></div>
             </div>
-
-            <div style="background:linear-gradient(135deg, #1F2937, #111827); padding:15px; border-radius:16px; text-align:center; color:white; margin-bottom:20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1)">
-                <small>নিট প্রফিট (Net Profit)</small>
-                <h1 id="net-profit" style="margin:5px 0; font-size:30px">৳0</h1>
-            </div>
-
+            <div style="background:linear-gradient(135deg,#1F2937,#111827);padding:15px;border-radius:16px;text-align:center;color:white;margin-bottom:20px"><small>নিট প্রফিট</small><h1 id="net-profit" style="margin:5px 0">৳0</h1></div>
             <div class="menu-grid">
                 <div class="menu-btn" onclick="nav('users')"><i class="fas fa-users"></i><span>ইউজার</span></div>
                 <div class="menu-btn" onclick="nav('plans')"><i class="fas fa-crown"></i><span>VIP প্ল্যান</span></div>
@@ -166,69 +90,26 @@
                 <div class="menu-btn" onclick="nav('history')"><i class="fas fa-history" style="color:#F59E0B"></i><span>হিস্টরি</span></div>
                 <div class="menu-btn" onclick="nav('settings')"><i class="fas fa-cogs"></i><span>সেটিংস</span></div>
             </div>
-
-            <div class="card">
-                <h3 style="margin-top:0; font-size:16px">নতুন জয়েনিং</h3>
-                <div id="recent-list"></div>
-            </div>
-            <button class="btn" style="background:#EF4444; margin-top:20px" onclick="logout()">লগ আউট</button>
+            <div class="card"><h3>নতুন জয়েনিং</h3><div id="recent-list"></div></div>
+            <button class="btn" style="background:#EF4444;margin-top:20px" onclick="logout()">লগ আউট</button>
         </div>
 
         <div id="dynamic-view" class="content-area">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
-                <h3 id="page-title" style="margin:0; color:var(--primary)">...</h3>
-                <button class="btn-sm" style="background:#374151; color:white" onclick="goHome()">ব্যাক</button>
-            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px"><h3 id="page-title" style="margin:0;color:var(--primary)">...</h3><button class="btn-sm" style="background:#374151" onclick="goHome()">ব্যাক</button></div>
             <div id="page-content"></div>
         </div>
 
         <div class="bottom-nav">
             <div class="nav-item active" onclick="goHome()"><i class="fas fa-home"></i><span>হোম</span></div>
             <div class="nav-item" onclick="nav('users')"><i class="fas fa-users"></i><span>ইউজার</span></div>
-            <div class="nav-item" onclick="nav('job_reqs')">
-                <i class="fas fa-check-circle"></i><span>এপ্রুভাল</span>
-                <span id="nav-badge" class="nav-badge" style="display:none">0</span>
-            </div>
+            <div class="nav-item" onclick="nav('job_reqs')"><i class="fas fa-check-circle"></i><span>এপ্রুভাল</span><span id="nav-badge" class="nav-badge" style="display:none">0</span></div>
             <div class="nav-item" onclick="nav('history')"><i class="fas fa-history"></i><span>হিস্টরি</span></div>
         </div>
     </div>
 
-    <div id="user-modal" class="modal"><div class="modal-box">
-        <h3>ইউজার এডিট</h3>
-        <input type="hidden" id="e-uid">
-        <label style="font-size:12px;color:#666">ব্যালেন্স</label>
-        <input id="e-bal" type="number" class="inp">
-        <label style="font-size:12px;color:#666">প্ল্যান নাম</label>
-        <input id="e-plan" class="inp">
-        <label style="font-size:12px;color:#666">নতুন পাসওয়ার্ড (ঐচ্ছিক)</label>
-        <input id="e-pass" class="inp" placeholder="পাসওয়ার্ড সেট করুন">
-        <div style="display:flex; gap:10px; margin-top:10px">
-            <button class="btn" style="background:#EF4444" onclick="doBan()" id="ban-btn">ব্যান</button>
-            <button class="btn" onclick="saveUser()">সেভ করুন</button>
-        </div>
-        <button onclick="closeModal('user-modal')" style="background:transparent; border:none; color:#999; width:100%; margin-top:15px">বন্ধ করুন</button>
-    </div></div>
-
-    <div id="plan-modal" class="modal"><div class="modal-box">
-        <h3>নতুন প্ল্যান</h3>
-        <input id="p-name" class="inp" placeholder="নাম (যেমন: Gold)">
-        <input id="p-price" type="number" class="inp" placeholder="দাম">
-        <input id="p-inc" type="number" class="inp" placeholder="দৈনিক ইনকাম">
-        <input id="p-val" type="number" class="inp" placeholder="মেয়াদ (দিন)">
-        <button class="btn" onclick="savePlan()">তৈরি করুন</button>
-        <button onclick="closeModal('plan-modal')" style="background:transparent; border:none; color:#999; width:100%; margin-top:15px">বন্ধ করুন</button>
-    </div></div>
-
-    <div id="detail-modal" class="modal"><div class="modal-box">
-        <div style="text-align:center; margin-bottom:20px">
-            <div style="width:60px; height:60px; background:#F3F4F6; border-radius:50%; display:flex; justify-content:center; align-items:center; margin:0 auto 10px">
-                <i class="fas fa-file-invoice" style="font-size:25px; color:var(--text-muted)"></i>
-            </div>
-            <h3 style="margin:0">লেনদেনের বিস্তারিত</h3>
-        </div>
-        <div id="rec-content"></div>
-        <button onclick="closeModal('detail-modal')" class="btn" style="margin-top:20px">ঠিক আছে</button>
-    </div></div>
+    <div id="user-modal" class="modal"><div class="modal-box"><h3>এডিট ইউজার</h3><input type="hidden" id="e-uid"><label>ব্যালেন্স</label><input id="e-bal" type="number" class="inp"><label>প্ল্যান</label><input id="e-plan" class="inp"><label>পাসওয়ার্ড</label><input id="e-pass" class="inp"><div style="display:flex;gap:10px;margin-top:10px"><button class="btn" style="background:#EF4444" onclick="doBan()" id="ban-btn">ব্যান</button><button class="btn" onclick="saveUser()">সেভ</button></div><button onclick="closeModal('user-modal')" style="background:transparent;border:none;color:#999;width:100%;margin-top:10px">বন্ধ করুন</button></div></div>
+    <div id="plan-modal" class="modal"><div class="modal-box"><h3>নতুন প্ল্যান</h3><input id="p-name" class="inp" placeholder="নাম"><input id="p-price" type="number" class="inp" placeholder="দাম"><input id="p-inc" type="number" class="inp" placeholder="ইনকাম"><input id="p-val" type="number" class="inp" placeholder="মেয়াদ"><button class="btn" onclick="savePlan()">তৈরি করুন</button><button onclick="closeModal('plan-modal')" style="background:transparent;border:none;color:#999;width:100%;margin-top:10px">বন্ধ করুন</button></div></div>
+    <div id="detail-modal" class="modal"><div class="modal-box"><h3 style="text-align:center">বিস্তারিত</h3><div id="rec-content"></div><button onclick="closeModal('detail-modal')" class="btn" style="margin-top:20px">ঠিক আছে</button></div></div>
 
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDgI-d8iwWr40tmknbY6jhH0oRb2Tvg4d0", authDomain: "takar-gach-a1d84.firebaseapp.com", databaseURL: "https://takar-gach-a1d84-default-rtdb.firebaseio.com", projectId: "takar-gach-a1d84", storageBucket: "takar-gach-a1d84.firebasestorage.app", messagingSenderId: "637802367074", appId: "1:637802367074:web:2e7f6c0670ec47f3a1693b", measurementId: "G-0QL9LB7BSK" };
@@ -236,90 +117,41 @@
         const CRED = { u: 'JIHAD', p: '198373' };
 
         window.onload = () => { setTimeout(() => { document.getElementById('splash-screen').style.display='none'; if(sessionStorage.getItem('adm_ok')) showDash(); else document.getElementById('auth-view').style.display='flex'; }, 3000); };
-
         function login(){ const u=document.getElementById('u').value, p=document.getElementById('p').value; if(u===CRED.u && p===CRED.p) { sessionStorage.setItem('adm_ok',true); showDash(); } else Swal.fire('ভুল','তথ্য সঠিক নয়','error'); }
         function logout(){ sessionStorage.removeItem('adm_ok'); location.reload(); }
         function showDash(){ document.getElementById('auth-view').style.display='none'; document.getElementById('dashboard').style.display='block'; loadHomeData(); count(); }
-
-        function goHome(){
-            document.getElementById('dynamic-view').classList.remove('active');
-            document.getElementById('home-view').classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
-            document.querySelector('.nav-item:first-child').classList.add('active');
-            loadHomeData();
-        }
+        function goHome(){ document.getElementById('dynamic-view').classList.remove('active'); document.getElementById('home-view').classList.add('active'); loadHomeData(); }
 
         function loadHomeData(){
             db.ref('users').once('value', s=>{
-                const u = s.val()||{};
-                let bal = 0, deposit = 0, withdraw = 0;
-                Object.values(u).forEach(x=>{
-                    bal += (x.balance||0);
-                    if(x.history){
-                        Object.values(x.history).forEach(h => {
-                            if(h.status === 'Success'){
-                                if(h.type.includes('Buy')) deposit += parseInt(h.amount);
-                                else if(h.type === 'Withdraw') withdraw += parseInt(h.amount);
-                            }
-                        });
-                    }
-                });
-                document.getElementById('total-u').innerText = Object.keys(u).length;
-                document.getElementById('total-b').innerText = '৳'+bal;
-                document.getElementById('total-dep').innerText = '৳'+deposit;
-                document.getElementById('total-wd').innerText = '৳'+withdraw;
-                document.getElementById('net-profit').innerText = '৳'+(deposit - withdraw);
-                document.getElementById('recent-list').innerHTML = Object.values(u).slice(-5).reverse().map(x=>`<div class="list-item"><div><b>${x.name}</b><br><small style="color:#666">${x.phone}</small></div><b style="color:var(--primary)">৳${x.balance}</b></div>`).join('');
+                const u = s.val()||{}; let bal=0, dep=0, wd=0;
+                Object.values(u).forEach(x=>{ bal+=(x.balance||0); if(x.history) Object.values(x.history).forEach(h=>{ if(h.status==='Success'){ if(h.type.includes('Buy')) dep+=parseInt(h.amount); else if(h.type==='Withdraw') wd+=parseInt(h.amount); } }); });
+                document.getElementById('total-u').innerText = Object.keys(u).length; document.getElementById('total-b').innerText = '৳'+bal; document.getElementById('total-dep').innerText = '৳'+dep; document.getElementById('total-wd').innerText = '৳'+wd; document.getElementById('net-profit').innerText = '৳'+(dep-wd);
+                document.getElementById('recent-list').innerHTML = Object.values(u).slice(-5).reverse().map(x=>`<div class="list-item"><div><b>${x.name}</b><br><small>${x.phone}</small></div><b style="color:var(--primary)">৳${x.balance}</b></div>`).join('');
             });
         }
 
-        let allHistoryData = [];
-
+        let allHistoryData=[];
         function nav(page){
-            document.getElementById('home-view').classList.remove('active');
-            const dv = document.getElementById('dynamic-view'); dv.classList.add('active');
-            const cont = document.getElementById('page-content');
-            const title = document.getElementById('page-title');
-            
+            document.getElementById('home-view').classList.remove('active'); document.getElementById('dynamic-view').classList.add('active');
+            const cont = document.getElementById('page-content'); const title = document.getElementById('page-title');
             cont.innerHTML = '<div style="text-align:center;padding:50px"><i class="fas fa-circle-notch fa-spin fa-2x" style="color:var(--primary)"></i></div>';
 
-            if(page === 'users'){
-                title.innerText = "সকল ইউজার";
+            if(page==='users'){
+                title.innerText="সকল ইউজার";
+                db.ref('users').once('value',s=>{ const u=s.val()||{}; cont.innerHTML = `<input onkeyup="search(this)" class="inp" placeholder="খুঁজুন..."><div id="u-list">${Object.keys(u).map(k=>`<div class="list-item user-row" data-ph="${u[k].phone}"><div><b>${u[k].name}</b> ${u[k].isVip?'<span class="badge badge-vip">VIP</span>':''}<br><small>${u[k].phone}</small></div><div><b style="color:var(--primary)">৳${u[k].balance}</b> <button class="btn-sm" style="background:#3b82f6" onclick="editU('${k}')"><i class="fas fa-pen"></i></button></div></div>`).join('')}</div>`; });
+            }
+            else if(page==='history'){
+                title.innerText="লেনদেন হিস্টরি";
                 db.ref('users').once('value',s=>{
-                    const u = s.val()||{};
-                    cont.innerHTML = `<input onkeyup="search(this)" class="inp" placeholder="খুঁজুন...">
-                    <div id="u-list">${Object.keys(u).map(k=>`<div class="list-item user-row" data-ph="${u[k].phone}"><div><b>${u[k].name}</b> ${u[k].isVip?'<span class="badge badge-vip">VIP</span>':''}<br><small>${u[k].phone}</small></div><div><b style="color:var(--primary)">৳${u[k].balance}</b> <button class="btn-sm btn-b" onclick="editU('${k}')"><i class="fas fa-pen"></i></button></div></div>`).join('')}</div>`;
+                    const u=s.val()||{}; let histList=[]; allHistoryData=[];
+                    Object.keys(u).forEach(uid=>{ const h=u[uid].history||{}; Object.keys(h).forEach(hid=>{ if(h[hid].status!=='Pending'){ histList.push({...h[hid],uid:uid,name:u[uid].name,phone:u[uid].phone}); } }); });
+                    histList.reverse(); allHistoryData=histList;
+                    cont.innerHTML = histList.length ? histList.map((x,i)=>`<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:15px"><div><b>${x.type}</b><br><small>${x.name} (${x.phone})</small></div><div style="text-align:right"><b>৳${x.amount}</b><br><span class="badge ${x.status==='Success'?'badge-success':'badge-reject'}">${x.status}</span> <button class="btn-sm" style="background:#3b82f6;padding:2px 6px" onclick="showReceipt(${i})">View</button></div></div>`).join('') : '<p style="text-align:center;color:#999">ফাঁকা</p>';
                 });
             }
-            else if(page === 'history'){ 
-                title.innerText = "লেনদেন হিস্টরি";
-                db.ref('users').once('value',s=>{
-                    const u = s.val()||{};
-                    let histList = [];
-                    allHistoryData = []; 
-                    Object.keys(u).forEach(uid=>{
-                        const h = u[uid].history || {};
-                        Object.keys(h).forEach(hid=>{
-                            const tr = h[hid];
-                            if(tr.status !== 'Pending'){
-                                const item = { ...tr, uid: uid, name: u[uid].name, phone: u[uid].phone };
-                                histList.push(item);
-                            }
-                        });
-                    });
-                    histList.reverse(); 
-                    allHistoryData = histList; 
-                    if(histList.length === 0){ cont.innerHTML = '<div style="text-align:center;padding:30px;color:#999">কোনো হিস্টরি নেই</div>'; } 
-                    else { cont.innerHTML = histList.map((item, index) => {
-                            let badgeClass = item.status === 'Success' ? 'badge-success' : 'badge-reject';
-                            return `<div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:15px"><div><div style="font-weight:bold; font-size:14px; margin-bottom:4px">${item.type}</div><div style="font-size:12px; color:#666">${item.name} (${item.phone})</div><div style="font-size:10px; color:#999; margin-top:2px">${item.date}</div></div><div style="text-align:right"><div style="font-weight:bold; font-size:16px; color:var(--text-main)">৳${item.amount}</div><span class="badge ${badgeClass}" style="font-size:9px; display:inline-block; margin-top:4px">${item.status}</span><br><button class="btn-sm btn-b" style="margin-top:5px; font-size:10px; padding:4px 8px" onclick="showReceipt(${index})">বিস্তারিত</button></div></div>`;
-                        }).join('');
-                    }
-                });
-            }
-                        else if(page === 'deposits' || page === 'withdraws' || page === 'job_reqs'){
-                const type = page==='job_reqs'?'Job':(page==='deposits'?'Deposit':'Withdraw');
-                title.innerText = type === 'Job' ? 'জব রিকোয়েস্ট' : (type==='Deposit'?'ডিপোজিট রিকোয়েস্ট':'উইথড্র রিকোয়েস্ট');
+            else if(page==='deposits'||page==='withdraws'||page==='job_reqs'){
+                const type = page==='job_reqs'?'Job':(page==='deposits'?'Deposit':'Withdraw'); title.innerText = type+' রিকোয়েস্ট';
                 db.ref('users').once('value',s=>{
                     let htm=''; const u=s.val()||{};
                     Object.keys(u).forEach(uid=>{
@@ -327,151 +159,82 @@
                         Object.keys(h).forEach(hid=>{
                             const tr=h[hid];
                             if(tr.status==='Pending'){
-                                let show=false;
-                                if(type==='Job' && tr.type==='Task Reward') show=true;
-                                if(type==='Deposit' && tr.type.includes('Buy')) show=true;
-                                if(type==='Withdraw' && tr.type==='Withdraw') show=true;
-                                if(show){
-                                    htm+=`<div class="card"><div style="display:flex;justify-content:space-between;margin-bottom:10px"><b>${u[uid].name}</b> <b style="color:var(--primary)">৳${tr.amount}</b></div><div style="background:#F9FAFB;padding:10px;border-radius:8px;font-size:12px;color:#666;margin-bottom:10px">${type==='Job'?`Proof: ${tr.proof}`:`Details: ${tr.trx||tr.sender||tr.trx}`}</div><div style="display:flex;gap:10px"><button class="btn btn-g" style="flex:1;padding:8px" onclick="act('${uid}','${hid}','Success','${tr.type}',${tr.amount})">Approve</button><button class="btn btn-r" style="flex:1;padding:8px" onclick="act('${uid}','${hid}','Rejected','${tr.type}',${tr.amount})">Reject</button></div></div>`;
-                                }
+                                let show=false; if(type==='Job'&&tr.type==='Task Reward')show=true; if(type==='Deposit'&&tr.type.includes('Buy'))show=true; if(type==='Withdraw'&&tr.type==='Withdraw')show=true;
+                                if(show) htm+=`<div class="card"><div style="display:flex;justify-content:space-between;margin-bottom:10px"><b>${u[uid].name}</b> <b style="color:var(--primary)">৳${tr.amount}</b></div><div style="background:#F9FAFB;padding:10px;border-radius:8px;font-size:12px;color:#666;margin-bottom:10px">${type==='Job'?`Proof: ${tr.proof}`:`Details: ${tr.trx||tr.sender} ${tr.validity?`<br>Validity: ${tr.validity} Days`:''}`}</div><div style="display:flex;gap:10px"><button class="btn" style="flex:1;background:#10b981" onclick="act('${uid}','${hid}','Success','${tr.type}',${tr.amount})">Approve</button><button class="btn" style="flex:1;background:#ef4444" onclick="act('${uid}','${hid}','Rejected','${tr.type}',${tr.amount})">Reject</button></div></div>`;
                             }
                         });
                     });
-                    cont.innerHTML = htm || '<div style="text-align:center;padding:30px;color:#999">কোনো পেন্ডিং রিকোয়েস্ট নেই</div>';
+                    cont.innerHTML = htm || '<p style="text-align:center;color:#999">পেন্ডিং নেই</p>';
                 });
             }
-            else if(page === 'plans'){
-                title.innerText = "ভিআইপি প্ল্যান";
-                cont.innerHTML = `<button class="btn" style="width:100%;margin-bottom:15px" onclick="document.getElementById('plan-modal').style.display='flex'">+ নতুন প্ল্যান</button><div id="p-list"></div>`;
-                db.ref('settings/vipPlans').on('value',s=>{
-                    cont.querySelector('#p-list').innerHTML = Object.keys(s.val()||{}).map(k=>{ const p=s.val()[k]; return `<div class="card" style="text-align:center;border:1px solid var(--primary)"><h3 style="margin:0">${p.name}</h3><h1 style="color:var(--primary);margin:10px 0">৳${p.price}</h1><p style="font-size:12px;color:#666">ইনকাম: ৳${p.dailyIncome}/দিন | মেয়াদ: ${p.validity} দিন</p><button class="btn-sm btn-r" style="margin-top:10px" onclick="delPlan('${k}')">ডিলিট</button></div>`; }).join('');
+            else if(page==='plans'){
+                title.innerText="ভিআইপি প্ল্যান"; cont.innerHTML=`<button class="btn" style="width:100%;margin-bottom:15px" onclick="document.getElementById('plan-modal').style.display='flex'">+ নতুন</button><div id="p-list"></div>`;
+                db.ref('settings/vipPlans').on('value',s=>{ cont.querySelector('#p-list').innerHTML=Object.keys(s.val()||{}).map(k=>{const p=s.val()[k]; return `<div class="card" style="text-align:center;border:1px solid var(--primary)"><h3 style="margin:0">${p.name}</h3><h1 style="color:var(--primary)">৳${p.price}</h1><small>ইনকাম: ৳${p.dailyIncome} | মেয়াদ: ${p.validity} দিন</small><button class="btn-sm" style="background:#ef4444;display:block;margin:10px auto" onclick="delPlan('${k}')">ডিলিট</button></div>`}).join(''); });
+            }
+            else if(page==='settings'){
+                title.innerText="সেটিংস";
+                db.ref('settings').once('value',s=>{
+                    const v=s.val()||{}; const cfg=v.config||{};
+                    const maint=v.maintenance?'checked':''; const lang=v.language==='en'?'checked':'';
+                    cont.innerHTML=`
+                    <div class="card" style="border:2px solid #EF4444"><h3>⚠️ ইমার্জেন্সি</h3><div style="display:flex;justify-content:space-between"><span>মেইনটেনেন্স মোড (App OFF)</span><label class="switch switch-red"><input type="checkbox" id="s-maint" ${maint}><span class="slider round"></span></label></div></div>
+                    <div class="card"><h3>🌐 ভাষা ও অ্যাপ</h3><div style="display:flex;justify-content:space-between"><span>App Language (Eng/Ban)</span><label class="switch"><input type="checkbox" id="s-lang" ${lang}><span class="slider round"></span></label></div></div>
+                    <div class="card"><h3>সাপোর্ট লিংক</h3><input id="s-sup" class="inp" value="${cfg.supportLink||''}"><input id="s-ch" class="inp" value="${cfg.channelLink||''}"><input id="s-grp" class="inp" value="${cfg.groupLink||''}"></div>
+                    <div class="card"><h3>নাম্বার</h3><input id="s-bk" class="inp" value="${cfg.bkash||''}"><input id="s-ng" class="inp" value="${cfg.nagad||''}"></div>
+                    <div class="card"><h3>লিমিট</h3><input id="s-minW" class="inp" value="${cfg.minWithdraw||20}"><input id="s-wch" class="inp" value="${cfg.withdrawCharge||5}"><input id="s-ref" class="inp" value="${cfg.refBonus||2}"></div>
+                    <div class="card"><h3>নোটিশ</h3><textarea id="s-nt" class="inp" rows="4">${v.notice||''}</textarea><button class="btn" onclick="saveSet()">সেভ করুন</button></div>`;
                 });
             }
-            // --- SETTINGS (DYNAMIC SUPPORT & MAINTENANCE) ---
-            else if(page === 'settings'){
-                title.innerText = "সেটিংস";
-                db.ref('settings').once('value',s=>{ 
-                    const v=s.val()||{}; 
-                    const cfg=v.config||{};
-                    const maint = v.maintenance ? 'checked' : '';
-                    cont.innerHTML = `
-                    <div class="card" style="border: 2px solid #EF4444;">
-                        <h3>⚠️ ইমার্জেন্সি</h3>
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span>মেইনটেনেন্স মোড (App OFF)</span>
-                            <label class="switch"><input type="checkbox" id="s-maint" ${maint}><span class="slider round"></span></label>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <h3>সাপোর্ট লিংক (Dynamic)</h3>
-                        <label>এডমিন সাপোর্ট (TG Username)</label><input id="s-sup" class="inp" value="${cfg.supportLink||'TAKAR_GACH_ADMIN'}">
-                        <label>চ্যানেল লিংক</label><input id="s-ch" class="inp" value="${cfg.channelLink||'TAKAR_GACHH'}">
-                        <label>গ্রুপ লিংক</label><input id="s-grp" class="inp" value="${cfg.groupLink||'TAKAR_GACH_V27'}">
-                    </div>
-                    <div class="card">
-                        <h3>পেমেন্ট নাম্বার</h3>
-                        <label>বিকাশ নাম্বার</label><input id="s-bk" class="inp" value="${cfg.bkash||''}">
-                        <label>নগদ নাম্বার</label><input id="s-ng" class="inp" value="${cfg.nagad||''}">
-                    </div>
-                    <div class="card">
-                        <h3>লিমিট ও বোনাস</h3>
-                        <label>মিনিমাম উইথড্র (টাকা)</label><input id="s-minW" type="number" class="inp" value="${cfg.minWithdraw||'20'}">
-                        <label>উইথড্র চার্জ (টাকা)</label><input id="s-wch" type="number" class="inp" value="${cfg.withdrawCharge||'5'}">
-                        <label>রেফার বোনাস (টাকা)</label><input id="s-ref" type="number" class="inp" value="${cfg.refBonus||'2'}">
-                    </div>
-                    <div class="card">
-                        <h3>নোটিশ</h3>
-                        <textarea id="s-nt" class="inp" rows="4">${v.notice||''}</textarea>
-                        <button class="btn" onclick="saveSet()">সেভ করুন</button>
-                    </div>`; 
-                });
-            }
-            else if(page === 'tasks'){
-                title.innerText = "টাস্ক";
-                cont.innerHTML = `<div class="card"><h3>নতুন টাস্ক</h3><input id="t-ti" class="inp" placeholder="শিরোনাম"><input id="t-rw" type="number" class="inp" placeholder="টাকা"><input id="t-ln" class="inp" placeholder="লিংক"><input id="t-hint" class="inp" placeholder="প্রুফ ইনস্ট্রাকশন" style="border-color:var(--primary)"><select id="t-tg" class="inp"><option value="free">ফ্রি</option><option value="vip">সকল VIP</option><option value="bronze">Bronze</option><option value="silver">Silver</option><option value="gold">Gold</option><option value="platinum">Platinum</option><option value="diamond">Diamond</option></select><button class="btn" onclick="addTask()">টাস্ক দিন</button></div><div id="t-list"></div>`;
-                db.ref('settings/tasks').on('value',s=>{ const t=s.val()||{}; cont.querySelector('#t-list').innerHTML = Object.keys(t).map(k=>`<div class="list-item"><div><b>${t[k].title}</b> (${t[k].target})</div><button class="btn-sm btn-r" onclick="delTask('${k}')">ডিলিট</button></div>`).join(''); });
+            else if(page==='tasks'){
+                title.innerText="টাস্ক"; cont.innerHTML=`<div class="card"><h3>নতুন টাস্ক</h3><input id="t-ti" class="inp" placeholder="শিরোনাম"><input id="t-rw" type="number" class="inp" placeholder="টাকা"><input id="t-ln" class="inp" placeholder="লিংক"><input id="t-hint" class="inp" placeholder="প্রুফ ইনস্ট্রাকশন"><select id="t-tg" class="inp"><option value="free">ফ্রি</option><option value="vip">সকল VIP</option><option value="bronze">Bronze</option><option value="silver">Silver</option><option value="gold">Gold</option></select><button class="btn" onclick="addTask()">এড করুন</button></div><div id="t-list"></div>`;
+                db.ref('settings/tasks').on('value',s=>{ cont.querySelector('#t-list').innerHTML=Object.keys(s.val()||{}).map(k=>`<div class="list-item"><b>${s.val()[k].title}</b><button class="btn-sm" style="background:#ef4444" onclick="delTask('${k}')">X</button></div>`).join(''); });
             }
         }
 
-        // --- REJECT REASON & ACTIONS ---
-        function act(uid, hid, st, type, amt){ 
-            if(st === 'Rejected'){
-                Swal.fire({
-                    title: 'রিজেক্ট করার কারণ?',
-                    input: 'text',
-                    inputPlaceholder: 'কারণ লিখুন (যেমন: ভুল তথ্য)',
-                    showCancelButton: true,
-                    confirmButtonText: 'রিজেক্ট করুন',
-                    cancelButtonText: 'বাতিল',
-                    confirmButtonColor: '#EF4444'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const reason = result.value || 'অনির্দিষ্ট কারণ';
-                        db.ref(`users/${uid}/history/${hid}`).update({status:st, reason: reason});
-                        if(type === 'Withdraw') {
-                            db.ref(`users/${uid}/balance`).transaction(b => (b||0) + parseInt(amt));
-                        }
-                        Swal.fire('রিজেক্ট করা হয়েছে', 'কারণ: ' + reason, 'success');
-                        nav(type==='Task Reward'?'job_reqs':(type==='Withdraw'?'withdraws':'deposits'));
+        // --- CORE ACTIONS (FIXED VALIDITY) ---
+        function act(uid, hid, st, type, amt){
+            if(st==='Rejected'){
+                Swal.fire({title:'কারণ লিখুন',input:'text',showCancelButton:true}).then(r=>{
+                    if(r.isConfirmed){
+                        const re = r.value||'অনির্দিষ্ট';
+                        db.ref(`users/${uid}/history/${hid}`).update({status:st,reason:re});
+                        if(type==='Withdraw') db.ref(`users/${uid}/balance`).transaction(b=>(b||0)+parseInt(amt));
+                        Swal.fire('Rejected','','success'); nav(type==='Task Reward'?'job_reqs':(type==='Withdraw'?'withdraws':'deposits'));
                     }
                 });
             } else {
-                db.ref(`users/${uid}/history/${hid}`).update({status:st}); 
-                if(st === 'Success'){ 
-                    if(type.includes('Buy')) db.ref(`users/${uid}`).update({isVip:true, currentPlan:type.replace('Buy ',''), vipExpire:Date.now()+(30*86400000)}); 
-                    else if(type==='Task Reward') db.ref(`users/${uid}/balance`).transaction(b=>(b||0)+parseInt(amt)); 
-                }
-                Swal.fire('সফল', 'রিকোয়েস্ট এপ্রুভ করা হয়েছে', 'success');
-                nav(type==='Task Reward'?'job_reqs':(type==='Withdraw'?'withdraws':'deposits'));
+                db.ref(`users/${uid}/history/${hid}`).once('value',s=>{
+                    const req = s.val()||{};
+                    db.ref(`users/${uid}/history/${hid}`).update({status:st});
+                    if(st==='Success'){
+                        if(type.includes('Buy')){
+                            const days = req.validity ? parseInt(req.validity) : 30; // 🔥 GET REAL VALIDITY
+                            db.ref(`users/${uid}`).update({isVip:true, currentPlan:type.replace('Buy ',''), vipExpire:Date.now()+(days*86400000)});
+                        } else if(type==='Task Reward') db.ref(`users/${uid}/balance`).transaction(b=>(b||0)+parseInt(amt));
+                    }
+                    Swal.fire('Success','','success'); nav(type==='Task Reward'?'job_reqs':(type==='Withdraw'?'withdraws':'deposits'));
+                });
             }
         }
 
-        function showReceipt(index){
-            const data = allHistoryData[index];
-            const content = document.getElementById('rec-content');
-            let reasonHtml = '';
-            if(data.status === 'Rejected' && data.reason) {
-                reasonHtml = `<div style="background:#FEF2F2; padding:8px; border-radius:8px; margin-top:10px; color:#EF4444; font-size:12px;"><b>❌ কারণ:</b> ${data.reason}</div>`;
-            }
-            content.innerHTML = `<div class="receipt-row"><span>ইউজার</span> <b>${data.name}</b></div><div class="receipt-row"><span>ফোন</span> <b>${data.phone}</b></div><div class="receipt-row"><span>ধরণ</span> <b>${data.type}</b></div><div class="receipt-row"><span>পরিমাণ</span> <b style="color:var(--primary)">৳${data.amount}</b></div><div class="receipt-row"><span>স্ট্যাটাস</span> <b style="color:${data.status==='Success'?'green':'red'}">${data.status}</b></div><div class="receipt-row"><span>তারিখ</span> <b>${data.date}</b></div><div style="background:#F9FAFB; padding:10px; border-radius:10px; margin-top:15px; font-size:12px; color:#666; word-break:break-all"><b>বিস্তারিত / প্রুফ:</b><br>${data.proof || data.trx || data.sender || data.method || 'N/A'}</div>${reasonHtml}`;
-            document.getElementById('detail-modal').style.display = 'flex';
+        function saveSet(){
+            db.ref('settings').update({ maintenance:document.getElementById('s-maint').checked, language:document.getElementById('s-lang').checked?'en':'bn', notice:document.getElementById('s-nt').value });
+            db.ref('settings/config').update({ bkash:document.getElementById('s-bk').value, nagad:document.getElementById('s-ng').value, supportLink:document.getElementById('s-sup').value, channelLink:document.getElementById('s-ch').value, groupLink:document.getElementById('s-grp').value, minWithdraw:parseInt(document.getElementById('s-minW').value), withdrawCharge:parseInt(document.getElementById('s-wch').value), refBonus:parseInt(document.getElementById('s-ref').value) });
+            Swal.fire('সেভ হয়েছে');
         }
 
-        function savePlan(){ const n=document.getElementById('p-name').value, p=document.getElementById('p-price').value, i=document.getElementById('p-inc').value, v=document.getElementById('p-val').value; if(!n||!p) return Swal.fire('ভুল','সব তথ্য দিন','error'); db.ref('settings/vipPlans').push({name:n, price:parseInt(p), dailyIncome:parseInt(i), validity:parseInt(v)}); closeModal('plan-modal'); Swal.fire('সফল'); }
-        function delPlan(k){ if(confirm('মুছে ফেলবেন?')) db.ref('settings/vipPlans/'+k).remove(); }
-        let editUid='';
-        function editU(uid){ editUid=uid; db.ref('users/'+uid).once('value',s=>{ const u=s.val(); document.getElementById('e-bal').value=u.balance; document.getElementById('e-plan').value=u.currentPlan||''; document.getElementById('e-pass').value=''; document.getElementById('ban-btn').innerText = u.banned ? "আনব্যান করুন" : "ব্যান করুন"; document.getElementById('user-modal').style.display='flex'; }); }
-        
-        function saveUser(){ 
-            let upd = {balance:parseInt(document.getElementById('e-bal').value), currentPlan:document.getElementById('e-plan').value, isVip:!!document.getElementById('e-plan').value};
-            const pass = document.getElementById('e-pass').value;
-            if(pass && pass.length >= 6) upd.pass = pass;
-            db.ref('users/'+editUid).update(upd); closeModal('user-modal'); Swal.fire('আপডেট হয়েছে'); nav('users'); 
-        }
-
-        function doBan(){ db.ref('users/'+editUid).once('value',s=>{ db.ref('users/'+editUid).update({banned:!s.val().banned}); closeModal('user-modal'); Swal.fire('সম্পন্ন'); nav('users'); }); }
-        
-        function saveSet(){ 
-            const maint = document.getElementById('s-maint').checked;
-            db.ref('settings').update({ maintenance: maint, notice: document.getElementById('s-nt').value });
-            db.ref('settings/config').update({ 
-                bkash: document.getElementById('s-bk').value, 
-                nagad: document.getElementById('s-ng').value,
-                supportLink: document.getElementById('s-sup').value,
-                channelLink: document.getElementById('s-ch').value,
-                groupLink: document.getElementById('s-grp').value,
-                minWithdraw: parseInt(document.getElementById('s-minW').value),
-                withdrawCharge: parseInt(document.getElementById('s-wch').value),
-                refBonus: parseInt(document.getElementById('s-ref').value)
-            }); 
-            Swal.fire('সেভ হয়েছে'); 
-        }
-
-        function addTask(){ const ti = document.getElementById('t-ti').value, rw = parseInt(document.getElementById('t-rw').value), ln = document.getElementById('t-ln').value, tg = document.getElementById('t-tg').value, hint = document.getElementById('t-hint').value || 'আপনার প্রুফ দিন'; if(!ti || !rw || !ln) return Swal.fire('সব তথ্য দিন'); db.ref('settings/tasks').push({ title: ti, reward: rw, link: ln, target: tg, proofHint: hint }); Swal.fire('টাস্ক দেওয়া হয়েছে'); }
+        function savePlan(){ const n=document.getElementById('p-name').value, p=document.getElementById('p-price').value, i=document.getElementById('p-inc').value, v=document.getElementById('p-val').value; if(!n)return; db.ref('settings/vipPlans').push({name:n,price:parseInt(p),dailyIncome:parseInt(i),validity:parseInt(v)}); closeModal('plan-modal'); }
+        function delPlan(k){ if(confirm('Delete?')) db.ref('settings/vipPlans/'+k).remove(); }
+        function addTask(){ const t=document.getElementById('t-ti').value, r=document.getElementById('t-rw').value, l=document.getElementById('t-ln').value, tg=document.getElementById('t-tg').value, h=document.getElementById('t-hint').value; if(!t)return; db.ref('settings/tasks').push({title:t,reward:parseInt(r),link:l,target:tg,proofHint:h}); Swal.fire('Done'); }
         function delTask(k){ db.ref('settings/tasks/'+k).remove(); }
+        let editUid=''; function editU(uid){ editUid=uid; db.ref('users/'+uid).once('value',s=>{ const u=s.val(); document.getElementById('e-bal').value=u.balance; document.getElementById('e-plan').value=u.currentPlan||''; document.getElementById('e-pass').value=''; document.getElementById('ban-btn').innerText=u.banned?"আনব্যান":"ব্যান"; document.getElementById('user-modal').style.display='flex'; }); }
+        function saveUser(){ let d={balance:parseInt(document.getElementById('e-bal').value),currentPlan:document.getElementById('e-plan').value,isVip:!!document.getElementById('e-plan').value}; if(document.getElementById('e-pass').value)d.pass=document.getElementById('e-pass').value; db.ref('users/'+editUid).update(d); closeModal('user-modal'); Swal.fire('Saved'); nav('users'); }
+        function doBan(){ db.ref('users/'+editUid).update({banned:document.getElementById('ban-btn').innerText==="ব্যান"}); closeModal('user-modal'); nav('users'); }
+        function showReceipt(i){ const d=allHistoryData[i]; const r=d.reason?`<br><b style="color:red">Reason: ${d.reason}</b>`:''; document.getElementById('rec-content').innerHTML=`<p><b>User:</b> ${d.name} (${d.phone})</p><p><b>Type:</b> ${d.type}</p><p><b>Amount:</b> ৳${d.amount}</p><p><b>Status:</b> ${d.status}</p><p><b>Proof/Trx:</b> ${d.proof||d.trx}</p>${r}`; document.getElementById('detail-modal').style.display='flex'; }
         function closeModal(id){ document.getElementById(id).style.display='none'; }
         function count(){ db.ref('users').once('value',s=>{ let c=0; const u=s.val()||{}; Object.values(u).forEach(x=>{ if(x.history) Object.values(x.history).forEach(h=>{ if(h.status==='Pending' && h.type!=='Task Reward') c++; }) }); const b=document.getElementById('nav-badge'); b.innerText=c; b.style.display=c>0?'block':'none'; }); }
         function search(e){ const v=e.value.toLowerCase(); document.querySelectorAll('.user-row').forEach(r=>r.style.display=r.dataset.ph.includes(v)?'flex':'none'); }
     </script>
 </body>
 </html>
+
