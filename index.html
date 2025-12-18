@@ -3,212 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Admin Pro V9.0</title>
+    <title>Enterprise Admin V10.5</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         /* =========================================
-           1. MODERN GLASS THEME
+           1. MODERN PROFESSIONAL THEME
            ========================================= */
         :root {
-            --primary: #6366f1; /* Indigo */
-            --accent: #8b5cf6;  /* Violet */
-            --success: #10b981;
-            --danger: #f43f5e;
-            --dark-bg: #0f172a;
-            --glass: rgba(30, 41, 59, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --text: #f1f5f9;
-            --text-muted: #94a3b8;
+            --primary: #10b981; 
+            --primary-dark: #065f46;
+            --secondary: #3b82f6;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --dark: #111827;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --border: #e5e7eb;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: var(--dark-bg); font-family: 'Outfit', 'Hind Siliguri', sans-serif; color: var(--text); padding-bottom: 90px; user-select: none; overflow-x: hidden; }
-        
-        /* Background Gradient Mesh */
-        body::before {
-            content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, rgba(15,23,42,0) 50%);
-            z-index: -1; animation: rotateBg 20s linear infinite;
-        }
-        @keyframes rotateBg { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        body { margin: 0; background: var(--light); font-family: 'Outfit', 'Hind Siliguri', sans-serif; color: var(--dark); padding-bottom: 100px; user-select: none; }
 
-        /* SCROLLBAR */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+        /* --- AUTH LOGIN SCREEN --- */
+        #auth-view { position: fixed; inset: 0; background: linear-gradient(135deg, #064e3b, #065f46); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 25px; }
+        .login-card { background: var(--white); padding: 40px 30px; border-radius: 28px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .login-card h2 { margin: 0 0 10px; color: var(--dark); font-weight: 800; }
+        .inp-auth { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 1px solid var(--border); background: var(--light); font-size: 16px; text-align: center; }
+        .btn-auth { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        .btn-auth:active { transform: scale(0.96); }
 
-        /* AUTH SCREEN */
-        #auth-view { position: fixed; inset: 0; background: #0f172a; z-index: 5000; display: flex; justify-content: center; align-items: center; padding: 25px; }
-        .login-card { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(20px); padding: 40px 30px; border-radius: 24px; width: 100%; max-width: 360px; text-align: center; border: 1px solid var(--glass-border); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-        .inp-modern { width: 100%; padding: 16px; margin-bottom: 15px; border-radius: 16px; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.3); color: white; font-size: 16px; text-align: center; transition: 0.3s; }
-        .inp-modern:focus { border-color: var(--primary); background: rgba(99,102,241,0.1); }
-        .btn-modern { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; border: none; border-radius: 16px; font-weight: 700; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px -5px rgba(99,102,241,0.4); }
-        .btn-modern:active { transform: scale(0.96); }
+        /* --- DASHBOARD HEADER --- */
+        .header { background: var(--white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .header h3 { margin: 0; color: var(--primary-dark); font-weight: 900; letter-spacing: -0.5px; }
+        .header i { font-size: 20px; color: var(--gray); cursor: pointer; transition: 0.3s; }
+        .header i:active { transform: rotate(180deg); }
 
-        /* HEADER */
-        .top-nav { position: sticky; top: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(15px); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); z-index: 100; }
-        .brand { font-size: 22px; font-weight: 800; background: linear-gradient(to right, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        /* DASHBOARD */
-        .content-view { display: none; padding: 20px; animation: fadeIn 0.4s ease; }
-        .content-view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* --- STATS SECTION --- */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
+        .stat-card { background: var(--white); padding: 20px; border-radius: 22px; text-align: center; box-shadow: var(--shadow); border-bottom: 4px solid var(--primary); }
+        .stat-card h2 { margin: 5px 0; font-size: 26px; font-weight: 800; color: var(--dark); }
+        .stat-card p { margin: 0; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* STATS GRID */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
-        .stat-card { background: var(--glass); padding: 20px; border-radius: 24px; border: 1px solid var(--glass-border); text-align: center; position: relative; overflow: hidden; }
-        .stat-card h2 { margin: 5px 0; font-size: 28px; font-weight: 700; }
-        .stat-card span { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .profit-banner { background: linear-gradient(135deg, #1f2937, #111827); margin: 0 20px 25px; padding: 25px; border-radius: 25px; text-align: center; color: white; box-shadow: var(--shadow); }
+        .profit-banner h1 { margin: 5px 0 0; font-size: 38px; font-weight: 900; }
 
-        .profit-card { background: linear-gradient(135deg, var(--primary), var(--accent)); padding: 25px; border-radius: 24px; text-align: center; margin-bottom: 25px; box-shadow: 0 20px 40px -10px rgba(99,102,241,0.3); }
-        .profit-card h1 { margin: 5px 0 0; font-size: 42px; font-weight: 800; }
+        /* --- NAVIGATION MENU --- */
+        .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 0 20px 30px; }
+        .menu-item { background: var(--white); padding: 18px 5px; border-radius: 20px; text-align: center; cursor: pointer; border: 1px solid var(--border); transition: 0.2s; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .menu-item:active { background: #f0fdf4; border-color: var(--primary); transform: scale(0.95); }
+        .menu-item i { font-size: 26px; margin-bottom: 8px; display: block; color: var(--dark); }
+        .menu-item span { font-size: 10px; font-weight: 700; color: #6b7280; }
 
-        /* MENU GRID */
-        .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-        .menu-item { background: var(--glass); padding: 15px 5px; border-radius: 20px; text-align: center; cursor: pointer; border: 1px solid var(--glass-border); transition: 0.3s; }
-        .menu-item:hover { background: rgba(255,255,255,0.05); border-color: var(--primary); }
-        .menu-item i { font-size: 24px; margin-bottom: 8px; display: block; color: var(--text); }
-        .menu-item span { font-size: 10px; font-weight: 600; color: var(--text-muted); }
+        /* --- CONTENT VIEWS --- */
+        .view-panel { display: none; padding: 0 20px 20px; animation: slideUp 0.4s ease; }
+        .view-panel.active { display: block; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* LIST & TABLES */
-        .list-card { background: var(--glass); padding: 15px; border-radius: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--glass-border); }
-        .list-info b { font-size: 15px; display: block; color: white; }
-        .list-info small { font-size: 12px; color: var(--text-muted); }
-        .badge { padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-        .bg-green { background: rgba(16, 185, 129, 0.2); color: #34d399; }
-        .bg-red { background: rgba(244, 63, 94, 0.2); color: #fb7185; }
-        .bg-yellow { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
-
-        /* BUTTONS */
-        .btn-sm { padding: 6px 14px; border-radius: 12px; font-size: 11px; font-weight: 700; border: none; cursor: pointer; background: var(--glass-border); color: white; transition: 0.2s; }
-        .btn-sm:hover { background: var(--primary); }
         .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        
-        /* MODALS */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 9000; display: none; justify-content: center; align-items: center; padding: 20px; }
-        .modal-box { background: #1e293b; width: 100%; max-width: 400px; padding: 25px; border-radius: 28px; border: 1px solid var(--glass-border); animation: slideUp 0.3s; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        
-        .modal-label { display: block; text-align: left; font-size: 12px; color: var(--text-muted); margin: 10px 0 5px; font-weight: 600; }
-        .select-modern { width: 100%; padding: 15px; background: #0f172a; border: 1px solid var(--glass-border); border-radius: 14px; color: white; outline: none; }
+        .btn-back { background: var(--dark); color: white; border: none; padding: 8px 18px; border-radius: 10px; font-weight: 700; font-size: 12px; cursor: pointer; }
 
-        /* BOTTOM NAV */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px); padding: 12px 20px; display: flex; justify-content: space-around; border-top: 1px solid var(--glass-border); z-index: 1000; border-radius: 24px 24px 0 0; }
-        .nav-btn { text-align: center; color: var(--text-muted); font-size: 10px; font-weight: 600; transition: 0.3s; }
+        /* --- DATA CARDS & LISTS --- */
+        .data-card { background: var(--white); padding: 15px; border-radius: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); box-shadow: var(--shadow); }
+        .data-info b { font-size: 15px; color: var(--dark); display: block; }
+        .data-info small { font-size: 12px; color: #9ca3af; font-weight: 500; }
+        
+        .badge { padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        .bg-green { background: #d1fae5; color: #059669; }
+        .bg-yellow { background: #fef3c7; color: #d97706; }
+        .bg-red { background: #fee2e2; color: #dc2626; }
+
+        /* --- MODALS --- */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 5000; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .modal-content { background: var(--white); width: 100%; max-width: 420px; padding: 30px; border-radius: 30px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); max-height: 85vh; overflow-y: auto; }
+        
+        .inp-field { width: 100%; padding: 14px; border: 1.5px solid var(--border); border-radius: 14px; margin-bottom: 15px; font-size: 14px; background: var(--light); }
+        .btn-submit { width: 100%; padding: 15px; border: none; border-radius: 14px; font-weight: 800; cursor: pointer; font-size: 14px; text-transform: uppercase; }
+
+        /* --- RECEIPT DESIGN --- */
+        .rec-header { text-align: center; border-bottom: 2px dashed var(--border); padding-bottom: 20px; margin-bottom: 20px; }
+        .rec-icon { width: 70px; height: 70px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 15px; font-size: 32px; }
+        .rec-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f9fafb; font-size: 14px; }
+        .rec-row span { color: #6b7280; font-weight: 500; }
+        .rec-row b { color: var(--dark); text-align: right; }
+
+        /* --- BOTTOM NAVIGATION --- */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--white); padding: 12px 20px; display: flex; justify-content: space-around; border-top: 1px solid var(--border); border-radius: 25px 25px 0 0; z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); }
+        .nav-btn { text-align: center; color: #9ca3af; font-size: 10px; font-weight: 700; transition: 0.3s; cursor: pointer; }
         .nav-btn.active { color: var(--primary); transform: translateY(-5px); }
-        .nav-btn i { font-size: 22px; margin-bottom: 4px; display: block; }
-
-        /* RECEIPT */
-        .receipt-header { text-align: center; border-bottom: 1px dashed var(--glass-border); padding-bottom: 15px; margin-bottom: 15px; }
-        .r-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--glass-border); font-size: 14px; }
+        .nav-btn i { font-size: 22px; margin-bottom: 5px; display: block; }
     </style>
 </head>
 <body>
 
     <div id="auth-view">
         <div class="login-card">
-            <i class="fas fa-fingerprint" style="font-size:60px;background:linear-gradient(to bottom, var(--primary), var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px"></i>
-            <h2 style="margin:0 0 5px">Admin Pro V9</h2>
-            <p style="color:var(--text-muted);font-size:13px;margin-bottom:30px">Secure Access Only</p>
-            <input id="u_in" class="inp-modern" placeholder="Username">
-            <input id="p_in" class="inp-modern" type="password" placeholder="Password">
-            <button class="btn-modern" onclick="doLogin()">Authenticate</button>
+            <i class="fas fa-user-shield" style="font-size:50px;color:var(--primary);margin-bottom:20px"></i>
+            <h2>Admin Login</h2>
+            <p style="color:#94a3b8;font-size:13px;margin-bottom:30px">Enter credentials to access dashboard</p>
+            <input id="adm_user" class="inp-auth" type="text" placeholder="Username">
+            <input id="adm_pass" class="inp-auth" type="password" placeholder="Password">
+            <button class="btn-auth" onclick="doLogin()">Authorize Access</button>
         </div>
     </div>
 
     <div id="main-ui" style="display:none">
         
-        <div class="top-nav">
-            <div class="brand"><i class="fas fa-tree" style="color:var(--primary)"></i> TakarGach <span style="font-size:10px;background:var(--primary);color:white;padding:2px 6px;border-radius:6px;vertical-align:middle">PRO</span></div>
-            <div onclick="location.reload()" style="cursor:pointer;color:var(--text-muted)"><i class="fas fa-sync-alt"></i></div>
+        <div class="header">
+            <h3>TAKAR GACH <span style="font-size:10px;background:var(--primary);color:white;padding:2px 6px;border-radius:6px;vertical-align:middle">ADMIN</span></h3>
+            <i class="fas fa-sync-alt" onclick="location.reload()"></i>
         </div>
 
-        <div id="view-home" class="content-view active">
+        <div id="view-home" class="view-panel active">
             <div class="stats-grid">
-                <div class="stat-card"><h2 id="s-users">0</h2><span>Total Users</span></div>
-                <div class="stat-card"><h2 id="s-dep" style="color:var(--success)">৳0</h2><span>Deposits</span></div>
-                <div class="stat-card"><h2 id="s-wd" style="color:var(--danger)">৳0</h2><span>Withdraws</span></div>
-                <div class="stat-card"><h2 id="s-bal">৳0</h2><span>Liabilities</span></div>
+                <div class="stat-card"><h2 id="s-users">0</h2><p>Total Users</p></div>
+                <div class="stat-card"><h2 id="s-bal" style="color:var(--secondary)">৳0</h2><p>Liabilities</p></div>
+                <div class="stat-card"><h2 id="s-dep" style="color:var(--primary)">৳0</h2><p>Total Deposit</p></div>
+                <div class="stat-card"><h2 id="s-wd" style="color:var(--danger)">৳0</h2><p>Total Withdraw</p></div>
             </div>
 
-            <div class="profit-card">
-                <small style="opacity:0.8;text-transform:uppercase;letter-spacing:2px">Net Profit</small>
+            <div class="profit-banner">
+                <p style="margin:0;opacity:0.8;font-size:12px;text-transform:uppercase;letter-spacing:1px">Net App Profit</p>
                 <h1 id="s-profit">৳0</h1>
             </div>
 
             <div class="menu-grid">
-                <div class="menu-item" onclick="openView('users')"><i class="fas fa-users" style="color:#60a5fa"></i><span>Users</span></div>
-                <div class="menu-item" onclick="openView('deposits')"><i class="fas fa-arrow-down" style="color:#34d399"></i><span>Deposit</span></div>
-                <div class="menu-item" onclick="openView('withdraws')"><i class="fas fa-arrow-up" style="color:#f472b6"></i><span>Withdraw</span></div>
-                <div class="menu-item" onclick="openView('tasks')"><i class="fas fa-tasks" style="color:#a78bfa"></i><span>Tasks</span></div>
-                <div class="menu-item" onclick="openView('history')"><i class="fas fa-history" style="color:#fbbf24"></i><span>History</span></div>
-                <div class="menu-item" onclick="openView('vip')"><i class="fas fa-crown" style="color:#e879f9"></i><span>VIP</span></div>
-                <div class="menu-item" onclick="openView('settings')"><i class="fas fa-cogs" style="color:#94a3b8"></i><span>Settings</span></div>
-                <div class="menu-item" onclick="appLogout()"><i class="fas fa-power-off" style="color:#ef4444"></i><span>Logout</span></div>
+                <div class="menu-item" onclick="openView('users')"><i class="fas fa-users" style="color:#3b82f6"></i><span>Users</span></div>
+                <div class="menu-item" onclick="openView('deposits')"><i class="fas fa-arrow-down" style="color:#10b981"></i><span>Deposit</span></div>
+                <div class="menu-item" onclick="openView('withdraws')"><i class="fas fa-arrow-up" style="color:#f43f5e"></i><span>Withdraw</span></div>
+                <div class="menu-item" onclick="openView('tasks')"><i class="fas fa-check-double" style="color:#8b5cf6"></i><span>Task Check</span></div>
+                <div class="menu-item" onclick="openView('add-task')"><i class="fas fa-plus-circle" style="color:#ec4899"></i><span>Add Task</span></div>
+                <div class="menu-item" onclick="openView('vip-plans')"><i class="fas fa-crown" style="color:#f59e0b"></i><span>VIP Plans</span></div>
+                <div class="menu-item" onclick="openView('history')"><i class="fas fa-history" style="color:#64748b"></i><span>Full History</span></div>
+                <div class="menu-item" onclick="openView('settings')"><i class="fas fa-cogs" style="color:#1e2937"></i><span>Settings</span></div>
             </div>
         </div>
 
-        <div id="view-dynamic" class="content-view">
+        <div id="view-dynamic" class="view-panel">
             <div class="page-header">
-                <h2 id="page-title" style="margin:0">...</h2>
-                <button class="btn-sm" onclick="goHome()">Back</button>
+                <h2 id="page-title" style="margin:0;font-weight:900">...</h2>
+                <button class="btn-back" onclick="goHome()">Back</button>
             </div>
-            <div id="page-body"></div>
+            <div id="page-content"></div>
         </div>
 
         <div class="bottom-nav">
             <div class="nav-btn active" onclick="goHome()"><i class="fas fa-home"></i>Home</div>
             <div class="nav-btn" onclick="openView('users')"><i class="fas fa-users"></i>Users</div>
-            <div class="nav-btn" onclick="openView('history')"><i class="fas fa-history"></i>History</div>
+            <div class="nav-btn" onclick="openView('history')"><i class="fas fa-list-alt"></i>History</div>
             <div class="nav-btn" onclick="openView('settings')"><i class="fas fa-cog"></i>Config</div>
         </div>
     </div>
 
-    <div id="user-modal" class="modal-overlay">
-        <div class="modal-box">
-            <h3 id="u-modal-name" style="margin-top:0;text-align:center">Manage User</h3>
-            
-            <label class="modal-label">User Balance</label>
-            <input id="u-bal-inp" type="number" class="inp-modern" style="text-align:left">
-            
-            <label class="modal-label">Assign VIP Plan</label>
-            <select id="u-vip-sel" class="select-modern">
-                <option value="Free">Free User (Downgrade)</option>
-                </select>
-            
-            <label class="modal-label">Password</label>
-            <input id="u-pass-inp" type="text" class="inp-modern" style="text-align:left">
-
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px">
-                <button class="btn-modern" onclick="saveUser()">Save Changes</button>
-                <button id="ban-btn" class="btn-modern" style="background:#ef4444" onclick="toggleBan()">Ban User</button>
-            </div>
-            <button class="btn-sm" style="width:100%;margin-top:10px;background:transparent" onclick="closeModal('user-modal')">Cancel</button>
+    <div id="main-modal" class="modal">
+        <div class="modal-content">
+            <div id="modal-body"></div>
+            <button class="btn-submit" style="background:#f3f4f6;color:#666;margin-top:15px" onclick="closeModal('main-modal')">Close Window</button>
         </div>
     </div>
-
-    <div id="rec-modal" class="modal-overlay">
-        <div class="modal-box">
-            <div id="rec-body"></div>
-            <button class="btn-sm" style="width:100%;margin-top:15px" onclick="closeModal('rec-modal')">Close Window</button>
-        </div>
-    </div>
-
-    <div id="form-modal" class="modal-overlay">
-        <div class="modal-box">
-            <h3 id="form-title" style="margin-top:0">...</h3>
-            <div id="form-content"></div>
-            <button class="btn-sm" style="width:100%;margin-top:15px;background:transparent" onclick="closeModal('form-modal')">Cancel</button>
-        </div>
-    </div>
-
+    
     <script>
-        // 1. FIREBASE CONFIG
+        // =========================================
+        // 1. DATABASE CONFIGURATION
+        // =========================================
         const firebaseConfig = { 
             apiKey: "AIzaSyDgI-d8iwWr40tmknbY6jhH0oRb2Tvg4d0", 
             authDomain: "takar-gach-a1d84.firebaseapp.com", 
@@ -223,35 +186,43 @@
 
         // GLOBAL STATE
         let USERS = {}, HISTORY = [], VIP_PLANS = {}, SETTINGS = {}, TASKS = {};
-        let EDIT_PHONE = ''; // To track which user is being edited
+        let EDIT_UID = ''; // Current user being edited
 
-        // 2. AUTHENTICATION (SECURE)
+        // =========================================
+        // 2. AUTHENTICATION (JIHAD / 198373)
+        // =========================================
         function doLogin() {
-            const u = document.getElementById('u_in').value.trim().toUpperCase();
-            const p = document.getElementById('p_in').value.trim();
+            const u = document.getElementById('adm_user').value.trim().toUpperCase();
+            const p = document.getElementById('adm_pass').value.trim();
             
-            if((u === "JIHAD" && p === "198373") || (u === "ADMIN" && p === "1234")) {
-                sessionStorage.setItem('admin_v9', 'GRANTED');
+            if ((u === "JIHAD" && p === "198373") || (u === "ADMIN" && p === "1234")) {
+                sessionStorage.setItem('adm_v10', 'GRANTED');
                 document.getElementById('auth-view').style.display = 'none';
                 document.getElementById('main-ui').style.display = 'block';
                 initData();
-                Swal.fire({icon:'success', title:'Access Granted', timer:1500, showConfirmButton:false});
+                Swal.fire({icon: 'success', title: 'Access Granted', timer: 1500, showConfirmButton: false});
             } else {
-                Swal.fire({icon:'error', title:'Access Denied', text:'Invalid Credentials'});
+                Swal.fire({icon: 'error', title: 'Denied', text: 'Wrong Username or Password'});
             }
         }
 
         window.onload = () => {
-            if(sessionStorage.getItem('admin_v9') === 'GRANTED') {
+            if (sessionStorage.getItem('adm_v10') === 'GRANTED') {
                 document.getElementById('auth-view').style.display = 'none';
                 document.getElementById('main-ui').style.display = 'block';
                 initData();
             }
         };
 
+        // =========================================
         // 3. CORE DATA ENGINE
+        // =========================================
         function initData() {
-            db.ref('users').on('value', s => { USERS = s.val() || {}; processStats(); });
+            db.ref('users').on('value', s => { 
+                USERS = s.val() || {}; 
+                processStats(); 
+                refreshView(); // Auto-refresh current page if open
+            });
             db.ref('settings').on('value', s => { 
                 SETTINGS = s.val() || {}; 
                 VIP_PLANS = SETTINGS.vipPlans || {}; 
@@ -260,250 +231,285 @@
         }
 
         function processStats() {
-            let uCnt=0, dep=0, wd=0, bal=0;
+            let uCnt = 0, dep = 0, wd = 0, bal = 0;
             HISTORY = [];
 
             Object.keys(USERS).forEach(uid => {
                 const u = USERS[uid];
                 uCnt++; bal += (u.balance || 0);
-                if(u.history) {
+                if (u.history) {
                     Object.keys(u.history).forEach(hid => {
                         const h = u.history[hid];
-                        HISTORY.push({...h, uid:uid, hid:hid, user:u.name, phone:u.phone});
-                        if(h.status === 'Success') {
-                            if(h.type.includes('Buy')) dep += parseInt(h.amount);
-                            if(h.type === 'Withdraw') wd += parseInt(h.amount);
+                        HISTORY.push({ ...h, uid: uid, hid: hid, user: u.name, phone: u.phone });
+                        if (h.status === 'Success') {
+                            if (h.type.includes('Buy')) dep += parseInt(h.amount);
+                            if (h.type === 'Withdraw') wd += parseInt(h.amount);
                         }
                     });
                 }
             });
-            HISTORY.sort((a,b) => new Date(b.date) - new Date(a.date));
+            HISTORY.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-            // Update Dashboard
+            // UI Update
             document.getElementById('s-users').innerText = uCnt;
-            document.getElementById('s-dep').innerText = '৳'+dep;
-            document.getElementById('s-wd').innerText = '৳'+wd;
-            document.getElementById('s-bal').innerText = '৳'+bal;
-            document.getElementById('s-profit').innerText = '৳'+(dep - wd);
-            
-            // Auto Refresh Current View
-            const title = document.getElementById('page-title').innerText;
-            if(document.getElementById('view-dynamic').style.display === 'block') {
-                if(title.includes('User')) renderUsers(document.getElementById('page-body'));
-                if(title.includes('Deposit')) renderReqs(document.getElementById('page-body'), 'Buy');
-                if(title.includes('Withdraw')) renderReqs(document.getElementById('page-body'), 'Withdraw');
-                if(title.includes('Task Verification')) renderReqs(document.getElementById('page-body'), 'Task');
-                if(title.includes('History')) renderFullHistory(document.getElementById('page-body'));
-            }
+            document.getElementById('s-bal').innerText = '৳' + bal;
+            document.getElementById('s-dep').innerText = '৳' + dep;
+            document.getElementById('s-wd').innerText = '৳' + wd;
+            document.getElementById('s-profit').innerText = '৳' + (dep - wd);
         }
 
-        // 4. NAVIGATION
+        // =========================================
+        // 4. NAVIGATION SYSTEM
+        // =========================================
+        let CURR_VIEW = '';
         function openView(v) {
-            const body = document.getElementById('page-body');
-            const head = document.getElementById('page-title');
+            CURR_VIEW = v;
             document.getElementById('view-home').classList.remove('active');
             document.getElementById('view-dynamic').classList.add('active');
+            
+            const head = document.getElementById('page-title');
+            const body = document.getElementById('page-content');
 
-            if(v==='users') { head.innerText='User Management'; renderUsers(body); }
-            else if(v==='deposits') { head.innerText='Pending Deposits'; renderReqs(body, 'Buy'); }
-            else if(v==='withdraws') { head.innerText='Pending Withdraws'; renderReqs(body, 'Withdraw'); }
-            else if(v==='tasks') { head.innerText='Task Verification'; renderReqs(body, 'Task'); }
-            else if(v==='history') { head.innerText='All History'; renderFullHistory(body); }
-            else if(v==='vip') { head.innerText='Manage VIP Plans'; renderVIP(body); }
-            else if(v==='settings') { head.innerText='System Config'; renderSettings(body); } // Fixed typo here
+            if (v === 'users') { head.innerText = 'User Management'; renderUsers(body); }
+            else if (v === 'deposits') { head.innerText = 'Deposit Requests'; renderReqs(body, 'Buy'); }
+            else if (v === 'withdraws') { head.innerText = 'Withdraw Requests'; renderReqs(body, 'Withdraw'); }
+            else if (v === 'tasks') { head.innerText = 'Task Verification'; renderReqs(body, 'Task'); }
+            else if (v === 'add-task') { head.innerText = 'Task Creator'; renderTaskForm(body); }
+            else if (v === 'vip-plans') { head.innerText = 'VIP Plan Manager'; renderVIPManager(body); }
+            else if (v === 'history') { head.innerText = 'Full Transaction History'; renderHistory(body); }
+            else if (v === 'settings') { head.innerText = 'App Settings'; renderSettings(body); }
         }
 
         function goHome() {
+            CURR_VIEW = '';
             document.getElementById('view-dynamic').classList.remove('active');
             document.getElementById('view-home').classList.add('active');
         }
 
-        // 5. USER MANAGEMENT (MANUAL VIP ASSIGN)
+        function refreshView() { if (CURR_VIEW) openView(CURR_VIEW); }
+
+        // =========================================
+        // 5. USER MANAGEMENT (VIP ASSIGNMENT)
+        // =========================================
         function renderUsers(c) {
-            c.innerHTML = `<input class="inp-modern" placeholder="Search User..." onkeyup="filterUser(this.value)"><div id="u-list"></div>`;
+            c.innerHTML = `<input class="inp-field" placeholder="Search by name/phone..." onkeyup="filterList(this.value)"><div id="u-list"></div>`;
             const list = document.getElementById('u-list');
             Object.values(USERS).reverse().forEach(u => {
-                let badge = u.isVip ? `<span class="badge bg-green">${u.currentPlan} VIP</span>` : `<span class="badge bg-yellow">Free</span>`;
+                let badge = u.isVip ? `<span class="badge bg-green">${u.currentPlan}</span>` : `<span class="badge bg-yellow">Free</span>`;
                 if(u.banned) badge = `<span class="badge bg-red">BANNED</span>`;
                 
                 list.innerHTML += `
-                <div class="list-card u-item" data-s="${u.name} ${u.phone}">
-                    <div class="list-info">
+                <div class="data-card u-item" data-search="${u.name} ${u.phone}">
+                    <div class="data-info">
                         <b>${u.name}</b>
                         <small>${u.phone} • Bal: ৳${u.balance} • ${badge}</small>
                     </div>
-                    <button class="btn-sm" onclick="editUser('${u.phone}')">MANAGE</button>
+                    <button class="btn-back" style="background:var(--primary)" onclick="editUser('${u.phone}')">Manage</button>
                 </div>`;
             });
         }
 
-        function editUser(p) {
-            EDIT_PHONE = p;
-            const u = USERS[p];
-            document.getElementById('u-modal-name').innerText = u.name + " (" + u.phone + ")";
-            document.getElementById('u-bal-inp').value = u.balance;
-            document.getElementById('u-pass-inp').value = u.pass;
+        function editUser(uid) {
+            EDIT_UID = uid;
+            const u = USERS[uid];
+            const modalBody = document.getElementById('modal-body');
             
-            // Populate VIP Select
-            const sel = document.getElementById('u-vip-sel');
-            sel.innerHTML = `<option value="Free">Free User (Remove VIP)</option>`;
+            // Generate VIP Options dynamically
+            let vipOptions = `<option value="Free" ${!u.isVip?'selected':''}>Free User (Remove VIP)</option>`;
             Object.values(VIP_PLANS).forEach(v => {
-                let selected = (u.isVip && u.currentPlan === v.name) ? 'selected' : '';
-                sel.innerHTML += `<option value="${v.name}" ${selected}>${v.name} VIP (${v.validity} Days)</option>`;
+                let active = (u.isVip && u.currentPlan === v.name) ? 'selected' : '';
+                vipOptions += `<option value="${v.name}" ${active}>${v.name} VIP (${v.validity} Days)</option>`;
             });
 
-            // Ban Button State
-            const banBtn = document.getElementById('ban-btn');
-            banBtn.innerText = u.banned ? "Unban User" : "Ban User";
-            banBtn.style.background = u.banned ? "#10b981" : "#f43f5e";
+            modalBody.innerHTML = `
+                <h3 style="text-align:center;margin-bottom:20px">${u.name}</h3>
+                <label style="font-size:12px;font-weight:700;color:#666">User Balance (৳)</label>
+                <input id="u_bal" class="inp-field" type="number" value="${u.balance}">
+                
+                <label style="font-size:12px;font-weight:700;color:#666">Assign VIP Plan (ম্যানুয়ালি)</label>
+                <select id="u_vip" class="inp-field" style="background:#fff">${vipOptions}</select>
+                
+                <label style="font-size:12px;font-weight:700;color:#666">Login Password</label>
+                <input id="u_pass" class="inp-field" value="${u.pass}">
 
-            openModal('user-modal');
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                    <button class="btn-submit bg-green" onclick="saveUser()">Save Update</button>
+                    <button class="btn-submit bg-red" onclick="toggleBan()">${u.banned?'Unban':'Ban'}</button>
+                </div>
+            `;
+            openModal('main-modal');
         }
 
         function saveUser() {
-            const bal = parseInt(document.getElementById('u-bal-inp').value);
-            const pass = document.getElementById('u-pass-inp').value;
-            const planName = document.getElementById('u-vip-sel').value;
+            const bal = parseInt(document.getElementById('u_bal').value);
+            const pass = document.getElementById('u_pass').value;
+            const plan = document.getElementById('u_vip').value;
             
             let updates = { balance: bal, pass: pass };
             
-            // VIP Assignment Logic
-            if(planName === 'Free') {
+            if (plan === 'Free') {
                 updates.isVip = false;
                 updates.currentPlan = 'Free';
             } else {
-                // Find validity of selected plan
-                let validity = 30; // Default
-                Object.values(VIP_PLANS).forEach(v => { if(v.name === planName) validity = parseInt(v.validity); });
+                // Find validity of selected plan to calculate expiry
+                let valDays = 30; // default
+                Object.values(VIP_PLANS).forEach(v => { if(v.name === plan) valDays = parseInt(v.validity); });
                 
                 updates.isVip = true;
-                updates.currentPlan = planName;
-                updates.vipExpire = Date.now() + (validity * 86400000);
+                updates.currentPlan = plan;
+                updates.vipExpire = Date.now() + (valDays * 86400000);
             }
 
-            db.ref('users/'+EDIT_PHONE).update(updates);
-            closeModal('user-modal');
-            Swal.fire('Saved', 'User updated successfully', 'success');
+            db.ref('users/'+EDIT_UID).update(updates);
+            closeModal('main-modal');
+            Swal.fire('Success', 'User profile updated!', 'success');
         }
 
         function toggleBan() {
-            const s = !USERS[EDIT_PHONE].banned;
-            db.ref('users/'+EDIT_PHONE).update({banned: s});
-            closeModal('user-modal');
-            Swal.fire(s ? 'User Banned' : 'User Unbanned', '', s ? 'error' : 'success');
+            const state = !USERS[EDIT_UID].banned;
+            db.ref('users/'+EDIT_UID).update({banned: state});
+            closeModal('main-modal');
+            Swal.fire(state?'Banned':'Unbanned', '', state?'error':'success');
         }
 
-        // 6. REQUESTS & HISTORY (RECEIPT SYSTEM)
+        // =========================================
+        // 6. REQUEST & RECEIPT SYSTEM
+        // =========================================
         function renderReqs(c, type) {
             const list = HISTORY.filter(h => h.type.includes(type) && h.status === 'Pending');
-            if(list.length === 0) return c.innerHTML = '<p style="text-align:center;color:#94a3b8;padding:20px">No Pending Requests</p>';
+            if (list.length === 0) return c.innerHTML = '<p style="text-align:center;color:#999;padding:40px">No pending requests</p>';
             
-            c.innerHTML = list.map((h, i) => {
+            c.innerHTML = list.map(h => {
                 const globalIdx = HISTORY.indexOf(h);
                 return `
-                <div class="list-card">
-                    <div class="list-info">
-                        <b>${h.user}</b>
-                        <small>${h.type} • ৳${h.amount}</small>
-                    </div>
-                    <div>
-                        <span class="badge bg-yellow">PENDING</span>
-                        <button class="btn-sm" onclick="viewReceipt(${globalIdx})">Verify</button>
-                    </div>
+                <div class="data-card">
+                    <div class="data-info"><b>${h.user}</b><small>${h.type} • ৳${h.amount}</small></div>
+                    <button class="btn-back" style="background:var(--accent)" onclick="viewReceipt(${globalIdx})">Verify</button>
                 </div>`;
             }).join('');
         }
 
-        function renderFullHistory(c) {
-            c.innerHTML = `<input class="inp-modern" placeholder="Search..." onkeyup="filterList(this.value)"><div id="hist-cont">` + 
-            HISTORY.map((h, i) => {
-                let badge = h.status=='Success'? 'bg-green' : h.status=='Pending'? 'bg-yellow' : 'bg-red';
-                return `
-                <div class="list-card h-item" data-s="${h.user} ${h.type} ${h.trx||''}">
-                    <div class="list-info"><b>${h.user}</b><small>${h.type} • ৳${h.amount}</small></div>
-                    <div style="text-align:right">
-                        <span class="badge ${badge}">${h.status}</span><br>
-                        <button class="btn-sm" style="margin-top:5px" onclick="viewReceipt(${i})">View</button>
-                    </div>
-                </div>`;
-            }).join('') + `</div>`;
-        }
-
-        function viewReceipt(i) {
-            const d = HISTORY[i];
-            const modal = document.getElementById('rec-body');
+        function viewReceipt(idx) {
+            const d = HISTORY[idx];
+            const modalBody = document.getElementById('modal-body');
             
-            let proofHtml = d.proof ? `<div class="r-row"><span>Proof</span><a href="${d.proof}" target="_blank" style="color:#6366f1">Open Link</a></div>` : '';
-            let reasonHtml = d.reason ? `<div style="background:rgba(244,63,94,0.2);color:#fb7185;padding:10px;border-radius:10px;margin-top:10px;font-size:12px">Reason: ${d.reason}</div>` : '';
+            let color = d.status === 'Success' ? '#059669' : (d.status === 'Pending' ? '#d97706' : '#dc2626');
+            let proofLink = d.proof ? `<div class="rec-row"><span>Proof link</span><a href="${d.proof}" target="_blank" style="color:var(--secondary)">Open Screenshot</a></div>` : '';
             
-            modal.innerHTML = `
-                <div class="receipt-header">
-                    <h2 style="margin:0">${d.status}</h2>
-                    <small style="color:var(--text-muted)">ID: ${d.hid}</small>
+            modalBody.innerHTML = `
+                <div class="rec-header">
+                    <div class="rec-icon" style="background:${color}20;color:${color}"><i class="fas fa-file-invoice-dollar"></i></div>
+                    <h2 style="margin:0;color:${color}">${d.status}</h2>
+                    <small>ID: ${d.hid}</small>
                 </div>
-                <div class="r-row"><span>User</span><b>${d.user} (${d.phone})</b></div>
-                <div class="r-row"><span>Type</span><b>${d.type}</b></div>
-                <div class="r-row"><span>Amount</span><b>৳${d.amount}</b></div>
-                <div class="r-row"><span>Details</span><b>${d.trx || d.sender || 'System'}</b></div>
-                <div class="r-row"><span>Date</span><b>${d.date}</b></div>
-                ${proofHtml}
-                ${reasonHtml}
-                
+                <div class="rec-row"><span>User</span><b>${d.user} (${d.phone})</b></div>
+                <div class="rec-row"><span>Type</span><b>${d.type}</b></div>
+                <div class="rec-row"><span>Amount</span><b style="font-size:18px">৳${d.amount}</b></div>
+                <div class="rec-row"><span>TrxID / Num</span><b>${d.trx || d.sender || 'System'}</b></div>
+                <div class="rec-row"><span>Date</span><b>${d.date}</b></div>
+                ${proofLink}
+                ${d.reason ? `<div style="background:#fee2e2;color:#dc2626;padding:10px;border-radius:10px;margin-top:10px;font-size:12px"><b>Reason:</b> ${d.reason}</div>` : ''}
+
                 ${d.status === 'Pending' ? `
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px">
-                    <button class="btn-modern" style="background:var(--success)" onclick="processTx('${d.uid}','${d.hid}','Approve',${d.amount},'${d.type}',${d.validity||0})">APPROVE</button>
-                    <button class="btn-modern" style="background:var(--danger)" onclick="processTx('${d.uid}','${d.hid}','Reject',${d.amount},'${d.type}',0)">REJECT</button>
+                <div class="action-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px">
+                    <button class="btn-submit bg-green" onclick="processTx('${d.uid}','${d.hid}','Approve', ${d.amount}, '${d.type}', ${d.validity||0})">Approve</button>
+                    <button class="btn-submit bg-red" onclick="processTx('${d.uid}','${d.hid}','Reject', ${d.amount}, '${d.type}', 0)">Reject</button>
                 </div>` : ''}
             `;
-            openModal('rec-modal');
+            openModal('main-modal');
         }
 
         function processTx(uid, hid, action, amt, type, valid) {
-            if(action === 'Reject') {
-                Swal.fire({title:'Reason?', input:'text', showCancelButton:true}).then(r => {
-                    if(r.value) {
-                        db.ref(`users/${uid}/history/${hid}`).update({status:'Rejected', reason:r.value});
-                        if(type==='Withdraw') db.ref(`users/${uid}/balance`).set((USERS[uid].balance||0) + parseInt(amt)); // Refund
-                        closeModal('rec-modal');
+            if (action === 'Reject') {
+                Swal.fire({title: 'Reject Reason', input: 'text', showCancelButton: true}).then(r => {
+                    if (r.value) {
+                        db.ref(`users/${uid}/history/${hid}`).update({status: 'Rejected', reason: r.value});
+                        if (type === 'Withdraw') db.ref(`users/${uid}/balance`).set((USERS[uid].balance || 0) + parseInt(amt)); // Refund
+                        closeModal('main-modal');
                     }
                 });
                 return;
             }
 
-            let updates = {};
+            // Approve
+            const updates = {};
             updates[`users/${uid}/history/${hid}/status`] = 'Success';
             
-            if(type.includes('Buy')) {
+            if (type.includes('Buy')) {
                 updates[`users/${uid}/isVip`] = true;
                 updates[`users/${uid}/currentPlan`] = type.replace('Buy ', '');
                 updates[`users/${uid}/vipExpire`] = Date.now() + (valid * 86400000);
-            } else if(type.includes('Task')) {
-                updates[`users/${uid}/balance`] = (USERS[uid].balance||0) + parseInt(amt);
+            } else if (type.includes('Task')) {
+                updates[`users/${uid}/balance`] = (USERS[uid].balance || 0) + parseInt(amt);
             }
             
             db.ref().update(updates);
-            closeModal('rec-modal');
+            closeModal('main-modal');
             Swal.fire('Approved', '', 'success');
         }
 
-        // 7. VIP & TASKS & SETTINGS
-        function renderVIP(c) {
+        // =========================================
+        // 7. TASK & VIP MANAGER
+        // =========================================
+        function renderTaskForm(c) {
             c.innerHTML = `
-            <div class="list-card" style="display:block">
-                <input id="v-name" class="inp-modern" placeholder="Plan Name">
-                <div style="display:flex;gap:10px;margin:10px 0">
-                    <input id="v-price" class="inp-modern" type="number" placeholder="Price">
-                    <input id="v-inc" class="inp-modern" type="number" placeholder="Daily Income">
+            <div class="data-card" style="display:block">
+                <input id="t-title" class="inp-field" placeholder="Task Title">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                    <input id="t-reward" class="inp-field" type="number" placeholder="Reward (Tk)">
+                    <select id="t-target" class="inp-field">
+                        <option value="Free">Free Users</option>
+                        <option value="Bronze">Bronze VIP</option>
+                        <option value="Silver">Silver VIP</option>
+                        <option value="Gold">Gold VIP</option>
+                        <option value="Platinum">Platinum VIP</option>
+                        <option value="Diamond">Diamond VIP</option>
+                        <option value="Master">Master VIP</option>
+                        <option value="Elite">Elite VIP</option>
+                    </select>
                 </div>
-                <input id="v-val" class="inp-modern" type="number" placeholder="Validity (Days)">
-                <button class="btn-modern" onclick="addVIP()">Create Plan</button>
+                <input id="t-link" class="inp-field" placeholder="Task Link (YT/FB/TG)">
+                <input id="t-hint" class="inp-field" placeholder="Proof Instruction (Screenshot?)">
+                <button class="btn-submit bg-green" onclick="createTask()">Publish Task</button>
             </div>
-            <div id="v-list"></div>`;
+            <div id="task-list-active"></div>`;
             
-            const list = document.getElementById('v-list');
-            Object.keys(VIP_PLANS).forEach(k => {
-                const p = VIP_PLANS[k];
-                list.innerHTML += `<div class="list-card"><div class="list-info"><b>${p.name}</b><small>৳${p.price} | ${p.validity} Days</small></div><button class="btn-sm" style="background:var(--danger)" onclick="delVIP('${k}')">DEL</button></div>`;
+            const list = document.getElementById('task-list-active');
+            Object.keys(TASKS).forEach(k => {
+                const t = TASKS[k];
+                list.innerHTML += `<div class="data-card"><div class="data-info"><b>${t.title}</b><small>${t.target} • ৳${t.reward}</small></div><button class="btn-back" style="background:var(--danger)" onclick="db.ref('settings/tasks/${k}').remove()">Del</button></div>`;
+            });
+        }
+
+        function createTask() {
+            const data = {
+                title: document.getElementById('t-title').value,
+                reward: parseInt(document.getElementById('t-reward').value),
+                target: document.getElementById('t-target').value,
+                link: document.getElementById('t-link').value,
+                proofHint: document.getElementById('t-hint').value
+            };
+            db.ref('settings/tasks').push(data);
+            Swal.fire('Success', 'Task live!', 'success');
+        }
+
+        function renderVIPManager(c) {
+            c.innerHTML = `
+            <div class="data-card" style="display:block">
+                <input id="v-name" class="inp-field" placeholder="Plan Name (Gold)">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                    <input id="v-price" class="inp-field" type="number" placeholder="Price">
+                    <input id="v-inc" class="inp-field" type="number" placeholder="Daily Income">
+                </div>
+                <input id="v-val" class="inp-field" type="number" placeholder="Validity (Days)">
+                <button class="btn-submit bg-green" onclick="addVIP()">Add Plan</button>
+            </div>
+            <div id="vip-list-active"></div>`;
+            
+            const list = document.getElementById('vip-list-active');
+            Object.values(VIP_PLANS).forEach((p, idx) => {
+                const k = Object.keys(VIP_PLANS)[idx];
+                list.innerHTML += `<div class="data-card"><div class="data-info"><b>${p.name}</b><small>৳${p.price} • ${p.validity} Days</small></div><button class="btn-back" style="background:var(--danger)" onclick="db.ref('settings/vipPlans/${k}').remove()">Del</button></div>`;
             });
         }
 
@@ -515,45 +521,49 @@
                 validity: parseInt(document.getElementById('v-val').value)
             };
             db.ref('settings/vipPlans').push(p);
-            openView('vip');
+            Swal.fire('VIP Added');
         }
-        function delVIP(k) { db.ref('settings/vipPlans/'+k).remove(); openView('vip'); }
+
+        // =========================================
+        // 8. UTILS & SETTINGS
+        // =========================================
+        function renderHistory(c) {
+            c.innerHTML = `<input class="inp-field" placeholder="Search..." onkeyup="filterList(this.value)"><div id="h-cont">` + 
+            HISTORY.map((h, i) => `
+                <div class="data-card h-item" data-search="${h.user} ${h.type}">
+                    <div class="data-info"><b>${h.user}</b><small>${h.type} • ৳${h.amount}</small></div>
+                    <div style="text-align:right">
+                        <span class="badge ${h.status==='Success'?'bg-green':(h.status==='Pending'?'bg-yellow':'bg-red')}">${h.status}</span><br>
+                        <button class="btn-detail" style="border:none;background:none;color:blue;cursor:pointer;font-size:11px" onclick="viewReceipt(${i})">View</button>
+                    </div>
+                </div>`).join('') + `</div>`;
+        }
 
         function renderSettings(c) {
             c.innerHTML = `
-            <div class="list-card" style="display:block">
-                <label class="modal-label">Bkash Number</label>
-                <input id="s-bk" class="inp-modern" value="${SETTINGS.bkash||''}">
-                <label class="modal-label">Nagad Number</label>
-                <input id="s-ng" class="inp-modern" value="${SETTINGS.nagad||''}">
-                <button class="btn-modern" style="margin-top:15px" onclick="saveSet()">Update Config</button>
+            <div class="data-card" style="display:block">
+                <label class="form-label">Bkash Number</label><input id="s-bk" class="inp-field" value="${SETTINGS.bkash||''}">
+                <label class="form-label">Nagad Number</label><input id="s-ng" class="inp-field" value="${SETTINGS.nagad||''}">
+                <label class="form-label">Global Notice</label><textarea id="s-not" class="inp-field" style="height:100px">${SETTINGS.notice||''}</textarea>
+                <button class="btn-submit bg-green" onclick="saveSettings()">Save Config</button>
             </div>`;
         }
-        function saveSet() {
+
+        function saveSettings() {
             db.ref('settings').update({
                 bkash: document.getElementById('s-bk').value,
-                nagad: document.getElementById('s-ng').value
+                nagad: document.getElementById('s-ng').value,
+                notice: document.getElementById('s-not').value
             });
-            Swal.fire('Updated');
+            Swal.fire('Settings Updated');
         }
 
-        // 8. TASK RENDERER (Part of modern request)
-        function renderReqs(c, type) { /* Re-used existing logic above */ }
-
-        // UTILS
-        function openModal(id) { document.getElementById(id).style.display='flex'; }
-        function closeModal(id) { document.getElementById(id).style.display='none'; }
-        function appLogout() { sessionStorage.clear(); location.reload(); }
-        function filterUser(v) { 
-            const t = v.toLowerCase();
-            document.querySelectorAll('.u-item').forEach(e => {
-                e.style.display = e.getAttribute('data-s').toLowerCase().includes(t) ? 'flex' : 'none';
-            });
-        }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function filterList(v) {
             const t = v.toLowerCase();
-            document.querySelectorAll('.h-item').forEach(e => {
-                e.style.display = e.getAttribute('data-s').toLowerCase().includes(t) ? 'flex' : 'none';
+            document.querySelectorAll('.u-item, .h-item').forEach(e => {
+                e.style.display = e.getAttribute('data-search').toLowerCase().includes(t) ? 'flex' : 'none';
             });
         }
     </script>
