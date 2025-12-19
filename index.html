@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Takar Gach - Admin V27.0 Master</title>
+    <title>Takar Gach - Admin V28.0 Final</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -13,87 +13,111 @@
 
     <style>
         /* =========================================
-           1. PREMIUM THEME & DASHBOARD
+           1. PREMIUM DESIGN & COLORS
            ========================================= */
         :root {
             --primary-grad: linear-gradient(135deg, #1e293b, #0f172a);
             --accent-grad: linear-gradient(135deg, #059669, #10b981);
-            --glass: rgba(255, 255, 255, 0.95);
+            --profit-bg: #1e293b;
+            --glass: rgba(255, 255, 255, 0.98);
             --primary: #059669;
             --bg: #f3f6f9;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { margin: 0; background: var(--bg); font-family: 'Hind Siliguri', sans-serif; padding-bottom: 50px; }
+        body { margin: 0; background: var(--bg); font-family: 'Hind Siliguri', sans-serif; user-select: none; }
 
-        /* HEADER & STATS (SCR 3 STYLE) */
-        .admin-header { background: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        /* LOGIN SCREEN */
+        #login-overlay { position: fixed; inset: 0; background: var(--primary-grad); z-index: 10000; display: flex; justify-content: center; align-items: center; padding: 25px; }
+        .login-box { background: white; width: 100%; max-width: 380px; padding: 45px 30px; border-radius: 40px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
+        .login-box i { font-size: 50px; color: var(--primary); margin-bottom: 20px; }
+
+        /* DASHBOARD (SCR 2 & 3 MATCH) */
+        .admin-header { background: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 15px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 500; }
         .admin-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; color: #1e293b; }
-        
+        .admin-logo i { color: #059669; font-size: 28px; }
+
         .dashboard { padding: 20px 15px; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-        .stat-card { background: white; padding: 22px 10px; border-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); text-align: center; border-bottom: 4px solid #eee; }
+        .stat-card { background: white; padding: 22px 10px; border-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); text-align: center; border-bottom: 4px solid #f1f5f9; transition: 0.3s; }
         .stat-card h2 { margin: 5px 0; font-size: 24px; color: #333; font-weight: 900; }
         .stat-card small { color: #888; font-weight: 700; font-size: 11px; }
         
-        /* Net Profit Card (SCR 3) */
-        .profit-card { background: var(--primary-grad); color: white; padding: 30px 20px; border-radius: 30px; text-align: center; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .profit-card h1 { margin: 10px 0 0; font-size: 38px; color: #10b981; }
-        .profit-card small { opacity: 0.7; font-weight: 700; letter-spacing: 1px; font-size: 12px; }
+        /* Net Profit Box (SCR 3) */
+        .profit-card { background: var(--profit-bg); color: white; padding: 35px 20px; border-radius: 35px; text-align: center; margin-bottom: 25px; box-shadow: 0 12px 30px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.05); }
+        .profit-card h1 { margin: 10px 0 0; font-size: 42px; color: #10b981; font-weight: 900; }
+        .profit-card small { opacity: 0.8; font-weight: 700; letter-spacing: 1px; font-size: 13px; text-transform: uppercase; }
 
-        /* 12-BUTTON GRID MENU */
+        /* 12-BUTTON MASTER GRID (SCR 2 UPGRADED) */
         .admin-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 0 15px; }
-        .m-item { background: white; padding: 20px 5px; border-radius: 25px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.03); cursor: pointer; border: 1.5px solid #f3f4f6; transition: 0.3s; }
+        .m-item { background: white; padding: 20px 5px; border-radius: 25px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.03); cursor: pointer; border: 1.5px solid #f3f4f6; transition: 0.3s; }
         .m-item:active { transform: scale(0.92); border-color: var(--primary); background: #ecfdf5; }
         .m-item i { font-size: 24px; margin-bottom: 10px; display: block; }
-        .m-item span { font-size: 10px; font-weight: 800; color: #444; display: block; }
+        .m-item span { font-size: 10.5px; font-weight: 800; color: #444; line-height: 1.3; display: block; }
 
-        /* SECTIONS & MODALS */
-        .section { display: none; padding: 20px 15px; animation: slideUp 0.4s ease-out; }
+        /* SECTIONS & NAVIGATION */
+        .section { display: none; padding: 20px 15px; animation: slideUp 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
         .section.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        .card { background: white; padding: 20px; border-radius: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.02); border: 1px solid #f3f4f6; margin-bottom: 20px; }
-        .back-nav { padding: 15px 0; font-weight: 800; color: #059669; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .card { background: white; padding: 25px; border-radius: 35px; box-shadow: 0 5px 20px rgba(0,0,0,0.02); border: 1px solid #f3f4f6; margin-bottom: 20px; }
+        .back-nav { padding: 15px 0; font-weight: 900; color: #059669; display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 18px; }
 
         /* INPUTS & BUTTONS */
-        .inp { width: 100%; padding: 16px; border: 2.5px solid #f3f4f6; border-radius: 18px; margin-bottom: 15px; font-size: 14px; font-family: inherit; font-weight: 600; }
-        .btn-main { background: var(--accent-grad); color: white; padding: 16px; width: 100%; font-size: 16px; font-weight: 800; border-radius: 18px; border: none; cursor: pointer; box-shadow: 0 5px 15px rgba(5, 150, 105, 0.2); }
+        .inp { width: 100%; padding: 18px; border: 2.5px solid #f1f5f9; border-radius: 20px; margin-bottom: 15px; font-size: 15px; font-family: inherit; font-weight: 600; background: #fafafa; }
+        .btn-main { background: var(--accent-grad); color: white; padding: 18px; width: 100%; font-size: 16px; font-weight: 800; border-radius: 20px; border: none; cursor: pointer; box-shadow: 0 8px 20px rgba(5, 150, 105, 0.2); }
+        .btn-close { background: #f1f5f9; color: #666; margin-top: 15px; width: 100%; padding: 15px; border-radius: 18px; border: none; font-weight: 800; cursor: pointer; }
 
-        /* RECEIPT UI (SCR 1 MATCH) */
-        .rec-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 9999; display: none; justify-content: center; align-items: center; padding: 20px; }
-        .rec-box { background: white; width: 100%; max-width: 400px; padding: 40px 30px; border-radius: 40px; text-align: center; position: relative; }
-        .rec-icon { width: 85px; height: 85px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 15px; font-size: 40px; }
+        /* RECEIPT MODAL (SCR 1 EXACT MATCH) */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(10px); }
+        .rec-box { background: white; width: 100%; max-width: 400px; padding: 45px 30px; border-radius: 45px; text-align: center; position: relative; box-shadow: 0 30px 70px rgba(0,0,0,0.5); }
+        .rec-icon { width: 90px; height: 90px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 20px; font-size: 45px; }
         .st-rej { background: #fee2e2; color: #ef4444; }
         .st-suc { background: #d1fae5; color: #059669; }
-        .dashed-line { border-bottom: 2.5px dashed #eee; margin: 20px 0; }
-        .rec-row { display: flex; justify-content: space-between; padding: 12px 0; font-size: 15px; border-bottom: 1px solid #f9fafb; }
-        .rec-row span { color: #888; font-weight: 500; } .rec-row b { color: #111; font-weight: 800; }
-        .rej-msg { background: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; padding: 15px; border-radius: 18px; margin-top: 20px; text-align: left; font-size: 14px; }
-        .modal-close { position: absolute; top: 20px; right: 20px; font-size: 22px; color: #ccc; cursor: pointer; }
+        .dashed-line { border-bottom: 2.5px dashed #eee; margin: 25px 0; }
+        .rec-row { display: flex; justify-content: space-between; padding: 14px 0; font-size: 15px; border-bottom: 1.5px solid #f9fafb; }
+        .rec-row span { color: #888; font-weight: 600; } 
+        .rec-row b { color: #111; font-weight: 900; }
+        
+        /* Rejection Reason Box (SCR 1) */
+        .rej-msg { background: #fee2e2; border: 1.5px solid #fca5a5; color: #b91c1c; padding: 18px; border-radius: 22px; margin-top: 25px; text-align: left; font-size: 14px; line-height: 1.5; }
+        .modal-x { position: absolute; top: 25px; right: 25px; font-size: 24px; color: #ccc; cursor: pointer; }
 
-        /* BADGES */
-        .badge { padding: 4px 10px; border-radius: 10px; font-size: 10px; font-weight: 900; text-transform: uppercase; }
+        /* BADGE SYSTEM */
+        .badge { padding: 6px 12px; border-radius: 12px; font-size: 11px; font-weight: 900; text-transform: uppercase; }
         .badge-pen { background: #fef3c7; color: #d97706; }
         .badge-suc { background: #d1fae5; color: #059669; }
+        .badge-rej { background: #fee2e2; color: #ef4444; }
     </style>
 </head>
 <body>
 
-    <div id="admin-home">
+    <div id="login-overlay">
+        <div class="login-box">
+            <i class="fas fa-user-shield"></i>
+            <h2 style="margin:0 0 10px;font-weight:900">ADMIN LOGIN</h2>
+            <p style="color:#888;margin-bottom:25px;font-weight:600">সিকিউরলি অ্যাক্সেস করুন</p>
+            <input id="l-user" class="inp" placeholder="ইউজারনেম">
+            <input id="l-pass" type="password" class="inp" placeholder="পাসওয়ার্ড">
+            <button class="btn-main" onclick="checkLogin()">প্রবেশ করুন</button>
+        </div>
+    </div>
+
+    <div id="admin-app" style="display:none">
+        
         <div class="admin-header">
-            <div class="admin-logo"><i class="fas fa-user-shield"></i> মাস্ট প্যানেল V27</div>
-            <div onclick="location.reload()" style="color:#059669;font-size:20px"><i class="fas fa-sync-alt"></i></div>
+            <div class="admin-logo"><i class="fas fa-leaf"></i> টাকার গাছ অ্যাডমিন</div>
+            <div onclick="location.reload()" style="background:#ecfdf5;padding:10px;border-radius:50%;color:#059669;cursor:pointer"><i class="fas fa-sync-alt"></i></div>
         </div>
 
-        <div class="dashboard">
+        <div id="dash-main" class="dashboard">
             <div class="stats-grid">
                 <div class="stat-card" style="border-color:#3b82f6"><b><h2 id="st-users">0</h2></b><small>মোট ইউজার</small></div>
                 <div class="stat-card" style="border-color:#10b981"><b><h2 id="st-bal">৳0</h2></b><small>মোট ব্যালেন্স</small></div>
             </div>
             <div class="stats-grid">
-                <div class="stat-card" style="border-color:#f59e0b"><b><h2 id="st-depo">৳0</h2></b><small>ডিপোজিট</small></div>
-                <div class="stat-card" style="border-color:#ef4444"><b><h2 id="st-with">৳0</h2></b><small>উইথড্র</small></div>
+                <div class="stat-card" style="border-color:#fbbf24"><b><h2 id="st-depo">৳0</h2></b><small>মোট ডিপোজিট</small></div>
+                <div class="stat-card" style="border-color:#ef4444"><b><h2 id="st-with">৳0</h2></b><small>মোট উইথড্র</small></div>
             </div>
 
             <div class="profit-card">
@@ -102,68 +126,80 @@
             </div>
 
             <div class="admin-grid">
-                <div class="m-item" onclick="openSec('req')"><i class="fas fa-bell" style="color:#ef4444"></i><span>পেন্ডিং</span></div>
                 <div class="m-item" onclick="openSec('users')"><i class="fas fa-users" style="color:#3b82f6"></i><span>ইউজার</span></div>
-                <div class="m-item" onclick="openSec('vip')"><i class="fas fa-crown" style="color:#fbbf24"></i><span>VIP রিকোয়েস্ট</span></div>
+                <div class="m-item" onclick="openSec('vip')"><i class="fas fa-crown" style="color:#fbbf24"></i><span>VIP প্ল্যান</span></div>
                 <div class="m-item" onclick="openSec('depo')"><i class="fas fa-arrow-down" style="color:#10b981"></i><span>ডিপোজিট</span></div>
                 <div class="m-item" onclick="openSec('with')"><i class="fas fa-arrow-up" style="color:#ef4444"></i><span>উইথড্র</span></div>
                 <div class="m-item" onclick="openSec('tasks')"><i class="fas fa-tasks" style="color:#6366f1"></i><span>সব জব</span></div>
                 <div class="m-item" onclick="openSec('ledger')"><i class="fas fa-briefcase" style="color:#ec4899"></i><span>পার্সোনাল</span></div>
-                <div class="m-item" onclick="openSec('config')"><i class="fas fa-cog" style="color:#6b7280"></i><span>সেটিংস</span></div>
+                <div class="m-item" onclick="openSec('hist')"><i class="fas fa-history" style="color:#f59e0b"></i><span>হিস্টরি</span></div>
+                <div class="m-item" onclick="openSec('config')"><i class="fas fa-cog" style="color:#64748b"></i><span>সেটিংস</span></div>
                 <div class="m-item" onclick="openSec('notice')"><i class="fas fa-bullhorn" style="color:#f97316"></i><span>নোটিশ</span></div>
                 <div class="m-item" onclick="openSec('banner')"><i class="fas fa-image" style="color:#8b5cf6"></i><span>ব্যানার</span></div>
                 <div class="m-item" onclick="window.open('https://t.me/TAKAR_GACH_ADMIN')"><i class="fab fa-telegram" style="color:#229ed9"></i><span>সাপোর্ট</span></div>
-                <div class="m-item" onclick="doLogout()"><i class="fas fa-power-off" style="color:#dc2626"></i><span>লগআউট</span></div>
+                <div class="m-item" onclick="doLogout()"><i class="fas fa-power-off" style="color:#dc2626"></i><span>লগ আউট</span></div>
             </div>
         </div>
-    </div>
 
-    <div id="sec-req" class="section">
-        <div class="back-nav" onclick="showDash()"><i class="fas fa-chevron-left"></i> পেন্ডিং রিকোয়েস্ট (Task)</div>
-        <div id="req-list"></div>
-    </div>
-
-    <div id="sec-users" class="section">
-        <div class="back-nav" onclick="showDash()"><i class="fas fa-chevron-left"></i> ইউজার লিস্ট</div>
-        <input id="u-search" class="inp" placeholder="নাম বা ফোন দিন..." oninput="renderUserList()">
-        <div id="user-list"></div>
-    </div>
-
-    <div id="sec-ledger" class="section">
-        <div class="back-nav" onclick="showDash()"><i class="fas fa-chevron-left"></i> পার্সোনাল লেজার (হিসাব)</div>
-        <div id="ledger-list"></div>
-    </div>
-
-    <div id="sec-notice" class="section">
-        <div class="back-nav" onclick="showDash()"><i class="fas fa-chevron-left"></i> নোটিশ বোর্ড সেটিংস</div>
-        <div class="card">
-            <label>নোটিশ পপ-আপ মেসেজ</label>
-            <textarea id="n-msg" class="inp" style="height:120px" placeholder="ইউজার প্যানেলে যা দেখাতে চান..."></textarea>
-            <button class="btn-main" onclick="saveNotice()">নোটিশ সেভ করুন</button>
+        <div id="sec-users" class="section">
+            <div class="back-nav" onclick="showDash()"><i class="fas fa-arrow-left"></i> ইউজার ম্যানেজমেন্ট</div>
+            <input id="u-search" class="inp" placeholder="নাম বা ফোন দিয়ে সার্চ..." oninput="renderUserList()">
+            <div id="user-list-box"></div>
         </div>
-    </div>
 
-    <div id="sec-config" class="section">
-        <div class="back-nav" onclick="showDash()"><i class="fas fa-chevron-left"></i> পেমেন্ট সেটিংস</div>
-        <div class="card">
-            <input id="c-bkash" class="inp" placeholder="বিকাশ নাম্বার">
-            <input id="c-nagad" class="inp" placeholder="নগদ নাম্বার">
-            <input id="c-rocket" class="inp" placeholder="রকেট নাম্বার">
-            <button class="btn-main" onclick="saveSettings()">আপডেট করুন</button>
+        <div id="sec-depo" class="section">
+            <div class="back-nav" onclick="showDash()"><i class="fas fa-arrow-left"></i> ডিপোজিট রিকোয়েস্ট (VIP)</div>
+            <div id="depo-list-box"></div>
         </div>
+
+        <div id="sec-with" class="section">
+            <div class="back-nav" onclick="showDash()"><i class="fas fa-arrow-left"></i> উইথড্র রিকোয়েস্ট (টাকা তোলা)</div>
+            <div id="with-list-box"></div>
+        </div>
+
+        <div id="sec-tasks" class="section">
+            <div class="back-nav" onclick="showDash()"><i class="fas fa-arrow-left"></i> সব জব ম্যানেজমেন্ট (পেন্ডিং)</div>
+            <div id="task-list-box"></div>
+        </div>
+
+        <div id="sec-ledger" class="section">
+            <div class="back-nav" onclick="showDash()"><i class="fas fa-arrow-left"></i> পার্সোনাল লেজার (ব্যক্তিগত হিসাব)</div>
+            <div id="ledger-list-box"></div>
+        </div>
+
+        <div id="sec-notice" class="section">
+            <div class="back-nav" onclick="showDash()"><i class="fas fa-arrow-left"></i> নোটিশ বোর্ড সেটিংস</div>
+            <div class="card">
+                <label style="display:block;margin-bottom:10px;font-weight:700;color:#555">লাইভ নোটিশ (পপ-আপ)</label>
+                <textarea id="n-msg" class="inp" style="height:150px;text-align:left;padding:20px" placeholder="এখানে যা লিখবেন তা ইউজারের কাছে পপ-আপ যাবে..."></textarea>
+                <button class="btn-main" onclick="saveNotice()">নোটিশ সেভ ও পাবলিশ</button>
+            </div>
+        </div>
+
+        <div id="sec-config" class="section">
+            <div class="back-nav" onclick="showDash()"><i class="fas fa-arrow-left"></i> অ্যাপ কনফিগারেশন</div>
+            <div class="card">
+                <input id="c-bkash" class="inp" placeholder="বিকাশ নাম্বার">
+                <input id="c-nagad" class="inp" placeholder="নগদ নাম্বার">
+                <input id="c-rocket" class="inp" placeholder="রকেট নাম্বার">
+                <input id="c-token" class="inp" placeholder="বট টোকেন">
+                <button class="btn-main" onclick="saveSettings()">সেটিংস আপডেট</button>
+            </div>
+        </div>
+
     </div>
 
-    <div id="rec-modal" class="rec-modal">
+    <div id="rec-modal" class="modal">
         <div class="rec-box">
-            <div class="modal-close" onclick="closeRec()"><i class="fas fa-times"></i></div>
+            <div class="modal-x" onclick="closeModal('rec-modal')"><i class="fas fa-times"></i></div>
             <div id="rec-body"></div>
-            <button class="btn-main" style="background:#333;margin-top:20px" onclick="closeRec()">CLOSE WINDOW</button>
+            <button class="btn-close" onclick="closeModal('rec-modal')">CLOSE WINDOW</button>
         </div>
     </div>
 
     <script>
         // =========================================
-        // 1. FIREBASE CONFIGURATION (Must match User Panel)
+        // 1. FIREBASE CONFIGURATION (V28 Master)
         // =========================================
         const firebaseConfig = { 
             apiKey: "AIzaSyDgI-d8iwWr40tmknbY6jhH0oRb2Tvg4d0", 
@@ -177,276 +213,264 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // GLOBAL DATA STORE
-        let ALL_USERS = {}, ALL_TASKS = {}, APP_CONF = {}, ALL_REQS = [];
+        // Global State
+        let ALL_USERS = {}, ALL_TASKS = {}, APP_CONF = {};
 
         // =========================================
-        // 2. INITIALIZATION & REAL-TIME SYNC
+        // 2. LOGIN SECURITY ENGINE (JIHAD / 1983)
         // =========================================
-        window.onload = () => {
-            // ইউজার ডাটা এবং স্ট্যাটাস সিংক
+        function checkLogin() {
+            const user = document.getElementById('l-user').value;
+            const pass = document.getElementById('l-pass').value;
+            if(user === 'JIHAD' && pass === '1983') {
+                localStorage.setItem('admin_session', 'true');
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('admin-app').style.display = 'block';
+                initSync();
+            } else {
+                Swal.fire('ভুল তথ্য!', 'সঠিক ইউজারনেম বা পাসওয়ার্ড দিন।', 'error');
+            }
+        }
+
+        // Auto-login if session exists
+        if(localStorage.getItem('admin_session') === 'true') {
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('admin-app').style.display = 'block';
+            initSync();
+        }
+
+        // =========================================
+        // 3. MASTER REAL-TIME SYNC ENGINE
+        // =========================================
+        function initSync() {
+            // Listen for Users
             db.ref('users').on('value', snapshot => {
                 ALL_USERS = snapshot.val() || {};
-                processDashboardStats();
+                processDashboard();
                 renderUserList();
                 renderPersonalLedger();
-                // যদি কোনো সেকশন ওপেন থাকে তবে তা আপডেট হবে
-                const activeSec = document.querySelector('.section.active');
-                if(activeSec) refreshActiveSection(activeSec.id);
+                
+                // Active Section Auto-Refresh
+                const active = document.querySelector('.section.active');
+                if(active) refreshSection(active.id);
             });
 
-            // সেটিংস এবং নোটিশ সিংক
+            // Listen for Settings
             db.ref('settings').on('value', snapshot => {
-                const data = snapshot.val() || {};
-                ALL_TASKS = data.tasks || {};
-                APP_CONF = data.config || {};
-                
-                // সেটিংস প্রি-ফিল
+                const d = snapshot.val() || {};
+                APP_CONF = d.config || {};
                 if(document.getElementById('c-bkash')){
                     document.getElementById('c-bkash').value = APP_CONF.bkash || '';
                     document.getElementById('c-nagad').value = APP_CONF.nagad || '';
                     document.getElementById('c-rocket').value = APP_CONF.rocket || '';
+                    document.getElementById('c-token').value = APP_CONF.botToken || '';
                 }
-                // নোটিশ প্রি-ফিল
-                if(document.getElementById('n-msg')) {
-                    document.getElementById('n-msg').value = data.notice || '';
-                }
+                document.getElementById('n-msg').value = d.notice || '';
             });
-        };
+        }
 
         // =========================================
-        // 3. DASHBOARD & NET PROFIT LOGIC
+        // 4. STATS & PROFIT CALCULATION (SCR 3)
         // =========================================
-        function processDashboardStats() {
-            let totalUsers = 0, totalBal = 0, totalDepo = 0, totalWith = 0;
-            ALL_REQS = [];
-
+        function processDashboard() {
+            let uCount = 0, bal = 0, depo = 0, withdr = 0;
             Object.keys(ALL_USERS).forEach(uid => {
                 const u = ALL_USERS[uid];
-                totalUsers++;
-                totalBal += (parseInt(u.balance) || 0);
-
-                if (u.history) {
-                    Object.keys(u.history).forEach(hid => {
-                        const h = u.history[hid];
-                        // রিকোয়েস্ট কালেকশন
-                        if (h.status === 'Pending') {
-                            ALL_REQS.push({ ...h, uid, hid, userName: u.name });
-                        }
-                        // নিট প্রফিট ক্যালকুলেশন
-                        if (h.status === 'Success') {
-                            if (h.type.includes('Buy')) totalDepo += parseInt(h.amount);
-                            if (h.type === 'Withdraw') totalWith += parseInt(h.amount);
+                uCount++;
+                bal += (parseInt(u.balance) || 0);
+                if(u.history) {
+                    Object.values(u.history).forEach(h => {
+                        if(h.status === 'Success') {
+                            if(h.type.includes('Buy')) depo += parseInt(h.amount);
+                            if(h.type === 'Withdraw') withdr += parseInt(h.amount);
                         }
                     });
                 }
             });
 
-            // UI আপডেট (SCR 3 স্টাইল)
-            document.getElementById('st-users').innerText = totalUsers;
-            document.getElementById('st-bal').innerText = '৳' + totalBal;
-            document.getElementById('st-depo').innerText = '৳' + totalDepo;
-            document.getElementById('st-with').innerText = '৳' + totalWith;
+            document.getElementById('st-users').innerText = uCount;
+            document.getElementById('st-bal').innerText = '৳' + bal;
+            document.getElementById('st-depo').innerText = '৳' + depo;
+            document.getElementById('st-with').innerText = '৳' + withdr;
             
-            const netProfit = totalDepo - totalWith;
-            const profitEl = document.getElementById('st-profit');
-            profitEl.innerText = '৳ ' + netProfit;
-            profitEl.style.color = netProfit >= 0 ? '#10b981' : '#ef4444';
+            const netProfit = depo - withdr;
+            const pEl = document.getElementById('st-profit');
+            pEl.innerText = '৳ ' + netProfit;
+            pEl.style.color = netProfit >= 0 ? '#10b981' : '#ef4444';
         }
 
         // =========================================
-        // 4. REQUEST MANAGEMENT (TASK/VIP/WITHDRAW)
+        // 5. REQUEST MANAGEMENT (TASK/VIP/WITHDRAW)
         // =========================================
-        function renderFilteredRequests(type) {
-            const container = document.getElementById('req-list');
-            container.innerHTML = '';
-            
-            let filtered = ALL_REQS;
-            if (type === 'depo') filtered = ALL_REQS.filter(r => r.type.includes('Buy'));
-            if (type === 'with') filtered = ALL_REQS.filter(r => r.type === 'Withdraw');
-            if (type === 'task') filtered = ALL_REQS.filter(r => r.type.includes('Task'));
+        function refreshSection(id) {
+            if(id === 'sec-depo') renderFilteredList('depo', 'Buy');
+            if(id === 'sec-with') renderFilteredList('with', 'Withdraw');
+            if(id === 'sec-tasks') renderFilteredList('task', 'Task');
+        }
 
-            if (filtered.length === 0) {
-                container.innerHTML = '<div style="text-align:center;padding:50px;color:#999">কোনো পেন্ডিং ডাটা নেই</div>';
-                return;
-            }
+        function renderFilteredList(boxId, typeFilter) {
+            const box = document.getElementById(boxId + '-list-box');
+            box.innerHTML = '';
+            let count = 0;
 
-            filtered.forEach(r => {
-                container.innerHTML += `
-                    <div class="card" style="text-align:left; border-left:5px solid #f59e0b">
-                        <div style="display:flex; justify-content:space-between; align-items:center">
-                            <b>${r.userName}</b>
-                            <span class="badge badge-pen">${r.type}</span>
-                        </div>
-                        <p style="margin:10px 0; color:#666; font-size:13px">পরিমাণ: <b>৳${r.amount}</b> | ${r.date}</p>
-                        <div style="display:flex; gap:8px">
-                            <button class="btn-main" style="padding:10px; font-size:12px; flex:1" onclick="manageReq('${r.uid}','${r.hid}','approve','${r.type}',${r.amount})">APPROVE</button>
-                            <button class="btn-main" style="padding:10px; font-size:12px; flex:1; background:#ef4444" onclick="manageReq('${r.uid}','${r.hid}','reject')">REJECT</button>
-                            <button class="btn-main" style="padding:10px; font-size:12px; flex:0.5; background:#333" onclick='viewRec(${JSON.stringify(r)})'><i class="fas fa-file-invoice"></i></button>
-                        </div>
-                    </div>`;
+            Object.keys(ALL_USERS).forEach(uid => {
+                const u = ALL_USERS[uid];
+                if(u.history) {
+                    Object.keys(u.history).forEach(hid => {
+                        const h = u.history[hid];
+                        if(h.status === 'Pending' && h.type.includes(typeFilter)) {
+                            count++;
+                            box.innerHTML += `
+                                <div class="card" style="text-align:left; border-left:5px solid #f59e0b">
+                                    <div style="display:flex; justify-content:space-between; align-items:center">
+                                        <b>${u.name}</b>
+                                        <span class="badge badge-pen">${h.type}</span>
+                                    </div>
+                                    <p style="margin:10px 0; color:#666; font-size:14px">পরিমাণ: <b>৳${h.amount}</b> | ${h.date}</p>
+                                    <div style="display:flex; gap:10px">
+                                        <button class="btn-main" style="padding:10px; font-size:12px; flex:1" onclick="manageReq('${uid}','${hid}','approve','${h.type}',${h.amount})">APPROVE</button>
+                                        <button class="btn-main" style="padding:10px; font-size:12px; flex:1; background:#ef4444" onclick="manageReq('${uid}','${hid}','reject')">REJECT</button>
+                                        <button class="btn-main" style="padding:10px; font-size:12px; flex:0.4; background:#333" onclick='showReceipt(${JSON.stringify(h)},"${u.name}","${uid}")'><i class="fas fa-file-invoice"></i></button>
+                                    </div>
+                                </div>`;
+                        }
+                    });
+                }
             });
+
+            if(count === 0) box.innerHTML = '<p style="text-align:center;padding:50px;color:#999">কোনো পেন্ডিং রিকোয়েস্ট নেই।</p>';
         }
 
         async function manageReq(uid, hid, action, type, amt) {
-            if (action === 'approve') {
+            if(action === 'approve') {
                 const updates = {};
                 updates[`users/${uid}/history/${hid}/status`] = 'Success';
-
-                // অটো ব্যালেন্স এবং প্ল্যান আপডেট
-                if (type.includes('Task')) {
-                    updates[`users/${uid}/balance`] = (parseInt(ALL_USERS[uid].balance) || 0) + parseInt(amt);
-                }
-                if (type.includes('Buy')) {
-                    const planName = type.replace('Buy ', '');
+                if(type.includes('Task')) updates[`users/${uid}/balance`] = (parseInt(ALL_USERS[uid].balance)||0) + parseInt(amt);
+                if(type.includes('Buy')) {
                     updates[`users/${uid}/isVip`] = true;
-                    updates[`users/${uid}/currentPlan`] = planName;
+                    updates[`users/${uid}/currentPlan`] = type.replace('Buy ', '');
                 }
-
                 await db.ref().update(updates);
-                Swal.fire('সফল!', 'রিকোয়েস্টটি অ্যাপ্রুভ হয়েছে।', 'success');
+                Swal.fire('সফল', 'অ্যাপ্রুভ হয়েছে।', 'success');
             } else {
-                // রিজেকশন উইথ রিজন
-                const { value: reason } = await Swal.fire({
-                    title: 'বাতিলের কারণ',
-                    input: 'text',
-                    inputPlaceholder: 'সঠিকভাবে কাজ করেননি',
-                    showCancelButton: true
-                });
-
-                if (reason) {
+                const { value: reason } = await Swal.fire({ title: 'রিজেক্ট করার কারণ', input: 'text', showCancelButton: true });
+                if(reason) {
                     await db.ref(`users/${uid}/history/${hid}`).update({ status: 'Rejected', reason: reason });
-                    Swal.fire('বাতিল!', 'ইউজার নোটিফিকেশন পাবে।', 'error');
+                    Swal.fire('বাতিল', 'রিজেক্ট করা হয়েছে।', 'error');
                 }
             }
         }
 
         // =========================================
-        // 5. RECEIPT VIEWER (SCR 1 MATCH)
+        // 6. RECEIPT DESIGNER (SCR 1 EXACT)
         // =========================================
-        function viewRec(h) {
-            let isRej = h.status === 'Rejected';
-            let icon = isRej ? 'times' : (h.status === 'Success' ? 'check' : 'clock fa-spin');
-            let cls = isRej ? 'st-rej' : (h.status === 'Success' ? 'st-suc' : 'st-pen');
+        function showReceipt(h, name, phone) {
+            const isRej = h.status === 'Rejected';
+            const icon = isRej ? 'times' : (h.status === 'Success' ? 'check' : 'clock fa-spin');
+            const cls = isRej ? 'st-rej' : (h.status === 'Success' ? 'st-suc' : 'st-pen');
 
             document.getElementById('rec-body').innerHTML = `
                 <div class="rec-icon ${cls}"><i class="fas fa-${icon}"></i></div>
-                <h2 style="margin:0; font-weight:900; color:${isRej?'#ef4444':'#059669'}">${h.status}</h2>
-                <small style="color:#999">ID: ${h.hid}</small>
+                <h1 style="margin:0;font-weight:900;color:${isRej?'#ef4444':'#059669'}">${h.status}</h1>
+                <small style="color:#999;font-weight:700">ID: ${h.hid || '-OgeOx...'}</small>
                 <div class="dashed-line"></div>
-                <div class="rec-row"><span>User Name</span><b>${h.userName}</b></div>
+                <div class="rec-row"><span>User Name</span><b>${name}</b></div>
+                <div class="rec-row"><span>User Phone</span><b>${phone}</b></div>
                 <div class="rec-row"><span>Transaction Type</span><b>${h.type}</b></div>
-                <div class="rec-row"><span>Amount</span><b style="font-size:18px">৳${h.amount}</b></div>
+                <div class="rec-row"><span>Amount</span><b style="font-size:19px">৳${h.amount}</b></div>
                 <div class="rec-row"><span>Date</span><b>${h.date}</b></div>
-                <div class="rec-row"><span>TrxID / Info</span><b>${h.trx || h.proof || h.uid}</b></div>
-                ${isRej ? `<div class="rej-msg"><b>Rejection Reason:</b><br>${h.reason || 'সঠিক নিয়মে কাজ করা হয়নি'}</div>` : ''}
+                <div class="rec-row"><span>TrxID / Info</span><b>${h.trx || h.proof || phone}</b></div>
+                ${isRej ? `<div class="rej-msg"><i class="fas fa-exclamation-circle" style="margin-right:8px"></i><b>Rejection Reason:</b><br>${h.reason || 'সঠিক নিয়মে কাজ করা হয়নি'}</div>` : ''}
             `;
-            document.getElementById('rec-modal').style.display = 'flex';
+            openModal('rec-modal');
         }
 
         // =========================================
-        // 6. PERSONAL LEDGER (INDIVIDUAL ACCOUNTING)
+        // 7. PERSONAL LEDGER (INDIVIDUAL ACCOUNTING)
         // =========================================
         function renderPersonalLedger() {
-            const container = document.getElementById('ledger-list');
-            if(!container) return;
-            container.innerHTML = '';
+            const box = document.getElementById('ledger-list-box');
+            if(!box) return; box.innerHTML = '';
             
             Object.keys(ALL_USERS).forEach(uid => {
                 const u = ALL_USERS[uid];
-                let totalWithdrawn = 0;
-                if(u.history){
+                let totalWith = 0;
+                if(u.history) {
                     Object.values(u.history).forEach(h => {
-                        if(h.type === 'Withdraw' && h.status === 'Success') totalWithdrawn += parseInt(h.amount);
+                        if(h.type === 'Withdraw' && h.status === 'Success') totalWith += parseInt(h.amount);
                     });
                 }
 
-                container.innerHTML += `
+                box.innerHTML += `
                     <div class="card" style="text-align:left; border-left:5px solid #ec4899">
-                        <div style="display:flex; justify-content:space-between">
+                        <div style="display:flex; justify-content:space-between; align-items:center">
                             <b>${u.name}</b>
-                            <small>${u.currentPlan || 'Free'}</small>
+                            <span class="badge badge-suc" style="background:#f1f5f9;color:#333">${u.currentPlan || 'Free'}</span>
                         </div>
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px">
-                            <div><small>ব্যালেন্স</small><br><b>৳${u.balance}</b></div>
-                            <div><small>মোট উইথড্র</small><br><b style="color:#ef4444">৳${totalWithdrawn}</b></div>
+                            <div><small>বর্তমান ব্যালেন্স</small><br><b style="font-size:18px">৳${u.balance}</b></div>
+                            <div><small>মোট উইথড্র</small><br><b style="color:#ef4444;font-size:18px">৳${totalWith}</b></div>
                         </div>
-                        <button class="btn-main" style="padding:10px; font-size:12px; margin-top:10px; background:#1e293b" onclick="editUserBal('${uid}')">ব্যালেন্স সংশোধন</button>
+                        <button class="btn-main" style="padding:12px; font-size:13px; margin-top:15px; background:#1e293b" onclick="editBal('${uid}')">ব্যালেন্স সংশোধন করুন</button>
                     </div>`;
             });
         }
 
-        async function editUserBal(uid) {
+        async function editBal(uid) {
             const u = ALL_USERS[uid];
-            const { value: newBal } = await Swal.fire({
-                title: u.name + '- এর নতুন ব্যালেন্স',
-                input: 'number',
-                inputValue: u.balance,
-                showCancelButton: true
-            });
-            if (newBal) {
-                db.ref('users/' + uid).update({ balance: parseInt(newBal) });
-                Swal.fire('সফল', 'ব্যালেন্স আপডেট হয়েছে', 'success');
+            const { value: newB } = await Swal.fire({ title: u.name + ' - এর ব্যালেন্স', input: 'number', inputValue: u.balance, showCancelButton: true });
+            if(newB) {
+                db.ref('users/'+uid).update({ balance: parseInt(newB) });
+                Swal.fire('সফল', 'ব্যালেন্স আপডেট হয়েছে।', 'success');
             }
         }
 
         // =========================================
-        // 7. NOTICE BOARD ENGINE (POPUP IN USER PANEL)
-        // =========================================
-        function saveNotice() {
-            const msg = document.getElementById('n-msg').value;
-            if(!msg) return Swal.fire('Error', 'মেসেজ লিখুন', 'warning');
-            db.ref('settings/notice').set(msg);
-            Swal.fire('সফল!', 'ইউজার প্যানেলে নোটিশ আপডেট হয়েছে।', 'success');
-        }
-
-        // =========================================
-        // 8. NAVIGATION & SEARCH
+        // 8. HELPERS & NAVIGATION
         // =========================================
         function openSec(id) {
-            document.getElementById('admin-home').style.display = 'none';
+            document.getElementById('dash-main').style.display = 'none';
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById('sec-' + id).classList.add('active');
-            
-            // ডাটা ফিল্টারিং অটো ট্রিগার
-            if (id === 'req') renderFilteredRequests('task');
-            if (id === 'depo') renderFilteredRequests('depo');
-            if (id === 'with') renderFilteredRequests('with');
+            refreshSection('sec-' + id);
         }
 
         function showDash() {
-            document.getElementById('admin-home').style.display = 'block';
+            document.getElementById('dash-main').style.display = 'block';
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         }
 
         function renderUserList() {
-            const container = document.getElementById('user-list');
-            if(!container) return;
+            const box = document.getElementById('user-list-box'); if(!box) return;
             const term = document.getElementById('u-search').value.toLowerCase();
-            container.innerHTML = '';
-            
+            box.innerHTML = '';
             Object.keys(ALL_USERS).forEach(uid => {
                 const u = ALL_USERS[uid];
-                if (u.name.toLowerCase().includes(term) || uid.includes(term)) {
-                    container.innerHTML += `
-                        <div class="card" style="text-align:left; padding:15px; margin-bottom:10px">
-                            <b>${u.name}</b> (${uid})<br>
-                            <small>ব্যালেন্স: ৳${u.balance} | প্ল্যান: ${u.currentPlan || 'ফ্রি'}</small>
-                        </div>`;
+                if(u.name.toLowerCase().includes(term) || uid.includes(term)) {
+                    box.innerHTML += `<div class="card" style="text-align:left;padding:15px;margin-bottom:10px"><b>${u.name}</b><br><small>ফোন: ${uid} | ব্যালেন্স: ৳${u.balance}</small></div>`;
                 }
             });
+        }
+
+        function saveNotice() {
+            const m = document.getElementById('n-msg').value;
+            db.ref('settings/notice').set(m);
+            Swal.fire('পাবলিশ হয়েছে!', 'ইউজার প্যানেলে নোটিশটি চলে গেছে।', 'success');
         }
 
         function saveSettings() {
             const bk = document.getElementById('c-bkash').value;
             const ng = document.getElementById('c-nagad').value;
             const rk = document.getElementById('c-rocket').value;
-            db.ref('settings/config').update({ bkash: bk, nagad: ng, rocket: rk });
-            Swal.fire('সফল', 'পেমেন্ট নাম্বার আপডেট হয়েছে', 'success');
+            const tk = document.getElementById('c-token').value;
+            db.ref('settings/config').update({ bkash: bk, nagad: ng, rocket: rk, botToken: tk });
+            Swal.fire('সফল', 'সেটিংস আপডেট হয়েছে।', 'success');
         }
 
-        function closeRec() { document.getElementById('rec-modal').style.display = 'none'; }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function doLogout() { localStorage.clear(); location.reload(); }
     </script>
 </body>
 </html>
+
