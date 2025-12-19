@@ -3,215 +3,455 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Takar Gach - Admin V30.0 Fixed</title>
+    <title>Takar Gach Pro V24.0</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         /* =========================================
-           1. PREMIUM UI & THEME
+           1. CORE VARIABLES & RESET (HUBUHU COLORS)
            ========================================= */
         :root {
-            --primary-grad: linear-gradient(135deg, #1e293b, #0f172a);
-            --accent-grad: linear-gradient(135deg, #059669, #10b981);
-            --bg: #f3f6f9; --primary: #059669;
+            --primary: #0CB767;
+            --primary-dark: #098a4e;
+            --secondary: #1e293b;
+            --bg-color: #f3f6f9;
+            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.95);
+            --shadow-sm: 0 4px 6px rgba(0,0,0,0.02);
+            --shadow-md: 0 10px 25px rgba(0,0,0,0.05);
+            --gradient-header: linear-gradient(135deg, #0CB767, #059669);
+            --gradient-silver: linear-gradient(135deg, #94a3b8, #64748b);
+            --gradient-gold: linear-gradient(135deg, #f59e0b, #d97706);
         }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { margin: 0; background: var(--bg); font-family: 'Hind Siliguri', sans-serif; user-select: none; padding-bottom: 50px; }
 
-        /* LOGIN */
-        #login-overlay { position: fixed; inset: 0; background: var(--primary-grad); z-index: 10000; display: flex; justify-content: center; align-items: center; padding: 25px; }
-        .login-box { background: white; width: 100%; max-width: 350px; padding: 40px 30px; border-radius: 30px; text-align: center; }
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+            margin: 0;
+            padding: 0;
+        }
 
-        /* DASHBOARD HEADER */
-        .admin-header { background: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 500; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .admin-logo { font-size: 20px; font-weight: 800; color: #1e293b; display: flex; gap: 10px; align-items: center; }
+        body {
+            background: var(--bg-color);
+            font-family: 'Hind Siliguri', sans-serif;
+            color: var(--secondary);
+            padding-bottom: 90px; /* Space for bottom nav */
+            user-select: none;
+            overflow-x: hidden;
+        }
+
+        /* =========================================
+           2. HEADER & PROFILE SECTION (SCREENSHOT 2 MATCH)
+           ========================================= */
+        .app-header {
+            background: var(--gradient-header);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--white);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(12, 183, 103, 0.2);
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Profile Card Wrapper */
+        .profile-section {
+            background: var(--gradient-header);
+            padding-top: 70px; /* Space for fixed header */
+            padding-bottom: 80px;
+            border-radius: 0 0 40px 40px;
+            position: relative;
+            margin-bottom: 70px; /* Space for overlapping card */
+        }
+
+        /* The Float Card */
+        .balance-card {
+            background: var(--white);
+            width: 90%;
+            margin: 0 auto;
+            border-radius: 30px;
+            padding: 25px;
+            text-align: center;
+            position: absolute;
+            bottom: -50px;
+            left: 5%;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .u-avatar {
+            width: 65px;
+            height: 65px;
+            background: #f0fdf4;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            color: var(--primary);
+            border: 3px solid var(--white);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-top: -55px; /* Pull up */
+            margin-bottom: 10px;
+        }
+
+        .u-balance-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+
+        .u-balance-amount {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: 15px;
+        }
+
+        /* Dynamic Badge (Silver/Gold/Free) */
+        .plan-badge {
+            background: #f1f5f9;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #475569;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+        .plan-badge.silver { background: var(--gradient-silver); color: white; box-shadow: 0 4px 10px rgba(148, 163, 184, 0.4); }
+        .plan-badge.gold { background: var(--gradient-gold); color: white; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4); }
+
+        .stats-row {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            border-top: 1.5px dashed #e2e8f0;
+            padding-top: 15px;
+        }
+        .stat-item { flex: 1; text-align: center; }
+        .stat-item b { display: block; font-size: 18px; color: #1e293b; }
+        .stat-item small { font-size: 11px; color: #94a3b8; font-weight: 600; }
+
+        /* =========================================
+           3. 8-GRID MENU (HUBUHU ICONS)
+           ========================================= */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            padding: 0 20px;
+            margin-top: 20px;
+        }
+
+        .menu-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .menu-item:active { transform: scale(0.95); }
+
+        .menu-icon-box {
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: var(--white);
+            border-radius: 22px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid #f1f5f9;
+            margin-bottom: 8px;
+        }
+        .menu-icon-box i { font-size: 24px; }
+        .menu-text { font-size: 11px; font-weight: 700; color: #334155; }
+
+        /* Icon Colors */
+        .ic-vip { color: #ec4899; }
+        .ic-task { color: #3b82f6; }
+        .ic-cash { color: #ef4444; }
+        .ic-hist { color: #f59e0b; }
+        .ic-prof { color: var(--primary); }
+        .ic-sup { color: #0ea5e9; }
+        .ic-rule { color: #6366f1; }
+        .ic-shar { color: #8b5cf6; }
+
+        /* =========================================
+           4. DAILY BONUS (TAKEN CHECK)
+           ========================================= */
+        .daily-card {
+            background: var(--white);
+            margin: 25px 20px;
+            padding: 20px;
+            border-radius: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            border: 1.5px solid #ecfdf5;
+            position: relative;
+            overflow: hidden;
+        }
+        .daily-card::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--primary);
+        }
+        .dc-left { display: flex; align-items: center; gap: 15px; }
+        .dc-icon { 
+            width: 50px; height: 50px; background: var(--primary); color: white; 
+            border-radius: 15px; display: flex; justify-content: center; align-items: center; font-size: 24px;
+        }
+        .dc-info b { font-size: 16px; display: block; color: #1e293b; }
+        .dc-info small { color: var(--primary); font-weight: 700; }
+
+        .btn-claim {
+            padding: 10px 20px;
+            border-radius: 15px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 12px;
+            transition: 0.3s;
+        }
+        .btn-claim.active { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(12, 183, 103, 0.3); }
+        .btn-claim.taken { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
+
+        /* =========================================
+           5. TASK LIST & PAYMENT (ROCKET OFF)
+           ========================================= */
+        .section-header {
+            padding: 0 20px; margin-bottom: 15px; font-size: 17px; font-weight: 800; color: #334155;
+        }
+
+        .task-card {
+            background: var(--white);
+            margin: 0 20px 15px;
+            padding: 18px;
+            border-radius: 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid #f1f5f9;
+        }
+        .tc-icon { 
+            width: 45px; height: 45px; background: #f0f9ff; color: #0ea5e9; 
+            border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px; margin-right: 15px;
+        }
+        .tc-btn {
+            background: var(--primary); color: white; padding: 10px 22px; 
+            border-radius: 12px; border: none; font-weight: 700; cursor: pointer;
+        }
+
+        /* Payment Grid */
+        .pay-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0 20px 30px;
+        }
+        .pay-item {
+            background: var(--white); border: 2px solid #f1f5f9; border-radius: 20px;
+            padding: 20px 10px; text-align: center; cursor: pointer; position: relative;
+        }
+        .pay-item.active { border-color: var(--primary); background: #ecfdf5; }
+        .pay-item.off { opacity: 0.6; pointer-events: none; filter: grayscale(1); }
+        .off-badge {
+            position: absolute; top: -8px; right: -5px; background: #ef4444; color: white;
+            font-size: 9px; padding: 2px 6px; border-radius: 8px; font-weight: 800; border: 2px solid white;
+        }
+        .pay-img { height: 25px; margin-bottom: 8px; object-fit: contain; }
+        .pay-name { font-size: 12px; font-weight: 700; display: block; }
+
+        /* =========================================
+           6. BOTTOM NAVIGATION (FIXED)
+           ========================================= */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: var(--white);
+            border-top: 1px solid #e2e8f0;
+            display: flex; justify-content: space-around;
+            padding: 12px 0; z-index: 1000;
+            border-radius: 25px 25px 0 0;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.03);
+        }
+        .nav-item { text-align: center; color: #94a3b8; cursor: pointer; flex: 1; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item i { font-size: 22px; margin-bottom: 4px; display: block; }
+        .nav-item span { font-size: 10px; font-weight: 700; display: block; }
+
+        /* =========================================
+           7. MODALS & POPUPS
+           ========================================= */
+        .modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9999;
+            display: none; justify-content: center; align-items: center; padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: var(--white); width: 100%; max-width: 350px;
+            padding: 30px 20px; border-radius: 35px; text-align: center; position: relative;
+            animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+        @keyframes popUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
-        .dashboard { padding: 20px 15px; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-        .stat-card { background: white; padding: 20px 10px; border-radius: 20px; text-align: center; border-bottom: 4px solid #eee; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
-        .stat-card h2 { margin: 5px 0; font-size: 22px; font-weight: 900; color: #333; }
-        .stat-card small { color: #888; font-weight: 700; font-size: 11px; }
+        .modal-close {
+            position: absolute; top: 15px; right: 15px; 
+            width: 35px; height: 35px; background: #f1f5f9; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; cursor: pointer; color: #64748b;
+        }
 
-        .profit-card { background: var(--primary-grad); color: white; padding: 30px; border-radius: 30px; text-align: center; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
-        .profit-card h1 { margin: 10px 0 0; font-size: 38px; color: #10b981; }
+        .inp-field {
+            width: 100%; padding: 15px; border: 2px solid #f1f5f9; border-radius: 15px;
+            margin-bottom: 15px; font-family: inherit; font-weight: 600; text-align: center;
+        }
+        .btn-full {
+            width: 100%; padding: 15px; background: var(--primary); color: white;
+            border: none; border-radius: 15px; font-weight: 800; font-size: 16px; cursor: pointer;
+        }
 
-        /* 12-GRID MENU */
-        .admin-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 0 5px; }
-        .m-item { background: white; padding: 18px 5px; border-radius: 20px; text-align: center; border: 1.5px solid #f3f4f6; cursor: pointer; transition: 0.2s; }
-        .m-item:active { transform: scale(0.95); background: #ecfdf5; border-color: var(--primary); }
-        .m-item i { font-size: 22px; margin-bottom: 8px; display: block; }
-        .m-item span { font-size: 10px; font-weight: 800; color: #444; display: block; }
+        /* PAGE SYSTEM */
+        .page { display: none; padding-top: 0; }
+        .page.active { display: block; animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* SECTIONS */
-        .section { display: none; padding: 20px 15px; animation: fadeIn 0.3s; }
-        .section.active { display: block; }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+        /* RECEIPT STYLES */
+        .rec-icon { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 15px; display: flex; justify-content: center; align-items: center; font-size: 35px; }
+        .rec-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f8fafc; font-size: 14px; }
+        .rec-row span { color: #94a3b8; font-weight: 600; }
+        .rec-row b { color: #334155; font-weight: 800; }
+        .rej-box { background: #fee2e2; padding: 15px; border-radius: 15px; color: #b91c1c; text-align: left; margin-top: 15px; font-size: 13px; font-weight: 600; border: 1px solid #fca5a5; }
 
-        .back-nav { padding: 10px 0; font-weight: 900; color: var(--primary); display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 16px; margin-bottom: 15px; }
-        .card { background: white; padding: 20px; border-radius: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); border: 1px solid #f3f4f6; margin-bottom: 15px; position: relative; }
-        
-        .inp { width: 100%; padding: 15px; border: 2px solid #f1f5f9; border-radius: 15px; margin-bottom: 10px; font-size: 14px; font-family: inherit; font-weight: 600; }
-        .btn-main { background: var(--accent-grad); color: white; padding: 15px; width: 100%; font-size: 15px; font-weight: 800; border-radius: 15px; border: none; cursor: pointer; }
-        
-        .badge { padding: 5px 10px; border-radius: 8px; font-size: 10px; font-weight: 900; text-transform: uppercase; float: right; }
-        .badge-pen { background: #fef3c7; color: #d97706; }
-        .badge-suc { background: #d1fae5; color: #059669; }
-
-        /* RECEIPT MODAL */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px); }
-        .rec-box { background: white; width: 100%; max-width: 380px; padding: 40px 25px; border-radius: 35px; text-align: center; position: relative; }
-        .rec-icon { width: 80px; height: 80px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 15px; font-size: 40px; }
-        .dashed-line { border-bottom: 2px dashed #eee; margin: 20px 0; }
-        .rec-row { display: flex; justify-content: space-between; padding: 10px 0; font-size: 14px; border-bottom: 1px solid #f9fafb; }
-        .rec-row b { color: #333; } .rec-row span { color: #888; }
-        .rej-msg { background: #fee2e2; padding: 15px; border-radius: 15px; margin-top: 20px; text-align: left; font-size: 13px; color: #b91c1c; }
     </style>
 </head>
 <body>
 
-    <div id="login-overlay">
-        <div class="login-box">
-            <i class="fas fa-user-lock"></i>
-            <h2 style="margin:0 0 10px;font-weight:900">ADMIN LOGIN</h2>
-            <input id="l-user" class="inp" placeholder="Username">
-            <input id="l-pass" type="password" class="inp" placeholder="Password">
-            <button class="btn-main" onclick="doLogin()">LOGIN</button>
+    <div class="app-header">
+        <div class="header-title"><i class="fas fa-leaf"></i> টাকার গাছ</div>
+        <div onclick="location.reload()"><i class="fas fa-sync-alt"></i></div>
+    </div>
+
+    <div id="page-home" class="page active">
+        
+        <div class="profile-section">
+            <div class="balance-card">
+                <div class="u-avatar"><i class="fas fa-user"></i></div>
+                <div class="u-balance-label">মোট ব্যালেন্স</div>
+                <div class="u-balance-amount">৳ <span id="u-bal">0</span></div>
+                <div id="u-badge" class="plan-badge">ফ্রি মেম্বার</div>
+                
+                <div class="stats-row">
+                    <div class="stat-item"><b id="u-ref-cnt">0</b><small>রেফার সংখ্যা</small></div>
+                    <div class="stat-item"><b>৳ <span id="u-ref-inc">0</span></b><small>রেফার কমিশন</small></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-grid">
+            <div class="menu-item" onclick="nav('vip')"><div class="menu-icon-box"><i class="fas fa-crown ic-vip"></i></div><span class="menu-text">ভিআইপি</span></div>
+            <div class="menu-item" onclick="nav('tasks')"><div class="menu-icon-box"><i class="fas fa-tasks ic-task"></i></div><span class="menu-text">কাজ</span></div>
+            <div class="menu-item" onclick="nav('withdraw')"><div class="menu-icon-box"><i class="fas fa-wallet ic-cash"></i></div><span class="menu-text">ক্যাশআউট</span></div>
+            <div class="menu-item" onclick="nav('history')"><div class="menu-icon-box"><i class="fas fa-history ic-hist"></i></div><span class="menu-text">হিস্টরি</span></div>
+            <div class="menu-item" onclick="nav('profile')"><div class="menu-icon-box"><i class="fas fa-user ic-prof"></i></div><span class="menu-text">প্রোফাইল</span></div>
+            <div class="menu-item" onclick="window.open('https://t.me/TAKAR_GACH_SUPPORT')"><div class="menu-icon-box"><i class="fab fa-telegram ic-sup"></i></div><span class="menu-text">সাপোর্ট</span></div>
+            <div class="menu-item" onclick="showRules()"><div class="menu-icon-box"><i class="fas fa-scroll ic-rule"></i></div><span class="menu-text">নিয়মাবলী</span></div>
+            <div class="menu-item" onclick="shareApp()"><div class="menu-icon-box"><i class="fas fa-share-alt ic-shar"></i></div><span class="menu-text">শেয়ার</span></div>
+        </div>
+
+        <div class="daily-card">
+            <div class="dc-left">
+                <div class="dc-icon"><i class="fas fa-gift"></i></div>
+                <div class="dc-info"><b>ডেইলি বোনাস</b><small>+ ৳২ ফ্রি</small></div>
+            </div>
+            <button id="bonus-btn" class="btn-claim active" onclick="claimBonus()">CLAIM</button>
+        </div>
+
+        <div class="section-header">আপনার জন্য কাজ</div>
+        <div id="home-task-list">
+            </div>
+
+        <div style="height: 100px;"></div>
+    </div>
+
+    <div id="page-withdraw" class="page" style="padding-top:80px">
+        <div class="section-header">পেমেন্ট গেটওয়ে</div>
+        <div class="daily-card" style="display:block; text-align:center;">
+            <p style="color:#64748b; margin-bottom:10px;">বর্তমান ব্যালেন্স</p>
+            <h1 style="color:var(--primary); margin-bottom:20px;">৳ <span id="w-bal">0</span></h1>
+            
+            <div class="pay-grid">
+                <div class="pay-item" id="pay-bkash" onclick="selPay('Bkash')">
+                    <img src="https://freelogopng.com/images/all_img/1656227518bkash-logo-png.png" class="pay-img">
+                    <span class="pay-name">বিকাশ</span>
+                </div>
+                <div class="pay-item" id="pay-nagad" onclick="selPay('Nagad')">
+                    <img src="https://freelogopng.com/images/all_img/1679248787nagad-logo.png" class="pay-img">
+                    <span class="pay-name">নগদ</span>
+                </div>
+                <div class="pay-item off">
+                    <img src="https://seeklogo.com/images/D/dutch-bangla-rocket-logo-B4D1CC458D-seeklogo.com.png" class="pay-img">
+                    <span class="pay-name">রকেট</span>
+                    <span class="off-badge">OFF</span>
+                </div>
+            </div>
+
+            <input id="w-amount" type="number" class="inp-field" placeholder="পরিমাণ (৳)">
+            <input id="w-number" type="number" class="inp-field" placeholder="রিসিভ নাম্বার">
+            <button class="btn-full" onclick="submitWithdraw()">রিকোয়েস্ট পাঠান</button>
         </div>
     </div>
 
-    <div id="admin-app" style="display:none">
-        
-        <div class="admin-header">
-            <div class="admin-logo"><i class="fas fa-leaf"></i> টাকার গাছ V30</div>
-            <div onclick="location.reload()" style="background:#ecfdf5;padding:8px;border-radius:50%;color:#059669"><i class="fas fa-sync-alt"></i></div>
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="nav('home')"><i class="fas fa-home"></i><span>হোম</span></div>
+        <div class="nav-item" onclick="nav('tasks')"><i class="fas fa-list-check"></i><span>কাজ</span></div>
+        <div class="nav-item" onclick="nav('history')"><i class="fas fa-file-invoice"></i><span>হিস্টরি</span></div>
+        <div class="nav-item" onclick="nav('profile')"><i class="fas fa-user-circle"></i><span>প্রোফাইল</span></div>
+    </div>
+
+    <div id="notice-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-close" onclick="closeModal('notice-modal')"><i class="fas fa-times"></i></div>
+            <div style="font-size:50px; color:#f59e0b; margin-bottom:15px"><i class="fas fa-bell"></i></div>
+            <h3 id="nt-title">নোটিশ</h3>
+            <p id="nt-msg" style="color:#64748b; margin:15px 0; line-height:1.5;">...</p>
+            <button class="btn-full" onclick="closeModal('notice-modal')">বুঝতে পেরেছি</button>
         </div>
-
-        <div id="dash-main" class="dashboard">
-            <div class="stats-grid">
-                <div class="stat-card" style="border-color:#3b82f6"><b><h2 id="st-users">0</h2></b><small>মোট ইউজার</small></div>
-                <div class="stat-card" style="border-color:#10b981"><b><h2 id="st-bal">৳0</h2></b><small>ইউজার ব্যালেন্স</small></div>
-            </div>
-            <div class="stats-grid">
-                <div class="stat-card" style="border-color:#f59e0b"><b><h2 id="st-depo">৳0</h2></b><small>ডিপোজিট</small></div>
-                <div class="stat-card" style="border-color:#ef4444"><b><h2 id="st-with">৳0</h2></b><small>উইথড্র</small></div>
-            </div>
-
-            <div class="profit-card">
-                <small>নিট প্রফিট (NET PROFIT)</small>
-                <h1 id="st-profit">৳ 0</h1>
-            </div>
-
-            <div class="admin-grid">
-                <div class="m-item" onclick="openSec('users')"><i class="fas fa-users" style="color:#3b82f6"></i><span>ইউজার</span></div>
-                <div class="m-item" onclick="openSec('vip-plans')"><i class="fas fa-gem" style="color:#f59e0b"></i><span>VIP প্ল্যান</span></div>
-                <div class="m-item" onclick="openSec('vip-req')"><i class="fas fa-crown" style="color:#fbbf24"></i><span>VIP রিকোয়েস্ট</span></div>
-                <div class="m-item" onclick="openSec('with-req')"><i class="fas fa-arrow-up" style="color:#ef4444"></i><span>উইথড্র</span></div>
-                <div class="m-item" onclick="openSec('task-add')"><i class="fas fa-plus-circle" style="color:#10b981"></i><span>টাস্ক যোগ</span></div>
-                <div class="m-item" onclick="openSec('task-req')"><i class="fas fa-tasks" style="color:#6366f1"></i><span>সব জব</span></div>
-                <div class="m-item" onclick="openSec('ledger')"><i class="fas fa-briefcase" style="color:#ec4899"></i><span>লেজার</span></div>
-                <div class="m-item" onclick="openSec('history')"><i class="fas fa-history" style="color:#f59e0b"></i><span>হিস্টরি</span></div>
-                <div class="m-item" onclick="openSec('notice')"><i class="fas fa-bullhorn" style="color:#f97316"></i><span>নোটিশ</span></div>
-                <div class="m-item" onclick="openSec('config')"><i class="fas fa-cog" style="color:#64748b"></i><span>সেটিংস</span></div>
-                <div class="m-item" onclick="window.open('https://t.me/TAKAR_GACH_ADMIN')"><i class="fab fa-telegram" style="color:#229ed9"></i><span>সাপোর্ট</span></div>
-                <div class="m-item" onclick="doLogout()"><i class="fas fa-power-off" style="color:#dc2626"></i><span>লগ আউট</span></div>
-            </div>
-        </div>
-
-        <div id="sec-users" class="section">
-            <div class="back-nav" onclick="showDash()"><i class="fas fa-arrow-left"></i> ইউজার লিস্ট</div>
-            <input id="u-search" class="inp" placeholder="নাম বা ফোন..." oninput="renderUserList()">
-            <div id="user-list"></div>
-        </div>
-
-        <div id="sec-task-req" class="section">
-            <div class="back-nav" onclick="showDash()"><i class="fas fa-arrow-left"></i> সব জবের রিকোয়েস্ট (Task)</div>
-            <div id="task-list"></div>
-        </div>
-
-        <div id="sec-vip-req" class="section">
-            <div class="back-nav" onclick="showDash()"><i class="fas fa-arrow-left"></i> VIP ডিপোজিট রিকোয়েস্ট</div>
-            <div id="vip-list"></div>
-        </div>
-
-        <div id="sec-with-req" class="section">
-            <div class="back-nav" onclick="showDash()"><i class="fas fa-arrow-left"></i> টাকা তোলার রিকোয়েস্ট</div>
-            <div id="with-list"></div>
-        </div>
-
-        <div id="sec-history" class="section">
-            <div class="back-nav" onclick="showDash()"><i class="fas fa-arrow-left"></i> সকল লেনদেন হিস্টরি</div>
-            <div id="history-list"></div>
-        </div>
-
-        <div id="sec-ledger" class="section">
-            <div class="back-nav" onclick="showDash()"><i class="fas fa-arrow-left"></i> পার্সোনাল লেজার (ব্যক্তিগত)</div>
-            <div id="ledger-list"></div>
-        </div>
-
-        <div id="sec-vip-plans" class="section">
-            <div class="back-nav" onclick="showDash()"><i class="fas fa-arrow-left"></i> VIP প্যাকেজ সেটআপ</div>
-            <div class="card">
-                <input id="vp-name" class="inp" placeholder="প্যাকেজ নাম (উদা: Silver)">
-                <input id="vp-price" type="number" class="inp" placeholder="দাম (৳)">
-                <input id="vp-daily" type="number" class="inp" placeholder="দৈনিক আয় (৳)">
-                <input id="vp-valid" type="number" class="inp" placeholder="মেয়াদ (দিন)">
-                <button class="btn-main" onclick="savePlan()">প্যাকেজ সেভ করুন</button>
-            </div>
-            <div id="plan-display"></div>
-        </div>
-
-        <div id="sec-task-add" class="section">
-            <div class="back-nav" onclick="showDash()"><i class="fas fa-arrow-left"></i> নতুন টাস্ক যোগ</div>
-            <div class="card">
-                <input id="t-title" class="inp" placeholder="টাইটেল">
-                <input id="t-link" class="inp" placeholder="লিংক">
-                <input id="t-reward" type="number" class="inp" placeholder="রিওয়ার্ড">
-                <select id="t-target" class="inp">
-                    <option value="Free">Free</option>
-                    <option value="Silver">Silver</option>
-                    <option value="Gold">Gold</option>
-                    <option value="Platinum">Platinum</option>
-                    <option value="Diamond">Diamond</option>
-                </select>
-                <button class="btn-main" onclick="saveNewTask()">টাস্ক সেভ করুন</button>
-            </div>
-        </div>
-
-        <div id="sec-notice" class="section">
-            <div class="back-nav" onclick="showDash()"><i class="fas fa-arrow-left"></i> পপ-আপ নোটিশ</div>
-            <div class="card">
-                <input id="n-title" class="inp" placeholder="শিরোনাম">
-                <textarea id="n-msg" class="inp" style="height:120px" placeholder="মেসেজ..."></textarea>
-                <button class="btn-main" onclick="saveNotice()">নোটিশ পাবলিশ করুন</button>
-            </div>
-        </div>
-
-        <div id="sec-config" class="section">
-            <div class="back-nav" onclick="showDash()"><i class="fas fa-arrow-left"></i> সেটিংস</div>
-            <div class="card">
-                <input id="c-bk" class="inp" placeholder="Bkash">
-                <input id="c-ng" class="inp" placeholder="Nagad">
-                <input id="c-rk" class="inp" placeholder="Rocket">
-                <button class="btn-main" onclick="saveConf()">আপডেট করুন</button>
-            </div>
-        </div>
-
     </div>
 
     <div id="rec-modal" class="modal">
-        <div class="rec-box">
-            <div style="position:absolute;top:20px;right:20px;font-size:25px;cursor:pointer" onclick="closeModal('rec-modal')"><i class="fas fa-times"></i></div>
+        <div class="modal-content">
+            <div class="modal-close" onclick="closeModal('rec-modal')"><i class="fas fa-times"></i></div>
             <div id="rec-body"></div>
-            <button class="btn-main" style="background:#f3f4f6;color:#333;margin-top:20px" onclick="closeModal('rec-modal')">CLOSE WINDOW</button>
         </div>
     </div>
 
     <script>
+        // =========================================
+        // 1. FIREBASE CONFIGURATION & VARS
+        // =========================================
         const firebaseConfig = { 
             apiKey: "AIzaSyDgI-d8iwWr40tmknbY6jhH0oRb2Tvg4d0", 
             authDomain: "takar-gach-a1d84.firebaseapp.com", 
@@ -221,268 +461,358 @@
             messagingSenderId: "637802367074", 
             appId: "1:637802367074:web:2e7f6c0670ec47f3a1693b" 
         };
-        firebase.initializeApp(firebaseConfig);
+        
+        // Initialize Firebase
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        const auth = firebase.auth();
 
-        let USERS = {}, PLANS = {}, CONF = {};
+        // Global Variables
+        let UID = localStorage.getItem('tg_uid'); // Get saved UID
+        let USER_DATA = {};
+        let SEL_METHOD = '';
 
-        // LOGIN
-        function doLogin(){
-            const u = document.getElementById('l-user').value;
-            const p = document.getElementById('l-pass').value;
-            if(u==='JIHAD' && p==='1983'){
-                localStorage.setItem('adm_v30','true');
-                startApp();
-            } else Swal.fire('Error','ভুল তথ্য','error');
-        }
-        if(localStorage.getItem('adm_v30')==='true') startApp();
-
-        function startApp(){
-            document.getElementById('login-overlay').style.display='none';
-            document.getElementById('admin-app').style.display='block';
-            
-            // MASTER SYNC
-            db.ref('users').on('value', s => {
-                USERS = s.val() || {};
-                calcStats();
-                // Refresh active view
-                const active = document.querySelector('.section.active');
-                if(active) openSec(active.id.replace('sec-',''));
-            });
-
-            db.ref('settings').on('value', s => {
-                const d = s.val() || {};
-                PLANS = d.vipPlans || {};
-                CONF = d.config || {};
-                renderPlanList();
-                if(document.getElementById('c-bk')){
-                    document.getElementById('c-bk').value = CONF.bkash||'';
-                    document.getElementById('c-ng').value = CONF.nagad||'';
-                    document.getElementById('c-rk').value = CONF.rocket||'';
-                    document.getElementById('n-title').value = d.notice?.title||'';
-                    document.getElementById('n-msg').value = d.notice?.message||'';
-                }
-            });
-        }
-
-        // STATS & PROFIT
-        function calcStats(){
-            let uC=0, bal=0, dep=0, wit=0;
-            Object.values(USERS).forEach(u => {
-                uC++;
-                bal += parseInt(u.balance||0);
-                if(u.history){
-                    Object.values(u.history).forEach(h => {
-                        if(h.status==='Success'){
-                            if(h.type.includes('Buy')) dep += parseInt(h.amount);
-                            if(h.type==='Withdraw') wit += parseInt(h.amount);
-                        }
-                    });
-                }
-            });
-            document.getElementById('st-users').innerText = uC;
-            document.getElementById('st-bal').innerText = '৳'+bal;
-            document.getElementById('st-depo').innerText = '৳'+dep;
-            document.getElementById('st-with').innerText = '৳'+wit;
-            document.getElementById('st-profit').innerText = '৳ '+(dep-wit);
-        }
-
-        // REQUEST RENDERER (THE FIX)
-        function renderReqs(type, containerId){
-            const box = document.getElementById(containerId);
-            if(!box) return;
-            box.innerHTML = '';
-            let count = 0;
-
-            Object.keys(USERS).forEach(uid => {
-                const u = USERS[uid];
-                if(u.history){
-                    Object.keys(u.history).forEach(hid => {
-                        const h = u.history[hid];
-                        let match = false;
-                        
-                        // STRICT FILTERING
-                        if(h.status === 'Pending'){
-                            if(type === 'task' && (h.type.includes('Task') || h.type.includes('Work'))) match = true;
-                            if(type === 'vip' && h.type.includes('Buy')) match = true;
-                            if(type === 'with' && h.type === 'Withdraw') match = true;
-                        }
-
-                        if(match){
-                            count++;
-                            box.innerHTML += `
-                                <div class="card" style="text-align:left;border-left:5px solid #f59e0b">
-                                    <div style="display:flex;justify-content:space-between"><b>${u.name}</b><span class="badge badge-pen">${h.type}</span></div>
-                                    <p style="margin:5px 0;font-size:14px">৳${h.amount} | ${h.date}</p>
-                                    <div style="display:flex;gap:10px;margin-top:10px">
-                                        <button class="btn-main" style="padding:10px;font-size:12px;flex:1" onclick="act('${uid}','${hid}','ok','${h.type}',${h.amount})">APPROVE</button>
-                                        <button class="btn-main" style="padding:10px;font-size:12px;flex:1;background:#ef4444" onclick="act('${uid}','${hid}','no')">REJECT</button>
-                                        <button class="btn-main" style="padding:10px;font-size:12px;flex:0.4;background:#333" onclick='viewRec(${JSON.stringify(h)},"${u.name}","${uid}")'><i class="fas fa-eye"></i></button>
-                                    </div>
-                                </div>`;
-                        }
-                    });
-                }
-            });
-            if(count===0) box.innerHTML='<p style="text-align:center;color:#999;padding:40px">কোনো পেন্ডিং ডাটা নেই</p>';
-        }
-
-        // APPROVE / REJECT ACTION
-        async function act(uid, hid, action, type, amt){
-            if(action==='ok'){
-                const up = {};
-                up[`users/${uid}/history/${hid}/status`] = 'Success';
-                
-                // TASK BALANCE ADD
-                if(type.includes('Task') || type.includes('Work')) {
-                    up[`users/${uid}/balance`] = (parseInt(USERS[uid].balance)||0) + parseInt(amt);
-                }
-                // VIP PLAN UPDATE
-                if(type.includes('Buy')) {
-                    up[`users/${uid}/isVip`] = true;
-                    up[`users/${uid}/currentPlan`] = type.replace('Buy ','');
-                }
-                // WITHDRAW (Already deducted in user panel, just mark success)
-
-                await db.ref().update(up);
-                Swal.fire('Done','সফল হয়েছে','success');
+        // =========================================
+        // 2. AUTH & INITIALIZATION
+        // =========================================
+        window.onload = () => {
+            // Check Login (Simple simulation for demo, replace with real auth if needed)
+            if(!UID) {
+                // If no user, redirect to login or create a temp ID
+                // For this demo, let's assume user is logged in or create a demo ID
+                // window.location.href = "login.html"; 
+                // Demo purpose only:
+                console.log("No User Found, waiting for login...");
             } else {
-                const {value:r} = await Swal.fire({title:'কারণ লিখুন',input:'text',showCancelButton:true});
-                if(r){
-                    await db.ref(`users/${uid}/history/${hid}`).update({status:'Rejected',reason:r});
-                    // Refund balance if withdraw rejected
-                    if(type==='Withdraw') db.ref(`users/${uid}/balance`).transaction(b => (b||0)+parseInt(amt));
-                    Swal.fire('Rejected','বাতিল করা হয়েছে','error');
+                initApp();
+            }
+        };
+
+        function initApp() {
+            // 1. Listen to User Data
+            db.ref('users/' + UID).on('value', snapshot => {
+                USER_DATA = snapshot.val();
+                if (!USER_DATA) return; // Handle new user case
+
+                // Update Balance
+                document.getElementById('u-bal').innerText = USER_DATA.balance || 0;
+                document.getElementById('w-bal').innerText = USER_DATA.balance || 0;
+                
+                // Update Stats
+                document.getElementById('u-ref-cnt').innerText = USER_DATA.refCount || 0;
+                document.getElementById('u-ref-inc').innerText = USER_DATA.refEarn || 0;
+
+                // Update Membership Badge (The Silver Fix)
+                const plan = USER_DATA.currentPlan || 'Free';
+                const badge = document.getElementById('u-badge');
+                
+                if (plan.toLowerCase().includes('silver') || plan.includes('সিলভার')) {
+                    badge.className = 'plan-badge silver';
+                    badge.innerHTML = '<i class="fas fa-crown"></i> সিলভার Member';
+                } else if (plan.toLowerCase().includes('gold') || plan.includes('গোল্ড')) {
+                    badge.className = 'plan-badge gold';
+                    badge.innerHTML = '<i class="fas fa-crown"></i> গোল্ড Member';
+                } else {
+                    badge.className = 'plan-badge';
+                    badge.innerHTML = 'ফ্রি মেম্বার';
                 }
+
+                // Check Daily Bonus
+                checkDailyBonusState();
+            });
+
+            // 2. Load Tasks
+            loadTasks();
+
+            // 3. Check for Admin Notice
+            db.ref('settings/notice').once('value', s => {
+                const notice = s.val();
+                if(notice && notice.message) {
+                    document.getElementById('nt-title').innerText = notice.title || 'নোটিশ';
+                    document.getElementById('nt-msg').innerText = notice.message;
+                    document.getElementById('notice-modal').style.display = 'flex';
+                }
+            });
+        }
+
+        // =========================================
+        // 3. DAILY BONUS LOGIC (TAKEN CHECK)
+        // =========================================
+        function checkDailyBonusState() {
+            const btn = document.getElementById('bonus-btn');
+            const today = new Date().toDateString();
+            
+            if (USER_DATA.lastBonus === today) {
+                btn.innerText = 'নিয়েছেন ✅';
+                btn.classList.remove('active');
+                btn.classList.add('taken');
+                btn.disabled = true;
+            } else {
+                btn.innerText = 'CLAIM';
+                btn.classList.add('active');
+                btn.classList.remove('taken');
+                btn.disabled = false;
             }
         }
 
-        // SECTION RENDERING
-        function openSec(id){
-            document.getElementById('dash-main').style.display='none';
-            document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-            document.getElementById('sec-'+id).classList.add('active');
+        function claimBonus() {
+            const today = new Date().toDateString();
+            if (USER_DATA.lastBonus === today) return;
 
-            if(id==='task-req') renderReqs('task','task-list');
-            if(id==='vip-req') renderReqs('vip','vip-list');
-            if(id==='with-req') renderReqs('with','with-list');
-            if(id==='users') renderUserList();
-            if(id==='ledger') renderLedger();
-            if(id==='history') renderAllHistory();
-        }
-        function showDash(){
-            document.getElementById('dash-main').style.display='block';
-            document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-        }
-
-        // USER LIST
-        function renderUserList(){
-            const box = document.getElementById('user-list-box'); box.innerHTML='';
-            const term = document.getElementById('u-search').value.toLowerCase();
-            Object.keys(USERS).forEach(uid=>{
-                const u = USERS[uid];
-                if(u.name.toLowerCase().includes(term) || uid.includes(term)){
-                    box.innerHTML += `
-                    <div class="card" style="text-align:left;padding:15px">
-                        <div style="display:flex;justify-content:space-between"><b>${u.name}</b><small class="badge badge-suc" style="background:#eee;color:#333">${u.currentPlan||'Free'}</small></div>
-                        <p style="margin:5px 0">Phone: ${uid} | Bal: ৳${u.balance}</p>
-                        <button onclick="editUser('${uid}')" style="background:#3b82f6;color:white;border:none;padding:5px 15px;border-radius:10px">Edit</button>
-                    </div>`;
-                }
+            // Give 2 Taka Bonus
+            const newBal = (parseInt(USER_DATA.balance) || 0) + 2;
+            
+            db.ref('users/' + UID).update({
+                balance: newBal,
+                lastBonus: today
+            }).then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'অভিনন্দন!',
+                    text: 'আপনি ৳২ ডেইলি বোনাস পেয়েছেন।',
+                    confirmButtonColor: '#0CB767'
+                });
             });
         }
 
-        async function editUser(uid){
-            const u = USERS[uid];
-            const {value:f} = await Swal.fire({
-                title:'Edit '+u.name,
-                html: `<input id="sw-bal" class="swal2-input" value="${u.balance}"><input id="sw-plan" class="swal2-input" value="${u.currentPlan||'Free'}">`,
-                preConfirm: () => [document.getElementById('sw-bal').value, document.getElementById('sw-plan').value]
-            });
-            if(f){
-                db.ref('users/'+uid).update({balance:parseInt(f[0]), currentPlan:f[1], isVip: f[1]!=='Free'});
-                Swal.fire('Saved','আপডেট হয়েছে','success');
-            }
-        }
+        // =========================================
+        // 4. TASK SYSTEM (DYNAMIC LIST)
+        // =========================================
+        function loadTasks() {
+            db.ref('settings/tasks').on('value', snapshot => {
+                const tasks = snapshot.val() || {};
+                const container = document.getElementById('home-task-list');
+                const taskPageList = document.getElementById('task-page-list'); // If exists
+                container.innerHTML = '';
 
-        // PERSONAL LEDGER
-        function renderLedger(){
-            const box = document.getElementById('ledger-list-box'); box.innerHTML='';
-            Object.keys(USERS).forEach(uid=>{
-                const u = USERS[uid];
-                let w = 0;
-                if(u.history) Object.values(u.history).forEach(h=>{ if(h.type==='Withdraw' && h.status==='Success') w+=parseInt(h.amount); });
-                box.innerHTML += `
-                <div class="card" style="text-align:left;border-left:5px solid #ec4899">
-                    <b>${u.name}</b> (${uid})
-                    <div style="display:flex;gap:20px;margin-top:10px">
-                        <div>Current: <b style="font-size:18px">৳${u.balance}</b></div>
-                        <div>Withdrawn: <b style="color:red;font-size:18px">৳${w}</b></div>
-                    </div>
-                </div>`;
-            });
-        }
-
-        // FULL HISTORY
-        function renderAllHistory(){
-            const box = document.getElementById('history-list-box'); box.innerHTML='';
-            Object.keys(USERS).forEach(uid=>{
-                const u = USERS[uid];
-                if(u.history){
-                    Object.values(u.history).forEach(h=>{
-                        box.innerHTML += `
-                        <div class="card" style="text-align:left;padding:15px;margin-bottom:10px">
-                            <div style="display:flex;justify-content:space-between"><b>${u.name}</b><small onclick='viewRec(${JSON.stringify(h)},"${u.name}","${uid}")' style="color:blue;cursor:pointer">রিসিট</small></div>
-                            <small>${h.type} | ৳${h.amount} | <span style="color:${h.status==='Success'?'green':(h.status==='Rejected'?'red':'orange')}">${h.status}</span></small>
+                Object.keys(tasks).forEach(key => {
+                    const t = tasks[key];
+                    // Check if already completed
+                    const isDone = USER_DATA.comp && USER_DATA.comp[key];
+                    
+                    // Render Logic
+                    if(!isDone) {
+                        const html = `
+                        <div class="task-card">
+                            <div class="t-left">
+                                <div class="tc-icon"><i class="fab fa-telegram-plane"></i></div>
+                                <div>
+                                    <b style="font-size:15px; color:#334155">${t.title}</b>
+                                    <small style="display:block; color:#0CB767; font-weight:700; margin-top:3px">+ ৳${t.reward}</small>
+                                </div>
+                            </div>
+                            <button class="tc-btn" onclick="doTask('${key}', '${t.link}', ${t.reward})">START</button>
                         </div>`;
-                    });
+                        container.innerHTML += html;
+                    }
+                });
+                
+                if(container.innerHTML === '') {
+                    container.innerHTML = '<p style="text-align:center; padding:20px; color:#94a3b8; font-weight:600">বর্তমানে কোনো কাজ নেই</p>';
                 }
             });
         }
 
-        // EXTRAS
-        function saveNewTask(){
-            const t=document.getElementById('t-title').value, l=document.getElementById('t-link').value;
-            const r=document.getElementById('t-reward').value, tg=document.getElementById('t-target').value;
-            db.ref('settings/tasks/task_'+Date.now()).set({title:t, link:l, reward:r, target:tg});
-            Swal.fire('Done','টাস্ক যোগ হয়েছে','success');
+        function doTask(taskId, link, reward) {
+            window.open(link, '_blank');
+            
+            // Simulate Wait Time
+            setTimeout(() => {
+                Swal.fire({
+                    title: 'প্রমাণ জমা দিন',
+                    text: 'আপনার টেলিগ্রাম ইউজারনেম বা স্ক্রিনশট লিংক দিন',
+                    input: 'text',
+                    showCancelButton: true,
+                    confirmButtonText: 'জমা দিন',
+                    confirmButtonColor: '#0CB767',
+                    cancelButtonText: 'বাতিল'
+                }).then((result) => {
+                    if (result.isConfirmed && result.value) {
+                        // Save to History as Pending
+                        db.ref('users/' + UID + '/history').push({
+                            type: 'Task Reward',
+                            amount: reward,
+                            status: 'Pending',
+                            date: new Date().toLocaleString(),
+                            proof: result.value,
+                            taskId: taskId
+                        });
+                        
+                        // Mark locally as pending/done to hide
+                        db.ref('users/' + UID + '/comp/' + taskId).set(true);
+
+                        Swal.fire('সফল!', 'আপনার কাজটি জমা দেওয়া হয়েছে। এডমিন চেক করে ব্যালেন্স যুক্ত করবেন।', 'success');
+                    }
+                });
+            }, 5000); // 5 seconds delay
         }
-        function savePlan(){
-            const n=document.getElementById('vp-name').value, p=document.getElementById('vp-price').value;
-            const d=document.getElementById('vp-daily').value, v=document.getElementById('vp-valid').value;
-            db.ref('settings/vipPlans/plan_'+Date.now()).set({name:n, price:p, dailyIncome:d, validity:v});
-            Swal.fire('Done','প্যাকেজ সেভ হয়েছে','success');
+
+        // =========================================
+        // 5. WITHDRAW SYSTEM (SELECTOR & LOGIC)
+        // =========================================
+        function selPay(method) {
+            SEL_METHOD = method;
+            
+            // UI Update
+            document.querySelectorAll('.pay-item').forEach(el => el.classList.remove('active'));
+            if(method === 'Bkash') document.getElementById('pay-bkash').classList.add('active');
+            if(method === 'Nagad') document.getElementById('pay-nagad').classList.add('active');
         }
-        function renderPlanList(){
-            const box = document.getElementById('plan-display'); box.innerHTML='';
-            Object.keys(PLANS).forEach(pid=>{
-                const p = PLANS[pid];
-                box.innerHTML += `<div style="background:#f9fafb;padding:10px;margin-bottom:5px;border-radius:10px"><b>${p.name}</b> - ৳${p.price} <i class="fas fa-trash" style="float:right;color:red;cursor:pointer" onclick="db.ref('settings/vipPlans/${pid}').remove()"></i></div>`;
+
+        function submitWithdraw() {
+            const amt = document.getElementById('w-amount').value;
+            const num = document.getElementById('w-number').value;
+
+            if (!SEL_METHOD) return Swal.fire('Error', 'পেমেন্ট মেথড সিলেক্ট করুন', 'warning');
+            if (!amt || !num) return Swal.fire('Error', 'সব তথ্য পূরণ করুন', 'warning');
+            if (parseInt(amt) < 20) return Swal.fire('Error', 'নূন্যতম উইথড্র ২০ টাকা', 'warning');
+            if (parseInt(amt) > parseInt(USER_DATA.balance)) return Swal.fire('Error', 'পর্যাপ্ত ব্যালেন্স নেই', 'error');
+
+            // Deduct Balance Immediately
+            const newBal = parseInt(USER_DATA.balance) - parseInt(amt);
+            db.ref('users/' + UID).update({ balance: newBal });
+
+            // Push Request
+            db.ref('users/' + UID + '/history').push({
+                type: 'Withdraw',
+                method: SEL_METHOD,
+                amount: amt,
+                number: num,
+                status: 'Pending',
+                date: new Date().toLocaleString()
+            });
+
+            Swal.fire({
+                icon: 'success',
+                title: 'সফল!',
+                text: 'উইথড্র রিকোয়েস্ট পাঠানো হয়েছে।',
+                confirmButtonColor: '#0CB767'
+            });
+            
+            // Clear inputs
+            document.getElementById('w-amount').value = '';
+            document.getElementById('w-number').value = '';
+        }
+
+        // =========================================
+        // 6. HISTORY & RECEIPT (SCREENSHOT MATCH)
+        // =========================================
+        function renderHistory() {
+            // This function is called when nav('history') is clicked
+            // But since History is in the same page or modal, we can render it dynamically
+            // For this layout, let's assume we show it in a modal or separate div
+            // Here is the RECEIPT VIEWER Logic
+        }
+
+        // Helper to view receipt from history list (Add this to your history render loop)
+        function openReceipt(h) {
+            let isRej = h.status === 'Rejected';
+            let isSuc = h.status === 'Success';
+            
+            let icon = isRej ? 'times' : (isSuc ? 'check' : 'clock');
+            let color = isRej ? '#ef4444' : (isSuc ? '#0CB767' : '#f59e0b');
+            let bg = isRej ? '#fee2e2' : (isSuc ? '#d1fae5' : '#fef3c7');
+
+            const html = `
+                <div class="rec-icon" style="background:${bg}; color:${color}">
+                    <i class="fas fa-${icon}"></i>
+                </div>
+                <h2 style="margin:0 0 5px; color:${color}; font-weight:800">${h.status}</h2>
+                <small style="color:#94a3b8; font-weight:600">ID: ${h.trxId || 'TXN-'+Math.floor(Math.random()*10000)}</small>
+                
+                <div style="border-bottom: 2px dashed #e2e8f0; margin: 25px 0;"></div>
+                
+                <div class="rec-row"><span>লেনদেনের ধরন</span><b>${h.type}</b></div>
+                <div class="rec-row"><span>মেথড</span><b>${h.method || 'System'}</b></div>
+                <div class="rec-row"><span>পরিমাণ</span><b style="font-size:18px; color:${color}">৳${h.amount}</b></div>
+                <div class="rec-row"><span>তারিখ</span><b>${h.date.split(',')[0]}</b></div>
+                
+                ${isRej ? `<div class="rej-box"><i class="fas fa-exclamation-circle"></i> <b>বাতিলের কারণ:</b><br>${h.reason || 'নিয়ম ভঙ্গ করেছেন'}</div>` : ''}
+                
+                <button onclick="closeModal('rec-modal')" style="width:100%; padding:15px; background:#f1f5f9; color:#64748b; border:none; border-radius:15px; font-weight:800; margin-top:25px; cursor:pointer;">CLOSE WINDOW</button>
+            `;
+            
+            document.getElementById('rec-body').innerHTML = html;
+            document.getElementById('rec-modal').style.display = 'flex';
+        }
+
+        // =========================================
+        // 7. NAVIGATION SYSTEM
+        // =========================================
+        function nav(page) {
+            // Remove active from all pages
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            // Remove active from all nav items
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+            // Activate specific page
+            if (page === 'home') {
+                document.getElementById('page-home').classList.add('active');
+                document.querySelectorAll('.nav-item')[0].classList.add('active');
+            } else if (page === 'withdraw') {
+                document.getElementById('page-withdraw').classList.add('active');
+                // Highlight bottom nav logic if needed
+            } else if (page === 'tasks') {
+                // Show tasks page (You can duplicate page structure for tasks)
+                document.querySelectorAll('.nav-item')[1].classList.add('active');
+                Swal.fire('Loading...', 'টাস্ক পেজ লোড হচ্ছে', 'info');
+            } else if (page === 'history') {
+                // Fetch and show history
+                showHistoryModal(); // Custom function to show history list
+                document.querySelectorAll('.nav-item')[2].classList.add('active');
+            } else if (page === 'profile') {
+                // Scroll to top or show profile modal
+                document.querySelectorAll('.nav-item')[3].classList.add('active');
+                window.scrollTo(0,0);
+            }
+        }
+
+        // Helper for History List (Since we didn't make a full page for it yet)
+        function showHistoryModal() {
+            let listHtml = '<div style="max-height:300px; overflow-y:auto;">';
+            if (USER_DATA.history) {
+                const histArr = Object.values(USER_DATA.history).reverse();
+                histArr.forEach(h => {
+                    listHtml += `
+                    <div onclick='openReceipt(${JSON.stringify(h)})' style="display:flex; justify-content:space-between; padding:15px; border-bottom:1px solid #eee; cursor:pointer">
+                        <div>
+                            <b style="font-size:14px; color:#333">${h.type}</b>
+                            <small style="display:block; color:#999">${h.date.split(',')[0]}</small>
+                        </div>
+                        <div style="text-align:right">
+                            <b style="color:${h.status==='Success'?'#0CB767':(h.status==='Rejected'?'#ef4444':'#f59e0b')}">৳${h.amount}</b>
+                            <small style="display:block; font-weight:700; font-size:10px; color:#94a3b8">${h.status}</small>
+                        </div>
+                    </div>`;
+                });
+            } else {
+                listHtml += '<p style="text-align:center; padding:20px; color:#999">কোনো লেনদেন নেই</p>';
+            }
+            listHtml += '</div>';
+
+            Swal.fire({
+                title: 'লেনদেন হিস্টরি',
+                html: listHtml,
+                showConfirmButton: false,
+                showCloseButton: true
             });
         }
-        function saveNotice(){ db.ref('settings/notice').set({title:document.getElementById('n-title').value, message:document.getElementById('n-msg').value}); Swal.fire('Done','নোটিশ আপডেট হয়েছে','success'); }
-        function saveConf(){ db.ref('settings/config').update({bkash:document.getElementById('c-bk').value, nagad:document.getElementById('c-ng').value, rocket:document.getElementById('c-rk').value}); Swal.fire('Done','সেভ হয়েছে','success'); }
 
-        // RECEIPT MODAL
-        function viewRec(h,name,phone){
-            const isRej=h.status==='Rejected';
-            const ico = isRej?'times':(h.status==='Success'?'check':'clock');
-            const clr = isRej?'#ef4444':(h.status==='Success'?'#059669':'#d97706');
-            document.getElementById('rec-body').innerHTML = `
-                <div class="rec-icon" style="background:${isRej?'#fee2e2':'#d1fae5'};color:${clr}"><i class="fas fa-${ico}"></i></div>
-                <h2 style="margin:0;color:${clr}">${h.status}</h2>
-                <div class="dashed-line"></div>
-                <div class="rec-row"><span>User</span><b>${name}</b></div>
-                <div class="rec-row"><span>Type</span><b>${h.type}</b></div>
-                <div class="rec-row"><span>Amount</span><b style="font-size:18px">৳${h.amount}</b></div>
-                <div class="rec-row"><span>TrxID</span><b>${h.trx||h.proof||phone}</b></div>
-                ${isRej ? `<div class="rej-msg"><b>Reason:</b> ${h.reason}</div>` : ''}
-            `;
-            document.getElementById('rec-modal').style.display='flex';
+        // Helpers
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function shareApp() { 
+            const link = `https://t.me/Takar_Gaach_Bot?start=${UID}`;
+            navigator.clipboard.writeText(link);
+            Swal.fire('কপি হয়েছে!', 'রেফার লিংক কপি হয়েছে। বন্ধুদের সাথে শেয়ার করুন।', 'success');
+        }
+        function showRules() {
+            Swal.fire({
+                title: 'নিয়মাবলী',
+                html: '<ul style="text-align:left; font-size:14px; color:#555"><li>প্রতিদিন ১ বার ডেইলি বোনাস নেওয়া যাবে।</li><li>সঠিকভাবে টাস্ক না করলে পেমেন্ট পাবেন না।</li><li>২০ টাকা হলে উইথড্র দেওয়া যাবে।</li></ul>',
+                confirmButtonColor: '#0CB767'
+            });
         }
 
-        function closeModal(id){ document.getElementById(id).style.display='none'; }
-        function doLogout(){ localStorage.clear(); location.reload(); }
     </script>
 </body>
 </html>
